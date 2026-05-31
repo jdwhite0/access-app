@@ -142,6 +142,195 @@ export default function CommandOutput({ command, userName }: Props) {
         </Block>
       )
 
+    /* ─────────────────────── /presence ─────────────────────────────── */
+    case '/presence': {
+      const handle = userName
+        ? `${userName.toLowerCase().replace(/\s+/g, '')}.access`
+        : 'guest.access'
+      return (
+        <Block label="PRESENCE STATUS">
+          <Body>
+            Your presence is your identity inside the JD AI System ecosystem.
+            This is not a profile. This is your position inside the network.
+          </Body>
+
+          {/* Status grid */}
+          {[
+            ['Identity',       'Verified',                       'var(--success)'],
+            ['Presence',       'Active',                         'var(--success)'],
+            ['ACCESS ID',      handle,                           'var(--accent)'],
+            ['Access Level',   'Builder',                        'var(--text)'],
+            ['Network Status', 'Local — not yet connected',      'var(--gold)'],
+          ].map(([k, v, color]) => (
+            <div key={k} style={{ display: 'flex', gap: '24px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', width: '120px', flexShrink: 0 }}>{k}</span>
+              <span style={{ color, fontSize: '12px' }}>{v}</span>
+            </div>
+          ))}
+
+          {/* Capabilities unlocked */}
+          <div style={{ marginTop: '20px', marginBottom: '8px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>Capabilities Unlocked</div>
+            {['Explore Systems', 'Explore Blueprints', 'Build AI Systems', 'Create Digital Presence', 'Access Frameworks and Tools'].map(c => (
+              <div key={c} style={{ padding: '6px 0', color: 'var(--text-dim)', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ color: 'var(--success)', fontSize: '10px' }}>✓</span>{c}
+              </div>
+            ))}
+          </div>
+
+          {/* Future capabilities */}
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>Future Capabilities</div>
+            {['Register AI Systems', 'Connect AI Systems', 'Network Routing', 'Shared Intelligence', 'AI-to-AI Communication'].map(c => (
+              <div key={c} style={{ padding: '6px 0', color: 'var(--text-muted)', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>○</span>{c}
+              </div>
+            ))}
+          </div>
+          <NextCommands cmds={['/pathways', '/access-id', '/network']} />
+        </Block>
+      )
+    }
+
+    /* ─────────────────────── /pathways ─────────────────────────────── */
+    case '/pathways':
+      return (
+        <Block label="BUILDER PATH">
+          <Body>
+            ACCESS is not a destination. It is a progression.
+            Every person who enters goes through these stages — at their own pace.
+          </Body>
+          {[
+            ['1', 'Explore',  'Understand the ecosystem, tools, systems, and blueprints.',        'Current'],
+            ['2', 'Learn',    'Study the frameworks. Understand how AI systems are built.',       'Next'],
+            ['3', 'Build',    'Create your first AI system, content system, or business system.', 'Upcoming'],
+            ['4', 'Connect',  'Register your system. Establish your AI identity.',               'Future'],
+            ['5', 'Deploy',   'Make your system live. Operate it inside the ecosystem.',          'Future'],
+            ['6', 'Network',  'Your system connects with others. Intelligence flows.',            'Future'],
+          ].map(([stage, name, desc, status]) => (
+            <div key={stage} style={{ display: 'flex', gap: '16px', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, width: '60px' }}>
+                <div style={{ color: status === 'Current' ? 'var(--accent)' : 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '2px' }}>Stage {stage}</div>
+                <div style={{
+                  color: status === 'Current' ? 'var(--success)' : status === 'Next' ? 'var(--gold)' : 'var(--text-muted)',
+                  fontSize: '9px', letterSpacing: '0.08em',
+                }}>{status}</div>
+              </div>
+              <div>
+                <div style={{ color: status === 'Current' ? 'var(--text)' : 'var(--text-dim)', fontSize: '13px', fontWeight: 500, marginBottom: '3px' }}>{name}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px', lineHeight: '1.6' }}>{desc}</div>
+              </div>
+            </div>
+          ))}
+          <Note>You are at Stage 1: Explore. Type /start to choose a direction.</Note>
+          <NextCommands cmds={['/start', '/presence', '/build-ai-system']} />
+        </Block>
+      )
+
+    /* ─────────────────────── /systems-registry ─────────────────────── */
+    case '/systems-registry':
+      return (
+        <Block label="SYSTEM REGISTRY">
+          <Body>
+            In the future, every AI system in the ecosystem will have a registered identity.
+            This is what a registered system looks like.
+          </Body>
+
+          {/* Example: JYSON */}
+          <div style={{ background: 'rgba(64,192,208,0.04)', border: '1px solid rgba(64,192,208,0.12)', borderRadius: '2px', padding: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div>
+                <div style={{ color: 'var(--text)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '3px' }}>JYSON</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.08em' }}>JD AI System — Public Intelligence</div>
+              </div>
+              <span style={{ color: 'var(--success)', fontSize: '9px', letterSpacing: '0.14em', border: '1px solid rgba(75,189,160,0.3)', padding: '3px 8px', borderRadius: '2px' }}>ACTIVE</span>
+            </div>
+            {[
+              ['Purpose',     'Public intelligence portal — educates, guides, and demonstrates AI system building'],
+              ['Capabilities','Reasoning  ·  Planning  ·  Research  ·  Creation  ·  Dispatch'],
+              ['Models',      'Claude  ·  GPT-4o  ·  Gemini  (automatic routing)'],
+              ['Owned by',    'JD White  ·  JD Productions'],
+              ['Connection',  'Internal only — external connection coming'],
+            ].map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', gap: '16px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', width: '90px', flexShrink: 0 }}>{k}</span>
+                <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{v}</span>
+              </div>
+            ))}
+          </div>
+
+          <Body>
+            When ACCESS opens system registration, you will be able to register your own
+            AI system — giving it an identity, capabilities, and a connection slot in the network.
+          </Body>
+          <Note>This is an educational preview. System registration is not yet active.</Note>
+          <NextCommands cmds={['/connect-ai', '/network', '/build-ai-system']} />
+        </Block>
+      )
+
+    /* ─────────────────────── /network ──────────────────────────────── */
+    case '/network':
+      return (
+        <Block label="FUTURE NETWORK">
+          <Body>
+            ACCESS will eventually allow AI systems to identify, discover, verify,
+            and communicate with one another — forming an intelligence network
+            for founders, creators, and builders.
+          </Body>
+
+          <div style={{ margin: '16px 0' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '12px' }}>Example Connections</div>
+            {[
+              ['JYSON  ↔  Business AI',     'Dispatch intelligence routes work to a specialized business system'],
+              ['Creator AI  ↔  Content AI', 'One AI hands content context to a specialized publishing system'],
+              ['Research AI  ↔  Knowledge AI', 'Findings are automatically routed to a knowledge vault system'],
+              ['Builder AI  ↔  Project AI', 'Build requests trigger coordinated project management responses'],
+            ].map(([pair, desc]) => (
+              <div key={pair} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ color: 'var(--accent)', fontSize: '12px', marginBottom: '4px', letterSpacing: '0.04em' }}>{pair}</div>
+                <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.6' }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ padding: '12px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '2px', marginTop: '8px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '6px' }}>Preview Only</div>
+            <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.7' }}>
+              This network does not yet exist. ACCESS is building toward it.
+              Your ACCESS ID is your future node in this network.
+            </div>
+          </div>
+          <NextCommands cmds={['/capabilities', '/systems-registry', '/access-id']} />
+        </Block>
+      )
+
+    /* ─────────────────────── /capabilities ─────────────────────────── */
+    case '/capabilities':
+      return (
+        <Block label="WHAT BECOMES POSSIBLE">
+          <Body>
+            When your AI system is registered and connected inside the ACCESS network,
+            here is what becomes possible:
+          </Body>
+          {[
+            ['Route work',               'Give your system a task. It routes the work to the right intelligence layer and returns an output.'],
+            ['Share information',        'Your system shares structured knowledge with other registered systems — securely, with permission.'],
+            ['Trigger automations',      'An event in one system triggers an action in another — without a human in the loop.'],
+            ['Exchange structured data', 'Systems pass structured outputs — not just messages — enabling real collaboration between AI.'],
+            ['Coordinate tasks',         'Multiple systems can work on parts of the same task and merge results.'],
+            ['Access specialized intelligence', 'Route specific domains to systems built for them: research, content, code, finance, legal.'],
+            ['Build without limits',     'Once systems can communicate, the ceiling for what you can build becomes defined by vision, not tools.'],
+          ].map(([title, desc]) => (
+            <div key={title} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <div style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>{title}</div>
+              <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.65' }}>{desc}</div>
+            </div>
+          ))}
+          <Note>None of this requires a team. It requires the right infrastructure. ACCESS is that infrastructure.</Note>
+          <NextCommands cmds={['/network', '/systems-registry', '/connect-ai']} />
+        </Block>
+      )
+
     /* ─────────────────────── /systems ──────────────────────────────── */
     case '/systems':
       return (
@@ -168,22 +357,75 @@ export default function CommandOutput({ command, userName }: Props) {
     case '/blueprints':
       return (
         <Block label="AVAILABLE BLUEPRINTS">
-          <Body>Blueprints are operating architectures — structured plans for building real systems.</Body>
+          <Body>Blueprints are operating architectures — structured plans for building real systems. Each includes purpose, tools, stack, and next steps.</Body>
+
           {[
-            ['AI Operating System',  'Build an intelligent, self-improving OS around your work and identity'],
-            ['Content System',       'From idea to output — a consistent, scalable content engine'],
-            ['Knowledge System',     'A structured second brain built on Obsidian or equivalent vaults'],
-            ['Creator System',       'Brand, output, and monetization infrastructure for creators'],
-            ['Business System',      'Operations, revenue, capital, and growth architecture'],
-            ['Automation System',    'Eliminate manual work — automate everything repeatable'],
-            ['Digital Presence',     'Establish your sovereign digital identity across the ecosystem'],
-          ].map(([name, desc]) => (
-            <div key={name} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-              <div style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 500, marginBottom: '3px' }}>{name}</div>
-              <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.6' }}>{desc}</div>
+            {
+              name:    'AI Operating System',
+              purpose: 'Build an intelligent, self-improving system around your work and identity.',
+              benefit: 'Offload thinking, execution, and memory to a system that runs 24/7.',
+              tools:   'Claude  ·  GPT-4o  ·  Obsidian  ·  Ollama  ·  GitHub',
+              stack:   'Next.js  ·  Clerk  ·  Vercel  ·  Anthropic API',
+              next:    '/build-ai-system  /tools  /frameworks',
+            },
+            {
+              name:    'Content System',
+              purpose: 'Turn ideas into consistent, scalable content output across all platforms.',
+              benefit: 'Stop creating from scratch every time. Build once, produce continuously.',
+              tools:   'Notion  ·  CapCut  ·  Claude  ·  Make  ·  Buffer',
+              stack:   'Script engine  ·  Publishing pipeline  ·  Analytics layer',
+              next:    '/build-content-system  /frameworks',
+            },
+            {
+              name:    'Knowledge System',
+              purpose: 'Structure everything you know into a searchable, connected intelligence layer.',
+              benefit: 'Never lose an idea, decision, or insight again. Build compound knowledge.',
+              tools:   'Obsidian  ·  NotebookLM  ·  Claude  ·  Readwise',
+              stack:   'Vault  ·  Templates  ·  Link graph  ·  AI layer',
+              next:    '/tools  /frameworks',
+            },
+            {
+              name:    'Business System',
+              purpose: 'Build a complete operating architecture for revenue, delivery, and growth.',
+              benefit: 'Stop reacting. Start running a system. Every layer connected to the next.',
+              tools:   'Notion  ·  Stripe  ·  Claude  ·  Make  ·  Vercel',
+              stack:   'Offer  ·  CRM  ·  Delivery  ·  Automation  ·  Analytics',
+              next:    '/build-business  /capabilities',
+            },
+            {
+              name:    'Automation System',
+              purpose: 'Identify every repeatable task and build systems to run them without you.',
+              benefit: 'Your time is freed for decisions. The system handles execution.',
+              tools:   'Make  ·  Zapier  ·  Claude  ·  Gmail  ·  Calendar',
+              stack:   'Trigger  ·  Logic  ·  Action  ·  Notification  ·  Audit',
+              next:    '/capabilities  /connect-ai',
+            },
+            {
+              name:    'Digital Presence',
+              purpose: 'Establish your identity, worlds, and infrastructure across the ecosystem.',
+              benefit: 'Own your presence. Build it once. Expand it everywhere.',
+              tools:   'Vercel  ·  GitHub  ·  Next.js  ·  Three.js  ·  Clerk',
+              stack:   'Domain  ·  Portal  ·  Identity layer  ·  ACCESS account',
+              next:    '/presence  /access-id  /worlds',
+            },
+          ].map(bp => (
+            <div key={bp.name} style={{ padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '2px' }}>
+              <div style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 600, marginBottom: '6px', letterSpacing: '0.04em' }}>{bp.name}</div>
+              {[
+                ['Purpose',  bp.purpose],
+                ['Benefit',  bp.benefit],
+                ['Tools',    bp.tools],
+                ['Stack',    bp.stack],
+                ['Next',     bp.next],
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: 'flex', gap: '16px', marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', width: '54px', flexShrink: 0, paddingTop: '2px' }}>{k}</span>
+                  <span style={{ color: k === 'Next' ? 'var(--accent)' : 'var(--text-dim)', fontSize: '11px', lineHeight: '1.6' }}>{v}</span>
+                </div>
+              ))}
             </div>
           ))}
-          <Note>Blueprints will be accessible as access levels expand.</Note>
+          <Note>Type any Next command shown above to continue building.</Note>
         </Block>
       )
 
@@ -333,34 +575,50 @@ export default function CommandOutput({ command, userName }: Props) {
       )
 
     /* ─────────────────────── /help ─────────────────────────────────── */
-    case '/help':
+    case '/help': {
+      const sections: Array<{ heading?: string; cmd?: string; desc?: string }> = [
+        { heading: 'Identity & Presence' },
+        { cmd: '/presence',            desc: 'Your digital presence — who you are in the ecosystem' },
+        { cmd: '/access-id',           desc: 'Your ACCESS ID and future AI identity' },
+        { cmd: '/pathways',            desc: 'Builder stages: Explore → Learn → Build → Connect → Deploy → Network' },
+        { heading: 'Build' },
+        { cmd: '/start',               desc: 'Choose a path — where do you want to begin?' },
+        { cmd: '/build-ai-system',     desc: 'Step-by-step: building an AI system (7 layers)' },
+        { cmd: '/build-business',      desc: 'Step-by-step: building a business system (7 layers)' },
+        { cmd: '/build-content-system',desc: 'Step-by-step: building a content system (7 layers)' },
+        { heading: 'Explore' },
+        { cmd: '/blueprints',          desc: 'Blueprints with purpose, tools, stack, and next steps' },
+        { cmd: '/frameworks',          desc: 'Mental models for thinking and building' },
+        { cmd: '/tools',               desc: 'Every tool in the ecosystem — explained in plain language' },
+        { cmd: '/capabilities',        desc: 'What becomes possible when AI systems are connected' },
+        { heading: 'Ecosystem' },
+        { cmd: '/jd-ecosystem',        desc: 'Overview of the JD AI System ecosystem' },
+        { cmd: '/systems',             desc: 'All systems in the ecosystem' },
+        { cmd: '/systems-registry',    desc: 'What a registered AI system looks like (preview)' },
+        { cmd: '/network',             desc: 'Future vision: AI-to-AI network (preview)' },
+        { cmd: '/worlds',              desc: 'All worlds, domains, and their status' },
+        { cmd: '/view-stack',          desc: 'Current technology stack' },
+        { heading: 'Session' },
+        { cmd: '/connect-ai',          desc: 'Future: connect your own AI system' },
+        { cmd: '/help',                desc: 'Show this reference' },
+        { cmd: '/logout',              desc: 'End session' },
+      ]
       return (
         <Block label="AVAILABLE COMMANDS">
-          {[
-            ['/start',               'Choose your path — where do you want to begin?'],
-            ['/build-ai-system',     'Step-by-step guide to building an AI system'],
-            ['/build-business',      'Step-by-step guide to building a business system'],
-            ['/build-content-system','Step-by-step guide to building a content system'],
-            ['/jd-ecosystem',        'Overview of the JD AI System ecosystem and worlds'],
-            ['/systems',             'View all systems in the ecosystem'],
-            ['/blueprints',          'View available operation blueprints'],
-            ['/frameworks',          'View thinking and planning frameworks'],
-            ['/tools',               'View tools — what each one does in plain language'],
-            ['/connect-ai',          'Future: connect your own AI system'],
-            ['/access-id',           'View your ACCESS ID and ecosystem identity'],
-            ['/worlds',              'View all worlds, domains, and their status'],
-            ['/view-stack',          'View the current technology stack'],
-            ['/help',                'Show this reference'],
-            ['/logout',              'End session'],
-          ].map(([cmd, desc]) => (
-            <div key={cmd} style={{ display: 'flex', gap: '24px', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'flex-start' }}>
-              <span style={{ color: 'var(--accent)', fontSize: '11px', width: '180px', flexShrink: 0 }}>{cmd}</span>
-              <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{desc}</span>
+          {sections.map((s, i) => s.heading ? (
+            <div key={i} style={{ padding: '10px 0 4px', color: 'var(--text-muted)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none', marginTop: i > 0 ? '4px' : 0 }}>
+              {s.heading}
+            </div>
+          ) : (
+            <div key={i} style={{ display: 'flex', gap: '24px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'flex-start' }}>
+              <span style={{ color: 'var(--accent)', fontSize: '11px', width: '196px', flexShrink: 0 }}>{s.cmd}</span>
+              <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{s.desc}</span>
             </div>
           ))}
-          <Note>Tip: after /start, type 1–5 to jump directly to a path.</Note>
+          <Note>After /start, type 1–5 to jump directly to a build path.</Note>
         </Block>
       )
+    }
 
     default:
       return null

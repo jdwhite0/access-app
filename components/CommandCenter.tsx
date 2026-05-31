@@ -19,10 +19,37 @@ const ACTIVATION = [
 ]
 
 const AVAILABLE_COMMANDS = [
-  '/start', '/build-ai-system', '/build-business', '/build-content-system',
-  '/jd-ecosystem', '/systems', '/blueprints', '/frameworks', '/tools',
-  '/connect-ai', '/access-id', '/worlds', '/view-stack', '/help', '/logout',
+  '/start', '/presence', '/pathways',
+  '/build-ai-system', '/build-business', '/build-content-system',
+  '/jd-ecosystem', '/systems', '/systems-registry', '/blueprints',
+  '/frameworks', '/tools', '/capabilities',
+  '/connect-ai', '/access-id', '/network', '/worlds', '/view-stack',
+  '/help', '/logout',
 ]
+
+// Fuzzy suggestion map for unknown inputs
+const SUGGESTIONS: Record<string, string[]> = {
+  'who':      ['/presence', '/access-id'],
+  'what':     ['/start', '/jd-ecosystem'],
+  'build':    ['/build-ai-system', '/build-business', '/build-content-system'],
+  'ai':       ['/build-ai-system', '/systems-registry', '/connect-ai'],
+  'connect':  ['/connect-ai', '/network'],
+  'future':   ['/network', '/capabilities', '/pathways'],
+  'system':   ['/systems', '/systems-registry', '/view-stack'],
+  'plan':     ['/blueprints', '/frameworks'],
+  'help':     ['/help'],
+  'path':     ['/pathways', '/start'],
+  'identity': ['/presence', '/access-id'],
+  'network':  ['/network', '/connect-ai'],
+}
+
+function getSuggestions(cmd: string): string[] {
+  const lower = cmd.replace(/^\//, '')
+  for (const [key, cmds] of Object.entries(SUGGESTIONS)) {
+    if (lower.includes(key)) return cmds
+  }
+  return ['/start', '/help']
+}
 
 // Shortcut map: bare numbers from /start menu
 const NUMBER_MAP: Record<string, string> = {
@@ -93,9 +120,13 @@ export default function CommandCenter() {
     if (AVAILABLE_COMMANDS.includes(cmd)) {
       setHistory((prev) => [...prev, { type: 'output', command: cmd }])
     } else {
+      const suggestions = getSuggestions(cmd)
       setHistory((prev) => [
         ...prev,
-        { type: 'error', text: `command not found: ${cmd}  —  type /help to see available commands` },
+        {
+          type: 'error',
+          text: `command not found: ${cmd}  —  suggested: ${suggestions.join('  ')}`,
+        },
       ])
     }
     setInput('')
@@ -215,11 +246,13 @@ export default function CommandCenter() {
             <div className="mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px' }}>
               {[
                 ['/start',            'Choose your path'],
+                ['/presence',         'Your digital presence status'],
+                ['/pathways',         'Builder progression stages'],
                 ['/build-ai-system',  'Build an AI system'],
-                ['/build-business',   'Build a business'],
-                ['/systems',          'View ecosystem systems'],
-                ['/blueprints',       'View blueprints'],
-                ['/connect-ai',       'Connect AI system'],
+                ['/blueprints',       'View operation blueprints'],
+                ['/systems-registry', 'What AI systems look like'],
+                ['/network',          'Future network vision'],
+                ['/capabilities',     'What connected systems can do'],
                 ['/access-id',        'Your ACCESS identity'],
                 ['/help',             'All commands'],
               ].map(([cmd, label]) => (
