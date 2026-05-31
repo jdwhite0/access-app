@@ -114,6 +114,22 @@ export async function updateProjectTasks(projectId: string, tasks: Task[]): Prom
   return !error
 }
 
+export async function updateProjectMilestones(projectId: string, milestones: Milestone[]): Promise<boolean> {
+  const { userId } = await auth()
+  if (!userId) return false
+
+  const supabase = createSupabaseAdmin()
+  if (!supabase) return false
+
+  const { error } = await supabase
+    .from('builder_projects')
+    .update({ milestones, updated_at: new Date().toISOString() })
+    .eq('clerk_user_id', userId)
+    .eq('id', projectId)
+
+  return !error
+}
+
 export async function archiveBuilderProject(projectId: string): Promise<boolean> {
   const { userId } = await auth()
   if (!userId) return false

@@ -1,6 +1,9 @@
-export type SystemType = 'ai' | 'business' | 'content' | 'knowledge'
-export type StatusType = 'active' | 'inactive' | 'archived'
+export type SystemType       = 'ai' | 'business' | 'content' | 'knowledge'
+export type StatusType       = 'active' | 'inactive' | 'archived'
 export type ActivationStatus = 'registered' | 'activating' | 'active'
+export type AssetType        = 'code' | 'content' | 'creative' | 'data' | 'document' | 'brand' | 'other'
+export type VaultType        = 'obsidian' | 'notion' | 'drive' | 'local' | 'other'
+export type OfferStatus      = 'draft' | 'active' | 'paused' | 'archived'
 
 export interface Profile {
   id: string
@@ -20,15 +23,15 @@ export interface AccessIdentity {
 export interface System {
   id: string
   clerk_user_id: string
-  owner_handle: string        // e.g., "jdwhite.access"
-  system_handle: string       // e.g., "jdproductions.access"
-  name: string                // e.g., "JD Productions OS"
+  owner_handle: string
+  system_handle: string
+  name: string
   type: SystemType
   description: string | null
   status: StatusType
-  activation_status: ActivationStatus  // registered → activating → active
-  capabilities: string[]               // what this entity can do
-  connections: string[]                // system handles this entity connects to
+  activation_status: ActivationStatus
+  capabilities: string[]
+  connections: string[]
   blueprint_id: string | null
   created_at: string
 }
@@ -41,6 +44,71 @@ export interface Blueprint {
   answers: string[]
   system_id: string | null
   created_at: string
+}
+
+export interface Agent {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  description: string | null
+  role: string | null
+  system_id: string | null
+  status: StatusType
+  created_at: string
+  updated_at: string
+}
+
+export interface Asset {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  description: string | null
+  asset_type: AssetType
+  url: string | null
+  status: StatusType
+  created_at: string
+  updated_at: string
+}
+
+export interface Workflow {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  description: string | null
+  trigger: string | null
+  system_id: string | null
+  status: StatusType
+  created_at: string
+  updated_at: string
+}
+
+export interface Vault {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  description: string | null
+  vault_type: VaultType | null
+  status: StatusType
+  created_at: string
+  updated_at: string
+}
+
+export interface Offer {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  description: string | null
+  delivery: string | null
+  pricing: string | null
+  status: OfferStatus
+  system_id: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface SystemFile {
@@ -84,7 +152,27 @@ export interface AccessKeyPreview {
   id: string
   clerk_user_id: string
   owner_handle: string
-  key_string: string    // e.g., "jdproductions.access"
+  key_string: string
   status: 'reserved' | 'active' | 'inactive'
   created_at: string
+}
+
+/* ─── Registry summary ─────────────────────────────────────── */
+export interface RegistryCounts {
+  systems: number
+  agents: number
+  projects: number
+  blueprints: number
+  assets: number
+  workflows: number
+  vaults: number
+  connections: number
+  offers: number
+}
+
+export interface RegistrySummary {
+  identityHandle: string
+  identityCreatedAt: string | null
+  counts: RegistryCounts
+  totalRegistered: number
 }

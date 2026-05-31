@@ -9,7 +9,14 @@ import { getOrCreateIdentity } from '@/lib/actions/identity'
 import { saveBlueprint, listBlueprints, deleteBlueprint as deleteBlueprintAction } from '@/lib/actions/blueprints'
 import { createSystem, listSystems, getSystem, deleteSystem as deleteSystemAction } from '@/lib/actions/systems'
 import { createBuilderProject, listBuilderProjects } from '@/lib/actions/projects'
-import type { Blueprint, System, BuilderProject, Task, Milestone } from '@/types/db'
+import { createAgent, listAgents } from '@/lib/actions/agents'
+import { createAsset, listAssets } from '@/lib/actions/assets'
+import { createWorkflow, listWorkflows } from '@/lib/actions/workflows'
+import { createVault, listVaults } from '@/lib/actions/vaults'
+import { createOffer, listOffers } from '@/lib/actions/offers'
+import { getRegistrySummary } from '@/lib/actions/registry'
+import RegistryPanel from './access/RegistryPanel'
+import type { Blueprint, System, BuilderProject, Task, Milestone, Agent, Asset, Workflow, Vault, Offer, RegistrySummary } from '@/types/db'
 
 /* ─── Activation sequence ─────────────────────────────────── */
 const ACTIVATION = [
@@ -90,8 +97,14 @@ const AVAILABLE_COMMANDS = [
   '/start', '/presence', '/pathways',
   '/build-ai-system', '/build-business', '/build-content-system', '/build-knowledge-system',
   '/explore', '/my-id',
+  '/registry',
   '/my-systems', '/register-system', '/open-system', '/system-status', '/delete-system',
-  '/jd-ecosystem', '/systems', '/systems-registry', '/blueprints',
+  '/register-agent', '/my-agents',
+  '/register-asset', '/my-assets',
+  '/register-workflow', '/my-workflows',
+  '/register-vault', '/my-vaults',
+  '/register-offer', '/my-offers',
+  '/my-projects', '/jd-ecosystem', '/systems', '/systems-registry', '/blueprints',
   '/frameworks', '/tools', '/capabilities',
   '/connect-ai', '/access-id', '/network', '/worlds', '/view-stack',
   '/save-blueprint', '/export-blueprint', '/copy-blueprint', '/email-blueprint', '/start-over',
@@ -115,6 +128,9 @@ const SUGGESTIONS: Record<string, string[]> = {
   'identity': ['/presence', '/my-id'],
   'network':  ['/network', '/connect-ai'],
   'blueprint':['/my-blueprints', '/blueprints'],
+  'project': ['/my-projects', '/register-system'],
+  'workspace':['/my-projects'],
+  'continue':['/my-projects'],
   'save':     ['/save-blueprint', '/my-blueprints'],
   'explore':  ['/explore', '/start'],
   'knowledge':['/build-knowledge-system', '/blueprints'],
@@ -211,7 +227,24 @@ type RegisterFlow = {
   name: string | null
 }
 
-type ActiveFlow = BlueprintFlow | RegisterFlow
+export type RegistryObjectType = 'agent' | 'asset' | 'workflow' | 'vault' | 'offer'
+
+type RegistryFlow = {
+  kind: 'registry-object'
+  objectType: RegistryObjectType
+  step: number   // 0 = name, 1 = description/details
+  name: string | null
+}
+
+type ActiveFlow = BlueprintFlow | RegisterFlow | RegistryFlow
+
+const REGISTRY_FLOW_DEFS: Record<RegistryObjectType, { label: string; q1: string; q2: string }> = {
+  agent:    { label: 'REGISTER AGENT',    q1: 'What is this agent called?',     q2: 'What does this agent do? (role and purpose)' },
+  asset:    { label: 'REGISTER ASSET',    q1: 'What is this asset called?',     q2: 'Describe it — what type is it and what does it contain?' },
+  workflow: { label: 'REGISTER WORKFLOW', q1: 'What is this workflow called?',  q2: 'What does this workflow automate?' },
+  vault:    { label: 'REGISTER VAULT',    q1: 'What is this vault called?',     q2: 'What knowledge does it store?' },
+  offer:    { label: 'REGISTER OFFER',    q1: 'What is this offer called?',     q2: 'What does it provide and how is it delivered?' },
+}
 
 /* ─── History types ────────────────────────────────────────── */
 type HistoryItem =
@@ -233,6 +266,10 @@ type HistoryItem =
   | { type: 'jyson-handoff'; payload: JysonPayload }
   | { type: 'project-created'; project: BuilderProject }
   | { type: 'project-list'; projects: BuilderProject[] }
+  | { type: 'registry-panel'; summary: RegistrySummary }
+  | { type: 'registry-question'; objectType: RegistryObjectType; questionText: string; step: number }
+  | { type: 'registry-registered'; objectType: RegistryObjectType; name: string }
+  | { type: 'registry-list'; objectType: RegistryObjectType; items: Array<{ id: string; name: string; description: string | null; created_at: string }> }
 
 /* ─── Component ─────────────────────────────────────────────── */
 export default function CommandCenter() {
@@ -251,6 +288,7 @@ export default function CommandCenter() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [systemCount, setSystemCount] = useState(0)
   const [jysonHandoff, setJysonHandoff] = useState<JysonPayload | null>(null)
+  const [registrySummary, setRegistrySummary] = useState<RegistrySummary | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -274,6 +312,7 @@ export default function CommandCenter() {
     if (phase !== 'active') return
     getOrCreateIdentity(accessId).catch(() => null)
     listSystems().then(s => setSystemCount(s.length)).catch(() => null)
+    getRegistrySummary(accessId).then(s => setRegistrySummary(s)).catch(() => null)
 
     // Check for JYSON handoff payload in URL
     const params = new URLSearchParams(window.location.search)
@@ -436,6 +475,52 @@ export default function CommandCenter() {
 
           setJysonHandoff(null)
         }
+      }
+      setInput('')
+      return
+    }
+
+    /* ── Inside registry object flow ── */
+    if (flow?.kind === 'registry-object') {
+      setCmdHistory(prev => [trimmed, ...prev])
+      setCmdIdx(-1)
+      push({ type: 'input', text: trimmed })
+
+      if (flow.step === 0) {
+        // Got name — ask description
+        setFlow({ ...flow, step: 1, name: trimmed })
+        push({
+          type: 'registry-question',
+          objectType: flow.objectType,
+          questionText: REGISTRY_FLOW_DEFS[flow.objectType].q2,
+          step: 1,
+        })
+      } else {
+        // Got description — create object
+        const name = flow.name ?? trimmed
+        const description = trimmed
+        setFlow(null)
+        push({ type: 'processing', text: `registering ${flow.objectType}...` })
+
+        let created = false
+        try {
+          switch (flow.objectType) {
+            case 'agent':    created = !!(await createAgent(accessId, name, description)); break
+            case 'asset':    created = !!(await createAsset(accessId, name, description)); break
+            case 'workflow': created = !!(await createWorkflow(accessId, name, description)); break
+            case 'vault':    created = !!(await createVault(accessId, name, description)); break
+            case 'offer':    created = !!(await createOffer(accessId, name, description)); break
+          }
+        } catch { created = false }
+
+        // Refresh registry summary
+        getRegistrySummary(accessId).then(s => setRegistrySummary(s)).catch(() => null)
+
+        setHistory(prev => {
+          const next = prev.filter(i => i.type !== 'processing')
+          if (!created) return [...next, { type: 'info', text: `Registration failed. Check Supabase configuration.` }]
+          return [...next, { type: 'registry-registered', objectType: flow.objectType, name }]
+        })
       }
       setInput('')
       return
@@ -665,6 +750,64 @@ export default function CommandCenter() {
       return
     }
 
+    /* /registry — reload and show full registry panel */
+    if (cmd === '/registry') {
+      push({ type: 'processing', text: 'loading registry...' })
+      const summary = await getRegistrySummary(accessId).catch(() => null)
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        if (!summary) return [...next, { type: 'info', text: 'Could not load registry. Check connection.' }]
+        setRegistrySummary(summary)
+        return [...next, { type: 'registry-panel', summary }]
+      })
+      setInput('')
+      return
+    }
+
+    /* Registry object registration starters */
+    const REGISTRY_CMD_MAP: Record<string, RegistryObjectType> = {
+      '/register-agent':    'agent',
+      '/register-asset':    'asset',
+      '/register-workflow': 'workflow',
+      '/register-vault':    'vault',
+      '/register-offer':    'offer',
+    }
+    if (REGISTRY_CMD_MAP[cmd]) {
+      const objType = REGISTRY_CMD_MAP[cmd]
+      setFlow({ kind: 'registry-object', objectType: objType, step: 0, name: null })
+      push({
+        type: 'registry-question',
+        objectType: objType,
+        questionText: REGISTRY_FLOW_DEFS[objType].q1,
+        step: 0,
+      })
+      setInput('')
+      return
+    }
+
+    /* Registry list commands */
+    const REGISTRY_LIST_MAP: Record<string, () => Promise<Array<{ id: string; name: string; description: string | null; created_at: string }>>> = {
+      '/my-agents':    listAgents,
+      '/my-assets':    listAssets,
+      '/my-workflows': listWorkflows,
+      '/my-vaults':    listVaults,
+      '/my-offers':    listOffers,
+    }
+    const REGISTRY_LIST_TYPE_MAP: Record<string, RegistryObjectType> = {
+      '/my-agents': 'agent', '/my-assets': 'asset', '/my-workflows': 'workflow', '/my-vaults': 'vault', '/my-offers': 'offer',
+    }
+    if (REGISTRY_LIST_MAP[cmd]) {
+      const objType = REGISTRY_LIST_TYPE_MAP[cmd]
+      push({ type: 'processing', text: `loading ${objType}s...` })
+      const items = await REGISTRY_LIST_MAP[cmd]().catch(() => [])
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        return [...next, { type: 'registry-list', objectType: objType, items }]
+      })
+      setInput('')
+      return
+    }
+
     /* /connect-jyson */
     if (cmd === '/connect-jyson') {
       push({
@@ -775,112 +918,71 @@ export default function CommandCenter() {
           <div className="fade-in mt-6">
             <div style={divider} />
 
-            <div style={{ marginBottom: '6px', color: 'var(--text)', fontSize: '0.92rem', fontWeight: 300 }}>
+            {/* Welcome line */}
+            <div style={{ marginBottom: '16px', color: 'var(--text)', fontSize: '0.9rem', fontWeight: 300 }}>
               Welcome, {displayName}.
             </div>
-            <div style={{ color: 'var(--text-dim)', fontSize: '0.78rem', lineHeight: '1.7', marginBottom: '14px' }}>
-              Your presence is active. Your ACCESS ID has been created.
-            </div>
 
-            {/* ACCESS ID block */}
-            <div style={{
-              display: 'inline-block',
-              background: 'rgba(64,192,208,0.04)',
-              border: '1px solid rgba(64,192,208,0.15)',
-              borderRadius: '2px',
-              padding: '10px 18px',
-              marginBottom: '24px',
-            }}>
-              <div style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '5px' }}>
-                ACCESS ID
+            {/* Registry Panel — primary view */}
+            {registrySummary ? (
+              <RegistryPanel summary={registrySummary} onCommand={handleCommand} />
+            ) : (
+              <div style={{
+                maxWidth: '600px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '2px',
+                padding: '20px', marginBottom: '24px', background: 'rgba(255,255,255,0.012)',
+              }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                  ACCESS REGISTRY
+                </div>
+                <div style={{ fontSize: '15px', color: 'var(--accent)', marginBottom: '12px', fontWeight: 300 }}>{accessId}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Loading registry<span className="cursor" /></div>
               </div>
-              <div style={{ fontSize: '16px', color: 'var(--accent)', letterSpacing: '0.06em', fontWeight: 300 }}>
-                {accessId}
-              </div>
-            </div>
+            )}
 
-            <div style={{ color: 'var(--text-dim)', fontSize: '0.78rem', marginBottom: '16px' }}>
-              What are you here to build?
-            </div>
-
-            {/* Path selectors */}
-            <div style={{ marginBottom: '28px' }}>
+            {/* Quick action strip */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxWidth: '600px', marginBottom: '20px' }}>
               {[
-                ['1', 'My first AI system',          '/build-ai-system'],
-                ['2', 'My business system',           '/build-business'],
-                ['3', 'My content system',            '/build-content-system'],
-                ['4', 'My personal knowledge system', '/build-knowledge-system'],
-                ['5', 'I just want to explore',       '/explore'],
-              ].map(([n, label, cmd], idx) => (
-                <button key={n}
-                  onClick={e => { e.stopPropagation(); handleCommand(n) }}
-                  style={{
-                    display: 'flex', gap: '20px', width: '100%', maxWidth: '520px',
-                    alignItems: 'center', padding: '10px 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    borderTop: idx === 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                    background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
-                  }}
-                  onMouseEnter={e => {
-                    const span = e.currentTarget.querySelector('.path-num') as HTMLElement
-                    if (span) span.style.color = 'var(--accent)'
-                  }}
-                  onMouseLeave={e => {
-                    const span = e.currentTarget.querySelector('.path-num') as HTMLElement
-                    if (span) span.style.color = 'var(--text-muted)'
-                  }}
-                >
-                  <span className="path-num" style={{ color: 'var(--text-muted)', fontSize: '12px', width: '16px', flexShrink: 0, transition: 'color 0.12s' }}>{n}</span>
-                  <span style={{ color: 'var(--text)', fontSize: '13px', flex: 1 }}>{label}</span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.08em' }}>{cmd}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Quick commands */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px', marginBottom: '16px' }}>
-              {[
-                ['/my-id',         'Your ACCESS identity'],
-                ['/my-systems',    'Registered systems'],
-                ['/my-blueprints', 'Saved blueprints'],
-                ['/connect-jyson', 'Connect to JYSON'],
-                ['/jd-ecosystem',  'JD AI Systems overview'],
-                ['/network',       'Future network vision'],
+                ['/start',         'Build something new'],
+                ['/register-system','Register a system'],
+                ['/connect-jyson', 'Connect JYSON'],
+                ['/my-id',         'Your identity'],
                 ['/help',          'All commands'],
               ].map(([cmd, label]) => (
                 <button key={cmd}
                   onClick={e => { e.stopPropagation(); handleCommand(cmd) }}
                   style={{
                     background: 'var(--surface)', border: '1px solid var(--border)',
-                    borderRadius: '2px', padding: '8px 12px', textAlign: 'left',
+                    borderRadius: '2px', padding: '6px 12px',
                     cursor: 'pointer', transition: 'border-color 0.15s',
+                    display: 'flex', flexDirection: 'column', gap: '2px',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(64,192,208,0.4)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                 >
-                  <div style={{ color: 'var(--accent)', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '2px' }}>{cmd}</div>
+                  <div style={{ color: 'var(--accent)', fontSize: '10px', letterSpacing: '0.1em' }}>{cmd}</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{label}</div>
                 </button>
               ))}
-
-              {/* Logout button — same grid position, distinct style */}
               <button
                 onClick={e => { e.stopPropagation(); signOut() }}
                 style={{
                   background: 'var(--surface)', border: '1px solid var(--border)',
-                  borderRadius: '2px', padding: '8px 12px', textAlign: 'left',
-                  cursor: 'pointer', transition: 'border-color 0.15s, color 0.15s',
+                  borderRadius: '2px', padding: '6px 12px',
+                  cursor: 'pointer', transition: 'border-color 0.15s',
+                  display: 'flex', flexDirection: 'column', gap: '2px',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = 'rgba(200,106,106,0.4)'
-                  ;(e.currentTarget.querySelector('.logout-cmd') as HTMLElement).style.color = 'rgba(200,106,106,0.8)'
+                  const d = e.currentTarget.querySelector('.lo') as HTMLElement
+                  if (d) d.style.color = 'rgba(200,106,106,0.8)'
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.borderColor = 'var(--border)'
-                  ;(e.currentTarget.querySelector('.logout-cmd') as HTMLElement).style.color = 'var(--text-muted)'
+                  const d = e.currentTarget.querySelector('.lo') as HTMLElement
+                  if (d) d.style.color = 'var(--text-muted)'
                 }}
               >
-                <div className="logout-cmd" style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '2px', transition: 'color 0.15s' }}>/logout</div>
+                <div className="lo" style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.1em', transition: 'color 0.15s' }}>/logout</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>End session</div>
               </button>
             </div>
@@ -1196,12 +1298,34 @@ export default function CommandCenter() {
 
             {item.type === 'project-list' && (
               <div className="mb-6 mt-2">
-                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '16px' }}>
                   BUILDER WORKSPACE
                 </div>
+
                 {item.projects.length === 0 ? (
-                  <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                    No active projects. Build something in JYSON and open it here.
+                  <div style={{ padding: '20px 0' }}>
+                    <div style={{ color: 'var(--text-dim)', fontSize: '13px', marginBottom: '6px' }}>
+                      No systems are being built yet.
+                    </div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '11px', lineHeight: '1.7', marginBottom: '16px' }}>
+                      Generate an architecture in JYSON and click &ldquo;Open Workspace in ACCESS&rdquo;
+                      to automatically create a Builder Project.
+                    </div>
+                    <a
+                      href={process.env.NEXT_PUBLIC_JYSON_URL ?? 'https://jyson.vercel.app'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 18px',
+                        background: 'rgba(64,192,208,0.08)', border: '1px solid rgba(64,192,208,0.25)',
+                        borderRadius: '2px', textDecoration: 'none',
+                        fontSize: '10px', letterSpacing: '0.1em', color: 'var(--accent)',
+                        fontFamily: 'var(--mono)', textTransform: 'uppercase' as const,
+                      }}
+                    >
+                      Start with JYSON ↗
+                    </a>
                   </div>
                 ) : (
                   <>
@@ -1209,30 +1333,160 @@ export default function CommandCenter() {
                       const done = proj.tasks.filter(t => t.completed).length
                       const total = proj.tasks.length
                       const pct = total > 0 ? Math.round((done / total) * 100) : 0
+                      const completedMilestones = proj.milestones.filter(m => m.completed).length
+
                       return (
-                        <div key={proj.id} style={{ padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'center' }}>
-                            <span style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 500 }}>{proj.name}</span>
-                            <span style={{ color: pct === 100 ? 'var(--success)' : 'var(--text-muted)', fontSize: '10px' }}>
+                        <div key={proj.id} style={{
+                          padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                        }}>
+                          {/* Title + progress pct */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'flex-start', gap: '12px' }}>
+                            <span style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 400, flex: 1 }}>{proj.name}</span>
+                            <span style={{
+                              color: pct === 100 ? 'var(--success)' : 'var(--text-muted)',
+                              fontSize: '10px', flexShrink: 0,
+                            }}>
                               {pct === 100 ? '✓ Complete' : `${pct}%`}
                             </span>
                           </div>
+
+                          {/* Objective */}
                           {proj.objective && (
-                            <div style={{ color: 'var(--text-dim)', fontSize: '11px', marginBottom: '6px', lineHeight: '1.5' }}>
-                              {proj.objective.slice(0, 100)}{proj.objective.length > 100 ? '…' : ''}
+                            <div style={{ color: 'var(--text-dim)', fontSize: '11px', marginBottom: '8px', lineHeight: '1.6' }}>
+                              {proj.objective.length > 110 ? proj.objective.slice(0, 110) + '…' : proj.objective}
                             </div>
                           )}
-                          <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
-                            {done}/{total} tasks  ·  {new Date(proj.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+
+                          {/* Meta */}
+                          <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginBottom: '8px', lineHeight: '1.8' }}>
+                            {total > 0 && `${done}/${total} tasks`}
+                            {proj.milestones.length > 0 && `  ·  ${completedMilestones}/${proj.milestones.length} milestones`}
+                            {proj.stack.length > 0 && `  ·  ${proj.stack.length} tools`}
+                            {`  ·  ${new Date(proj.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
                           </div>
+
+                          {/* Progress bar */}
                           {total > 0 && (
-                            <div style={{ marginTop: '8px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
-                              <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', transition: 'width 0.4s ease' }} />
+                            <div style={{ height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden', marginBottom: '12px' }}>
+                              <div style={{ height: '100%', width: `${pct}%`, background: pct === 100 ? 'var(--success)' : 'var(--accent)', transition: 'width 0.4s ease' }} />
                             </div>
                           )}
+
+                          {/* Actions */}
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {/* Primary: Continue Building */}
+                            <a
+                              href={`/projects/${proj.id}`}
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                padding: '5px 14px',
+                                background: 'rgba(64,192,208,0.08)', border: '1px solid rgba(64,192,208,0.25)',
+                                borderRadius: '2px', textDecoration: 'none',
+                                fontSize: '9px', letterSpacing: '0.12em', color: 'var(--accent)',
+                                fontFamily: 'var(--mono)', textTransform: 'uppercase' as const,
+                                transition: 'all 0.15s',
+                              }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(64,192,208,0.15)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(64,192,208,0.5)' }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(64,192,208,0.08)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(64,192,208,0.25)' }}
+                            >
+                              Continue Building →
+                            </a>
+
+                            {/* View Architecture */}
+                            {proj.architecture && (
+                              <a
+                                href={`/projects/${proj.id}`}
+                                style={{
+                                  display: 'inline-flex', alignItems: 'center',
+                                  padding: '5px 12px',
+                                  background: 'transparent', border: '1px solid rgba(255,255,255,0.08)',
+                                  borderRadius: '2px', textDecoration: 'none',
+                                  fontSize: '9px', letterSpacing: '0.1em', color: 'var(--text-muted)',
+                                  fontFamily: 'var(--mono)', textTransform: 'uppercase' as const,
+                                  transition: 'all 0.15s',
+                                }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-dim)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.18)' }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}
+                              >
+                                View
+                              </a>
+                            )}
+                          </div>
                         </div>
                       )
                     })}
+                    <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '14px', lineHeight: '1.8' }}>
+                      Click &ldquo;Continue Building&rdquo; to open the full project workspace.
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {item.type === 'registry-panel' && (
+              <div className="mb-6 mt-4">
+                <RegistryPanel summary={item.summary} onCommand={handleCommand} />
+              </div>
+            )}
+
+            {item.type === 'registry-question' && (
+              <div className="mb-1 mt-4" style={{ paddingLeft: '2px' }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.16em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  {REGISTRY_FLOW_DEFS[item.objectType].label}
+                  <span style={{ color: 'rgba(64,192,208,0.4)', marginLeft: '12px' }}>
+                    {item.step === 0 ? 'name' : 'description'}
+                  </span>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: '1.65' }}>{item.questionText}</div>
+              </div>
+            )}
+
+            {item.type === 'registry-registered' && (
+              <div className="mb-4 mt-2" style={{ borderLeft: '2px solid var(--success)', padding: '12px 16px', background: 'rgba(75,189,160,0.03)' }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--success)', marginBottom: '6px' }}>
+                  ✓ {item.objectType.toUpperCase()} REGISTERED
+                </div>
+                <div style={{ fontSize: '14px', color: 'var(--text)', marginBottom: '6px' }}>{item.name}</div>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: '1.7' }}>
+                  Owned by <span style={{ color: 'var(--accent)' }}>{accessId}</span>
+                  {'  ·  '}/my-{item.objectType}s to view all
+                  {'  ·  '}/registry to refresh
+                </div>
+              </div>
+            )}
+
+            {item.type === 'registry-list' && (
+              <div className="mb-6 mt-2">
+                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
+                  MY {item.objectType.toUpperCase()}S
+                </div>
+                {item.items.length === 0 ? (
+                  <div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '6px' }}>
+                      No {item.objectType}s registered yet.
+                    </div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                      Type <span style={{ color: 'var(--accent)' }}>/register-{item.objectType}</span> to register your first.
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {item.items.map((obj, idx) => (
+                      <div key={obj.id} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+                          <span style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 400 }}>{obj.name}</span>
+                          <span style={{ color: 'var(--success)', fontSize: '9px', letterSpacing: '0.12em' }}>ACTIVE</span>
+                        </div>
+                        {obj.description && (
+                          <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.6', marginBottom: '3px' }}>
+                            {obj.description.length > 100 ? obj.description.slice(0, 100) + '…' : obj.description}
+                          </div>
+                        )}
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
+                          {new Date(obj.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                      </div>
+                    ))}
                   </>
                 )}
               </div>
@@ -1275,9 +1529,9 @@ export default function CommandCenter() {
           <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '4px', marginBottom: '4px', letterSpacing: '0.06em' }}>
             {flow.kind === 'blueprint'
               ? `answering question ${flow.step + 1} of ${FLOW_DEFS[flow.type].questions.length}  ·  type your answer`
-              : flow.step === 'name'
-              ? 'registering system  ·  type the system name'
-              : 'confirming system identity  ·  press enter or type a custom name'
+              : flow.kind === 'register'
+              ? (flow.step === 'name' ? 'registering system  ·  type the system name' : 'confirming system identity  ·  press enter or type a custom name')
+              : `registering ${flow.objectType}  ·  ${flow.step === 0 ? 'type the name' : 'type the description'}`
             }
           </div>
         )}
