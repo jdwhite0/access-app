@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:           #050505;
+  --surface:      #0c0c0c;
+  --border:       rgba(255,255,255,0.07);
+  --text:         #e8e8e8;
+  --text-dim:     rgba(232,232,232,0.40);
+  --text-muted:   rgba(232,232,232,0.18);
+  --accent:       #40C0D0;
+  --accent-glow:  rgba(64,192,208,0.08);
+  --success:      #4ABDA0;
+  --gold:         #C9A46A;
+  --mono:         'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 0.9em;
+  background: var(--accent);
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 1.1s step-end infinite;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.fade-in { animation: fadeSlideIn 0.28s ease forwards; }
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+.scanline::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(transparent, rgba(64,192,208,0.025), transparent);
+  animation: scanline 12s linear infinite;
+  pointer-events: none;
+}
+
+#terminal-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(64,192,208,0.15) transparent;
+}
+#terminal-scroll::-webkit-scrollbar { width: 3px; }
+#terminal-scroll::-webkit-scrollbar-thumb { background: rgba(64,192,208,0.15); }
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  width: 100%;
+  text-align: left;
+}
+.auth-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: var(--accent-glow);
+}
+
+.cmd-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  flex: 1;
+  caret-color: var(--accent);
+}
+
+.cmd-table { width: 100%; border-collapse: collapse; }
+.cmd-table th {
+  text-align: left;
+  color: var(--accent);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  padding: 3px 20px 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-table td {
+  padding: 7px 20px 7px 0;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.cmd-table td:first-child { color: var(--text); }
