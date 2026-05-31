@@ -10,17 +10,16 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="START HERE">
           <Body>
-            ACCESS helps you understand and use AI systems, frameworks, tools, and
-            blueprints to build in the digital world.
+            ACCESS helps you build AI systems, businesses, content systems, and
+            knowledge infrastructure. Choose a path to begin.
           </Body>
-          <Body>Choose a path:</Body>
           <div style={{ marginTop: '12px' }}>
             {[
-              ['1', 'Build an AI system',             '/build-ai-system'],
-              ['2', 'Build a business',               '/build-business'],
-              ['3', 'Build a content system',         '/build-content-system'],
-              ['4', 'Understand the JD ecosystem',    '/jd-ecosystem'],
-              ['5', 'Connect my AI system',           '/connect-ai'],
+              ['1', 'My first AI system',           '/build-ai-system'],
+              ['2', 'My business system',            '/build-business'],
+              ['3', 'My content system',             '/build-content-system'],
+              ['4', 'My personal knowledge system',  '/build-knowledge-system'],
+              ['5', 'I just want to explore',        '/explore'],
             ].map(([n, label, cmd]) => (
               <div key={n} style={{ display: 'flex', gap: '20px', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
                 <span style={{ color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '12px', width: '16px', flexShrink: 0 }}>{n}</span>
@@ -29,7 +28,7 @@ export default function CommandOutput({ command, userName }: Props) {
               </div>
             ))}
           </div>
-          <Note>Type a number (1–5) or the command shown to begin.</Note>
+          <Note>Type a number (1–5) or the command shown. ACCESS will ask a few questions and generate a starter blueprint.</Note>
         </Block>
       )
 
@@ -577,31 +576,42 @@ export default function CommandOutput({ command, userName }: Props) {
     /* ─────────────────────── /help ─────────────────────────────────── */
     case '/help': {
       const sections: Array<{ heading?: string; cmd?: string; desc?: string }> = [
-        { heading: 'Identity & Presence' },
-        { cmd: '/presence',            desc: 'Your digital presence — who you are in the ecosystem' },
-        { cmd: '/access-id',           desc: 'Your ACCESS ID and future AI identity' },
-        { cmd: '/pathways',            desc: 'Builder stages: Explore → Learn → Build → Connect → Deploy → Network' },
+        { heading: 'Identity' },
+        { cmd: '/my-id',                     desc: 'Your ACCESS ID — username.access format' },
+        { cmd: '/presence',                  desc: 'Your digital presence status in the ecosystem' },
+        { cmd: '/access-id',                 desc: 'Your ACCESS ID and future AI identity' },
+        { cmd: '/pathways',                  desc: 'Builder stages: Explore → Learn → Build → Connect → Deploy → Network' },
         { heading: 'Build' },
-        { cmd: '/start',               desc: 'Choose a path — where do you want to begin?' },
-        { cmd: '/build-ai-system',     desc: 'Step-by-step: building an AI system (7 layers)' },
-        { cmd: '/build-business',      desc: 'Step-by-step: building a business system (7 layers)' },
-        { cmd: '/build-content-system',desc: 'Step-by-step: building a content system (7 layers)' },
+        { cmd: '/start',                     desc: 'Choose a path — generates a blueprint via Q&A' },
+        { cmd: '/build-ai-system',           desc: 'Generate an AI system blueprint (5 questions)' },
+        { cmd: '/build-business',            desc: 'Generate a business system blueprint (5 questions)' },
+        { cmd: '/build-content-system',      desc: 'Generate a content system blueprint (5 questions)' },
+        { cmd: '/build-knowledge-system',    desc: 'Generate a knowledge system blueprint (5 questions)' },
+        { heading: 'Blueprints' },
+        { cmd: '/my-blueprints',             desc: 'View your saved blueprints' },
+        { cmd: '/save-blueprint',            desc: 'Save current blueprint to ACCESS workspace' },
+        { cmd: '/copy-blueprint',            desc: 'Copy current blueprint to clipboard' },
+        { cmd: '/export-blueprint',          desc: 'Download current blueprint as .md file' },
+        { cmd: '/start-over',                desc: 'Clear current blueprint flow and choose a new path' },
+        { cmd: '/open-blueprint [n]',        desc: 'Reopen a saved blueprint by number' },
+        { cmd: '/delete-blueprint [n]',      desc: 'Delete a saved blueprint by number' },
         { heading: 'Explore' },
-        { cmd: '/blueprints',          desc: 'Blueprints with purpose, tools, stack, and next steps' },
-        { cmd: '/frameworks',          desc: 'Mental models for thinking and building' },
-        { cmd: '/tools',               desc: 'Every tool in the ecosystem — explained in plain language' },
-        { cmd: '/capabilities',        desc: 'What becomes possible when AI systems are connected' },
+        { cmd: '/explore',                   desc: 'Browse systems, blueprints, tools, and frameworks' },
+        { cmd: '/blueprints',                desc: 'Pre-built operating architectures for reference' },
+        { cmd: '/frameworks',                desc: 'Mental models for thinking and building' },
+        { cmd: '/tools',                     desc: 'Every tool in the ecosystem — in plain language' },
+        { cmd: '/capabilities',              desc: 'What becomes possible when AI systems are connected' },
         { heading: 'Ecosystem' },
-        { cmd: '/jd-ecosystem',        desc: 'Overview of the JD AI System ecosystem' },
-        { cmd: '/systems',             desc: 'All systems in the ecosystem' },
-        { cmd: '/systems-registry',    desc: 'What a registered AI system looks like (preview)' },
-        { cmd: '/network',             desc: 'Future vision: AI-to-AI network (preview)' },
-        { cmd: '/worlds',              desc: 'All worlds, domains, and their status' },
-        { cmd: '/view-stack',          desc: 'Current technology stack' },
+        { cmd: '/jd-ecosystem',              desc: 'Overview of the JD AI System ecosystem' },
+        { cmd: '/systems',                   desc: 'All systems in the ecosystem' },
+        { cmd: '/systems-registry',          desc: 'What a registered AI system looks like (preview)' },
+        { cmd: '/network',                   desc: 'Future vision: AI-to-AI network (preview)' },
+        { cmd: '/worlds',                    desc: 'All worlds, domains, and their status' },
+        { cmd: '/view-stack',                desc: 'Current technology stack' },
         { heading: 'Session' },
-        { cmd: '/connect-ai',          desc: 'Future: connect your own AI system' },
-        { cmd: '/help',                desc: 'Show this reference' },
-        { cmd: '/logout',              desc: 'End session' },
+        { cmd: '/connect-ai',                desc: 'Future: connect your own AI system' },
+        { cmd: '/help',                      desc: 'Show this reference' },
+        { cmd: '/logout',                    desc: 'End session' },
       ]
       return (
         <Block label="AVAILABLE COMMANDS">
@@ -615,7 +625,90 @@ export default function CommandOutput({ command, userName }: Props) {
               <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{s.desc}</span>
             </div>
           ))}
-          <Note>After /start, type 1–5 to jump directly to a build path.</Note>
+          <Note>After /start, type 1–5 to jump directly to a build path. Use /build-knowledge-system for path 4.</Note>
+        </Block>
+      )
+    }
+
+    /* ─── /build-knowledge-system ─── */
+    case '/build-knowledge-system':
+      return (
+        <Block label="BUILD A KNOWLEDGE SYSTEM">
+          <Body>A knowledge system turns everything you learn into something you can use. It compounds over time.</Body>
+          {[
+            ['1', 'Capture',    'Every idea, note, article, and insight goes into one place.'],
+            ['2', 'Organize',   'Structure what you capture so you can find and use it later.'],
+            ['3', 'Connect',    'Link related ideas. Build a graph, not just a list.'],
+            ['4', 'AI layer',   'Let AI search, summarize, and surface relevant knowledge on demand.'],
+            ['5', 'Outputs',    'Turn structured knowledge into documents, decisions, and systems.'],
+            ['6', 'Review',     'Revisit and refine. Knowledge improves with time and attention.'],
+          ].map(([n, title, desc]) => (
+            <div key={n} style={{ display: 'flex', gap: '16px', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <span style={{ color: 'var(--accent)', fontSize: '11px', width: '16px', flexShrink: 0, paddingTop: '2px' }}>{n}</span>
+              <div>
+                <div style={{ color: 'var(--text)', fontSize: '13px', marginBottom: '3px', fontWeight: 500 }}>{title}</div>
+                <div style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.6' }}>{desc}</div>
+              </div>
+            </div>
+          ))}
+          <Body style={{ marginTop: '16px' }}>ACCESS will help you design the architecture before you build.</Body>
+          <NextCommands cmds={['/blueprints', '/tools', '/frameworks']} />
+        </Block>
+      )
+
+    /* ─── /explore ─── */
+    case '/explore':
+      return (
+        <Block label="EXPLORE ACCESS">
+          <Body>
+            ACCESS helps you explore systems, blueprints, frameworks, tools, and the future of AI identity.
+            No obligation to build yet. Start by understanding the landscape.
+          </Body>
+          <div style={{ marginTop: '8px', marginBottom: '4px' }}>
+            {[
+              ['/systems',         'All systems in the ecosystem'],
+              ['/blueprints',      'Operating architectures for real builds'],
+              ['/frameworks',      'Mental models for thinking and building'],
+              ['/tools',           'Every tool in the ecosystem — in plain language'],
+              ['/connect-ai',      'Future: connect your AI system to the network'],
+              ['/worlds',          'All JD ecosystem worlds and their status'],
+              ['/my-id',           'Your ACCESS identity'],
+            ].map(([cmd, desc]) => (
+              <div key={cmd} style={{ display: 'flex', gap: '24px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
+                <span style={{ color: 'var(--accent)', fontSize: '11px', width: '140px', flexShrink: 0 }}>{cmd}</span>
+                <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{desc}</span>
+              </div>
+            ))}
+          </div>
+          <Note>Ready to build? Type /start to choose a path and generate your first blueprint.</Note>
+        </Block>
+      )
+
+    /* ─── /my-id ─── */
+    case '/my-id': {
+      const handle = userName
+        ? `${userName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')}.access`
+        : 'guest-builder.access'
+      return (
+        <Block label="ACCESS ID">
+          <div style={{ fontSize: '20px', color: 'var(--accent)', letterSpacing: '0.08em', fontWeight: 300, marginBottom: '20px', fontFamily: 'var(--mono)' }}>
+            {handle}
+          </div>
+          {[
+            ['Status',                'Active',       'var(--success)'],
+            ['Presence',              'Verified',     'var(--success)'],
+            ['Connected Systems',     '0',            'var(--text-muted)'],
+            ['Future AI Connections', 'Available',    'var(--text-dim)'],
+          ].map(([k, v, color]) => (
+            <div key={k} style={{ display: 'flex', gap: '24px', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'center' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', width: '160px', flexShrink: 0 }}>{k}</span>
+              <span style={{ color, fontSize: '12px' }}>{v}</span>
+            </div>
+          ))}
+          <p style={{ fontSize: '11px', lineHeight: '1.75', color: 'var(--text-dim)', marginTop: '18px', maxWidth: '56ch', fontFamily: 'var(--mono)' }}>
+            This identifier will eventually represent you, your systems, and your AI presence
+            within the ACCESS network.
+          </p>
         </Block>
       )
     }
