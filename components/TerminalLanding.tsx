@@ -15,26 +15,25 @@ export default function TerminalLanding() {
 
   return (
     <div className="access-landing">
-      {/* Brand label */}
-      <div className="brand-eyebrow">JD PRODUCTIONS</div>
+      {/* Brand eyebrow */}
+      <div className="brand-eyebrow">JD AI SYSTEMS</div>
 
-      {/* Main brand */}
+      {/* Hero wordmark */}
       <div className="brand-hero">
         <div className="brand-hero-text">ACCESS</div>
         <div className="brand-hero-glow" />
       </div>
 
-      {/* Tagline */}
+      {/* Primary headline */}
       <div className="hero-tagline">
-        Your gateway into the AI-powered digital world.
+        Create your ACCESS identity.
       </div>
 
+      {/* Supporting copy */}
       <div className="hero-sub">
-        Create your presence.&nbsp;&nbsp;
-        Explore systems.&nbsp;&nbsp;
-        Unlock blueprints.&nbsp;&nbsp;
-        Connect intelligence.&nbsp;&nbsp;
-        Build what&apos;s next.
+        Register your presence.&nbsp;&nbsp;
+        Own your systems.&nbsp;&nbsp;
+        Connect intelligence.
       </div>
 
       {/* Auth */}
@@ -45,7 +44,7 @@ export default function TerminalLanding() {
         </button>
 
         <div className="auth-divider">
-          <span>or continue with</span>
+          <span>continue with</span>
         </div>
 
         <div className="auth-providers">
@@ -64,21 +63,43 @@ export default function TerminalLanding() {
         </div>
       </div>
 
-      {/* Trust */}
-      <p className="trust-text">
-        Secure authentication powered by OAuth. Your private files are not exposed.
-        Your login creates your ACCESS identity inside the ecosystem.
-      </p>
+      {/* Identity model — the key distinction */}
+      <div className="identity-model">
+        <div className="identity-model-row">
+          <span className="identity-model-label">Your login</span>
+          <span className="identity-model-sep">→</span>
+          <span className="identity-model-value">verifies you</span>
+        </div>
+        <div className="identity-model-row">
+          <span className="identity-model-label">Your ACCESS ID</span>
+          <span className="identity-model-sep">→</span>
+          <span className="identity-model-value accent">identifies you</span>
+        </div>
+        <p className="identity-model-note">
+          Authentication can change. Identity remains.
+        </p>
+      </div>
 
-      {/* App positioning */}
+      {/* Ecosystem copy */}
       <p className="app-position-text">
-        ACCESS is the gateway app for the JD Productions ecosystem.
-        Web access now. App experience coming next.
+        ACCESS is part of JD AI Systems — the infrastructure ecosystem
+        for building, registering, and connecting intelligent systems.
       </p>
 
-      {/* Demo */}
+      {/* Ecosystem product line */}
+      <div className="ecosystem-line">
+        <span className="eco-product active">ACCESS</span>
+        <span className="eco-divider">·</span>
+        <span className="eco-product">JYSON</span>
+        <span className="eco-divider">·</span>
+        <span className="eco-product">Builder</span>
+        <span className="eco-divider">·</span>
+        <span className="eco-product">Vault</span>
+      </div>
+
+      {/* Demo link */}
       <button className="demo-link" onClick={() => setDemoMode(true)}>
-        → Explore demo terminal first
+        → Explore the terminal first
       </button>
     </div>
   )
@@ -96,19 +117,37 @@ function DemoTerminal({ onExit, onSignIn }: { onExit: () => void; onSignIn: () =
 
         <div className="demo-line">
           <span className="demo-key">SYSTEM</span>
-          <span style={{ color: 'var(--accent)' }}>ACCESS demo terminal — preview mode</span>
+          <span style={{ color: 'var(--accent)' }}>ACCESS — identity and registry layer</span>
         </div>
         <div className="demo-line">
-          <span className="demo-key">INFO</span>
-          <span style={{ color: 'var(--text-dim)' }}>Sign in to unlock the full command center.</span>
+          <span className="demo-key">PURPOSE</span>
+          <span style={{ color: 'var(--text-dim)' }}>Create identity. Register systems. Own what you build.</span>
         </div>
-        <div className="demo-line" style={{ marginTop: '20px' }}>
+        <div className="demo-line" style={{ marginTop: '16px' }}>
+          <span className="demo-key">PART OF</span>
+          <span style={{ color: 'var(--text-muted)' }}>JD AI Systems  ·  JYSON  ·  Builder  ·  Vault</span>
+        </div>
+        <div className="demo-line" style={{ marginTop: '8px' }}>
           <span className="demo-key">CMDS</span>
-          <span style={{ color: 'var(--text-muted)' }}>/help  /systems  /blueprints  /worlds  /tools</span>
+          <span style={{ color: 'var(--text-muted)' }}>/my-id  /my-systems  /register-system  /help</span>
         </div>
 
-        <button className="auth-primary-btn small" style={{ marginTop: '32px' }} onClick={onSignIn}>
-          Sign in to unlock full access
+        <div style={{
+          marginTop: '20px', padding: '12px 14px',
+          border: '1px solid rgba(64,192,208,0.12)',
+          background: 'rgba(64,192,208,0.02)',
+          borderRadius: '2px',
+          fontFamily: 'var(--mono)',
+          fontSize: '11px',
+          color: 'var(--text-muted)',
+          lineHeight: '1.7',
+        }}>
+          Sign in to claim your <span style={{ color: 'var(--accent)' }}>username.access</span> identity
+          and register your first system.
+        </div>
+
+        <button className="auth-primary-btn small" style={{ marginTop: '20px' }} onClick={onSignIn}>
+          Claim your ACCESS ID
         </button>
       </div>
     </div>

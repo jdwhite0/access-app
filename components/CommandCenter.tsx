@@ -95,6 +95,7 @@ const AVAILABLE_COMMANDS = [
   '/connect-ai', '/access-id', '/network', '/worlds', '/view-stack',
   '/save-blueprint', '/export-blueprint', '/copy-blueprint', '/email-blueprint', '/start-over',
   '/my-blueprints', '/open-blueprint', '/delete-blueprint',
+  '/connect-jyson',
   '/help', '/logout',
 ]
 
@@ -621,6 +622,30 @@ export default function CommandCenter() {
       return
     }
 
+    /* /connect-jyson */
+    if (cmd === '/connect-jyson') {
+      push({
+        type: 'info',
+        text: [
+          'CONNECT JYSON',
+          '',
+          'JYSON is the Value Architecture Engine inside JD AI Systems.',
+          'It discovers, structures, and builds — ACCESS registers what it creates.',
+          '',
+          'Future flow:',
+          '  JYSON creates a system blueprint',
+          '  → Blueprint is sent to ACCESS',
+          '  → ACCESS registers the system under your identity',
+          '  → You own it at username.access',
+          '',
+          'JYSON connection is coming in a future release.',
+          'Your ACCESS ID is already registered and ready to receive it.',
+        ].join('\n'),
+      })
+      setInput('')
+      return
+    }
+
     /* Standard output commands */
     if (AVAILABLE_COMMANDS.includes(cmd)) {
       push({ type: 'output', command: cmd })
@@ -772,13 +797,13 @@ export default function CommandCenter() {
             {/* Quick commands */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px', marginBottom: '16px' }}>
               {[
-                ['/my-id',        'Your ACCESS identity'],
-                ['/my-systems',   'Registered systems'],
-                ['/my-blueprints','Saved blueprints'],
-                ['/blueprints',   'Reference blueprints'],
-                ['/tools',        'Tools in the ecosystem'],
-                ['/network',      'Future network vision'],
-                ['/help',         'All commands'],
+                ['/my-id',         'Your ACCESS identity'],
+                ['/my-systems',    'Registered systems'],
+                ['/my-blueprints', 'Saved blueprints'],
+                ['/connect-jyson', 'Connect to JYSON'],
+                ['/jd-ecosystem',  'JD AI Systems overview'],
+                ['/network',       'Future network vision'],
+                ['/help',          'All commands'],
               ].map(([cmd, label]) => (
                 <button key={cmd}
                   onClick={e => { e.stopPropagation(); handleCommand(cmd) }}
@@ -888,7 +913,7 @@ export default function CommandCenter() {
                   What will you call this system?
                 </div>
                 <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Example: JD Productions OS  ·  My Content Machine  ·  Knowledge Base AI
+                  Example: JD AI Systems OS  ·  My Content Machine  ·  Knowledge Base AI
                 </div>
               </div>
             )}
@@ -959,7 +984,7 @@ export default function CommandCenter() {
             )}
 
             {item.type === 'info' && (
-              <div className="mb-3" style={{ color: item.success ? 'var(--success)' : 'var(--text-dim)', fontSize: '12px' }}>
+              <div className="mb-3" style={{ color: item.success ? 'var(--success)' : 'var(--text-dim)', fontSize: '12px', whiteSpace: 'pre-line', lineHeight: '1.75' }}>
                 {item.text}
               </div>
             )}

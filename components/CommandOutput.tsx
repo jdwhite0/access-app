@@ -118,16 +118,16 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="JD ECOSYSTEM">
           <Body>
-            JD Productions builds worlds, systems, and AI-powered infrastructure
-            for founders, creators, and builders.
+            JD AI Systems builds identity infrastructure, intelligence systems, and
+            operating layers for founders, creators, and builders.
           </Body>
-          <Body>Current worlds:</Body>
+          <Body>The ecosystem:</Body>
           {[
-            ['JD AI System', 'The AI brand — intelligence infrastructure behind JYSON'],
-            ['JYSON',        'Public AI intelligence portal — the visible face of the system'],
-            ['ACCESS',       'Gateway and capability layer — how users enter the ecosystem'],
-            ['LINC',         'Love Is The New Currency — value and culture layer'],
-            ['Lil Dev',      'Character IP and franchise universe — building'],
+            ['JD AI Systems', 'The parent infrastructure — the company behind JYSON, ACCESS, Builder, and Vault'],
+            ['JYSON',         'Value Architecture Engine — discovers and structures what you build'],
+            ['ACCESS',        'Identity and registry layer — creates presence, ownership, and connection'],
+            ['Builder',       'Future execution layer — building'],
+            ['Vault',         'Future memory layer — building'],
           ].map(([name, desc]) => (
             <div key={name} style={{ display: 'flex', gap: '16px', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
               <span style={{ color: 'var(--text)', fontSize: '12px', width: '120px', flexShrink: 0, fontWeight: 500 }}>{name}</span>
@@ -135,9 +135,9 @@ export default function CommandOutput({ command, userName }: Props) {
             </div>
           ))}
           <Body style={{ marginTop: '16px' }}>
-            ACCESS is how users create presence and gain entry into the ecosystem.
+            ACCESS creates persistent identity and registers what you build into the JD AI Systems ecosystem.
           </Body>
-          <NextCommands cmds={['/systems', '/worlds', '/access-id']} />
+          <NextCommands cmds={['/systems', '/worlds', '/my-id']} />
         </Block>
       )
 
@@ -149,8 +149,8 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="PRESENCE STATUS">
           <Body>
-            Your presence is your identity inside the JD AI System ecosystem.
-            This is not a profile. This is your position inside the network.
+            Your presence is your identity inside the JD AI Systems ecosystem.
+            This is not a profile. This is your registered position in the network.
           </Body>
 
           {/* Status grid */}
@@ -240,7 +240,7 @@ export default function CommandOutput({ command, userName }: Props) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <div>
                 <div style={{ color: 'var(--text)', fontSize: '14px', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '3px' }}>JYSON</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.08em' }}>JD AI System — Public Intelligence</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.08em' }}>JD AI Systems — Value Architecture Engine</div>
               </div>
               <span style={{ color: 'var(--success)', fontSize: '9px', letterSpacing: '0.14em', border: '1px solid rgba(75,189,160,0.3)', padding: '3px 8px', borderRadius: '2px' }}>ACTIVE</span>
             </div>
@@ -248,7 +248,7 @@ export default function CommandOutput({ command, userName }: Props) {
               ['Purpose',     'Public intelligence portal — educates, guides, and demonstrates AI system building'],
               ['Capabilities','Reasoning  ·  Planning  ·  Research  ·  Creation  ·  Dispatch'],
               ['Models',      'Claude  ·  GPT-4o  ·  Gemini  (automatic routing)'],
-              ['Owned by',    'JD White  ·  JD Productions'],
+              ['Owned by',    'JD White  ·  JD AI Systems'],
               ['Connection',  'Internal only — external connection coming'],
             ].map(([k, v]) => (
               <div key={k} style={{ display: 'flex', gap: '16px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
@@ -335,11 +335,11 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="AVAILABLE SYSTEMS">
           {[
-            ['JD AI System', 'The AI brand and intelligence infrastructure — the company behind JYSON', 'Active'],
-            ['JYSON',        'Public AI intelligence — powered by Claude, GPT-4o, and Gemini',           'Active'],
-            ['ACCESS',       'Identity and capability gateway into the ecosystem',                       'Active'],
-            ['LINC',         'Love Is The New Currency — value and culture layer',                       'Active'],
-            ['Future Systems','Additional worlds and products in development',                           'Coming Soon'],
+            ['JD AI Systems', 'The parent infrastructure — JYSON, ACCESS, Builder, Vault',                'Active'],
+            ['JYSON',         'Value Architecture Engine — discovers and structures what you build',      'Active'],
+            ['ACCESS',        'Identity and registry layer — presence, ownership, connection',            'Active'],
+            ['Builder',       'Future execution layer — runs and operates what you build',               'Building'],
+            ['Vault',         'Future memory layer — stores knowledge, context, and system history',     'Building'],
           ].map(([name, desc, status]) => (
             <div key={name} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -452,9 +452,9 @@ export default function CommandOutput({ command, userName }: Props) {
     case '/tools':
       return (
         <Block label="TOOLS IN THE ECOSYSTEM">
-          <Body>These are the tools used to build, run, and operate the JD AI System.</Body>
+          <Body>These are the tools used to build, run, and operate the JD AI Systems ecosystem.</Body>
           {[
-            ['JYSON',       'JD AI System — the public intelligence interface. Reasons, builds, and dispatches work.'],
+            ['JYSON',       'Value Architecture Engine — discovers, structures, and builds inside JD AI Systems.'],
             ['Claude',      'Helps reason, write, code, plan, and execute complex work. Powers JYSON via Anthropic.'],
             ['GPT-4o',      'Fast general intelligence for broad tasks and structured output. Powers JYSON via OpenAI.'],
             ['Gemini',      'Research, real-time knowledge, and multimodal capability. Powers JYSON via Google.'],
@@ -508,12 +508,12 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="ACCESS ID">
           <Body>
-            Your ACCESS ID is your identity inside the JD AI System ecosystem.
-            This handle represents your account, your AI system, and your presence across the network.
+            Your ACCESS ID is your identity inside the JD AI Systems ecosystem.
+            Authentication verifies you. Your ACCESS ID identifies you — permanently and independently.
           </Body>
           {[
             ['Handle',     handle,          'var(--accent)'],
-            ['Ecosystem',  'JD AI System',  'var(--text)'],
+            ['Ecosystem',  'JD AI Systems', 'var(--text)'],
             ['Status',     'Active',        'var(--success)'],
             ['Joined',     joined,          'var(--text-dim)'],
             ['AI System',  'Not connected', 'var(--text-muted)'],
@@ -523,7 +523,7 @@ export default function CommandOutput({ command, userName }: Props) {
               <span style={{ color, fontSize: '13px' }}>{v}</span>
             </div>
           ))}
-          <Note>JYSON is to JD AI System what Claude is to Anthropic. Your ACCESS ID connects you to that ecosystem.</Note>
+          <Note>JYSON is to JD AI Systems what Claude is to Anthropic. Your ACCESS ID is your presence in that ecosystem.</Note>
           <NextCommands cmds={['/connect-ai']} />
         </Block>
       )
@@ -535,7 +535,7 @@ export default function CommandOutput({ command, userName }: Props) {
         <Block label="CONNECTED WORLDS">
           {[
             ['jdwhite.world',               'JD White',       'Identity and portal layer — the system entry point', 'Live'],
-            ['jdproductions.io',            'JD Productions', 'Production and media engine',                       'Live'],
+            ['jdproductions.io',            'JD Productions', 'Production and media engine — film, IP, brand',     'Live'],
             ['jyson.vercel.app',            'JYSON',          'Public AI intelligence portal',                     'Live'],
             ['loveisthenewcurrency.world',  'LINC',           'Value and cultural movement',                       'Live'],
             ['lildev.world',                'Lil Dev',        'Character IP and franchise universe',               'Building'],
@@ -557,7 +557,7 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="CURRENT ECOSYSTEM STACK">
           {[
-            ['AI Brand',   ['JD AI System', 'JYSON (public interface)']],
+            ['AI Brand',   ['JD AI Systems', 'JYSON (Value Architecture Engine)', 'ACCESS (Identity Layer)']],
             ['AI Models',  ['Claude (Anthropic)', 'GPT-4o (OpenAI)', 'Gemini (Google)', 'Ollama (local)']],
             ['Frontend',   ['Next.js', 'React', 'Three.js', 'Tailwind CSS']],
             ['Identity',   ['Clerk', 'ACCESS']],
@@ -607,7 +607,7 @@ export default function CommandOutput({ command, userName }: Props) {
         { cmd: '/tools',                     desc: 'Every tool in the ecosystem — in plain language' },
         { cmd: '/capabilities',              desc: 'What becomes possible when AI systems are connected' },
         { heading: 'Ecosystem' },
-        { cmd: '/jd-ecosystem',              desc: 'Overview of the JD AI System ecosystem' },
+        { cmd: '/jd-ecosystem',              desc: 'Overview of the JD AI Systems ecosystem' },
         { cmd: '/systems',                   desc: 'All systems in the JD ecosystem' },
         { cmd: '/systems-registry',          desc: 'What a registered AI system looks like (preview)' },
         { cmd: '/network',                   desc: 'Future vision: AI-to-AI network (preview)' },

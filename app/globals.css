@@ -274,27 +274,91 @@ html, body {
   background: var(--accent-glow);
 }
 
-/* Trust + demo */
-.trust-text {
+/* Identity model block */
+.identity-model {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 14px 20px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.015);
+  max-width: 320px;
+  width: 100%;
+}
+
+.identity-model-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.identity-model-label {
+  color: var(--text-muted);
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.identity-model-sep {
+  color: rgba(255,255,255,0.15);
+  font-size: 10px;
+}
+
+.identity-model-value {
+  color: var(--text-dim);
+}
+
+.identity-model-value.accent {
+  color: var(--accent);
+}
+
+.identity-model-note {
   font-family: var(--mono);
   font-size: 9px;
   color: var(--text-muted);
-  letter-spacing: 0.05em;
-  line-height: 1.8;
-  max-width: 360px;
-  margin-bottom: 16px;
-  opacity: 0.7;
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+  opacity: 0.65;
+}
+
+/* Ecosystem product line */
+.ecosystem-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+
+.eco-product {
+  color: var(--text-muted);
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+.eco-product.active {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.eco-divider {
+  color: rgba(255,255,255,0.1);
 }
 
 .app-position-text {
   font-family: var(--mono);
   font-size: 9px;
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   line-height: 1.9;
   max-width: 340px;
-  margin-bottom: 10px;
-  opacity: 0.6;
+  margin-bottom: 12px;
+  opacity: 0.55;
   text-align: center;
 }
 
