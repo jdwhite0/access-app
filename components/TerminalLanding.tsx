@@ -30,7 +30,11 @@ export default function TerminalLanding() {
       </div>
 
       <div className="hero-sub">
-        Create your presence.&nbsp; Explore systems, blueprints, and future intelligence capabilities.
+        Create your presence.&nbsp;&nbsp;
+        Explore systems.&nbsp;&nbsp;
+        Unlock blueprints.&nbsp;&nbsp;
+        Connect intelligence.&nbsp;&nbsp;
+        Build what&apos;s next.
       </div>
 
       {/* Auth */}
@@ -62,8 +66,14 @@ export default function TerminalLanding() {
 
       {/* Trust */}
       <p className="trust-text">
-        ACCESS uses secure authentication. Your private files are not exposed.
-        Your identity creates your ecosystem access layer.
+        Secure authentication powered by OAuth. Your private files are not exposed.
+        Your login creates your ACCESS identity inside the ecosystem.
+      </p>
+
+      {/* App positioning */}
+      <p className="app-position-text">
+        ACCESS is the gateway app for the JD Productions ecosystem.
+        Web access now. App experience coming next.
       </p>
 
       {/* Demo */}

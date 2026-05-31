@@ -19,11 +19,19 @@ const ACTIVATION = [
 ]
 
 const AVAILABLE_COMMANDS = [
-  '/start', '/systems', '/blueprints', '/frameworks', '/tools',
-  '/build', '/build ai-system', '/build business', '/build content',
-  '/build automation', '/build brand', '/build presence',
-  '/future', '/worlds', '/connect-ai', '/access-id', '/view-stack', '/help', '/logout',
+  '/start', '/build-ai-system', '/build-business', '/build-content-system',
+  '/jd-ecosystem', '/systems', '/blueprints', '/frameworks', '/tools',
+  '/connect-ai', '/access-id', '/worlds', '/view-stack', '/help', '/logout',
 ]
+
+// Shortcut map: bare numbers from /start menu
+const NUMBER_MAP: Record<string, string> = {
+  '1': '/build-ai-system',
+  '2': '/build-business',
+  '3': '/build-content-system',
+  '4': '/jd-ecosystem',
+  '5': '/connect-ai',
+}
 
 type HistoryItem =
   | { type: 'input'; text: string }
@@ -67,8 +75,11 @@ export default function CommandCenter() {
   }, [phase])
 
   const handleCommand = (raw: string) => {
-    const cmd = raw.trim().toLowerCase()
+    let cmd = raw.trim().toLowerCase()
     if (!cmd) return
+
+    // Map bare numbers (from /start menu) to full commands
+    if (NUMBER_MAP[cmd]) cmd = NUMBER_MAP[cmd]
 
     setCmdHistory((prev) => [cmd, ...prev])
     setCmdIdx(-1)
@@ -84,7 +95,7 @@ export default function CommandCenter() {
     } else {
       setHistory((prev) => [
         ...prev,
-        { type: 'error', text: `command not found: ${cmd}  |  type /help for available commands` },
+        { type: 'error', text: `command not found: ${cmd}  —  type /help to see available commands` },
       ])
     }
     setInput('')
@@ -192,22 +203,44 @@ export default function CommandCenter() {
               ))}
             </div>
 
-            <div className="mb-1" style={{ color: 'var(--text)' }}>Welcome.</div>
-            <div className="mb-1" style={{ color: 'var(--text-dim)' }}>Access has been granted.</div>
-            <div className="mb-6" style={{ color: 'var(--text-dim)' }}>What would you like to explore?</div>
+            <div className="mb-1" style={{ color: 'var(--text)', fontSize: '0.88rem' }}>
+              Welcome, {name}.
+            </div>
+            <div className="mb-4" style={{ color: 'var(--text-dim)', fontSize: '0.78rem', lineHeight: '1.7' }}>
+              Your presence is active. Private system access remains protected.<br/>
+              Type a command below or start with <span style={{ color: 'var(--accent)' }}>/start</span> to choose a path.
+            </div>
 
-            <div className="mb-6 text-xs" style={{ color: 'var(--text-muted)' }}>
-              {AVAILABLE_COMMANDS.map((c, i) => (
-                <span key={c}>
-                  <button
-                    className="hover:underline"
-                    style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }}
-                    onClick={(e) => { e.stopPropagation(); handleCommand(c) }}
-                  >
-                    {c}
-                  </button>
-                  {i < AVAILABLE_COMMANDS.length - 1 && <span style={{ color: 'var(--text-muted)' }}>{'  '}</span>}
-                </span>
+            {/* Quick command grid */}
+            <div className="mb-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px' }}>
+              {[
+                ['/start',            'Choose your path'],
+                ['/build-ai-system',  'Build an AI system'],
+                ['/build-business',   'Build a business'],
+                ['/systems',          'View ecosystem systems'],
+                ['/blueprints',       'View blueprints'],
+                ['/connect-ai',       'Connect AI system'],
+                ['/access-id',        'Your ACCESS identity'],
+                ['/help',             'All commands'],
+              ].map(([cmd, label]) => (
+                <button
+                  key={cmd}
+                  onClick={(e) => { e.stopPropagation(); handleCommand(cmd) }}
+                  style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '2px',
+                    padding: '8px 12px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(64,192,208,0.4)')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                >
+                  <div style={{ color: 'var(--accent)', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '2px' }}>{cmd}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{label}</div>
+                </button>
               ))}
             </div>
           </div>

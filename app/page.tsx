@@ -11,7 +11,7 @@ export default function Page() {
     <div className="relative h-full scanline">
       {/* Ambient grid — very subtle */}
       <div
-        className="pointer-events-none fixed inset-0 opacity-[0.025]"
+        className="pointer-events-none fixed inset-0 opacity-[0.012]"
         style={{
           backgroundImage:
             'linear-gradient(rgba(64,192,208,1) 1px, transparent 1px), linear-gradient(90deg, rgba(64,192,208,1) 1px, transparent 1px)',
