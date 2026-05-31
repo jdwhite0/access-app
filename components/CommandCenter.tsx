@@ -772,13 +772,13 @@ export default function CommandCenter() {
             {/* Quick commands */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px', marginBottom: '16px' }}>
               {[
-                ['/my-id',       'Your ACCESS identity'],
-                ['/my-systems',  'Registered systems'],
+                ['/my-id',        'Your ACCESS identity'],
+                ['/my-systems',   'Registered systems'],
                 ['/my-blueprints','Saved blueprints'],
-                ['/blueprints',  'Reference blueprints'],
-                ['/tools',       'Tools in the ecosystem'],
-                ['/network',     'Future network vision'],
-                ['/help',        'All commands'],
+                ['/blueprints',   'Reference blueprints'],
+                ['/tools',        'Tools in the ecosystem'],
+                ['/network',      'Future network vision'],
+                ['/help',         'All commands'],
               ].map(([cmd, label]) => (
                 <button key={cmd}
                   onClick={e => { e.stopPropagation(); handleCommand(cmd) }}
@@ -794,6 +794,27 @@ export default function CommandCenter() {
                   <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{label}</div>
                 </button>
               ))}
+
+              {/* Logout button — same grid position, distinct style */}
+              <button
+                onClick={e => { e.stopPropagation(); signOut() }}
+                style={{
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: '2px', padding: '8px 12px', textAlign: 'left',
+                  cursor: 'pointer', transition: 'border-color 0.15s, color 0.15s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'rgba(200,106,106,0.4)'
+                  ;(e.currentTarget.querySelector('.logout-cmd') as HTMLElement).style.color = 'rgba(200,106,106,0.8)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'var(--border)'
+                  ;(e.currentTarget.querySelector('.logout-cmd') as HTMLElement).style.color = 'var(--text-muted)'
+                }}
+              >
+                <div className="logout-cmd" style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '2px', transition: 'color 0.15s' }}>/logout</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>End session</div>
+              </button>
             </div>
           </div>
         )}
