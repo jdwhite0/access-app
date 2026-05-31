@@ -98,9 +98,33 @@ create table if not exists public.access_keys_preview (
 );
 
 -- ────────────────────────────────────────────────────────────
+-- builder_projects
+-- Execution layer. Every JYSON architecture auto-creates a project.
+-- Projects are the unit of work. Systems are the unit of identity.
+-- ────────────────────────────────────────────────────────────
+create table if not exists public.builder_projects (
+  id              uuid primary key default gen_random_uuid(),
+  clerk_user_id   text not null,
+  owner_handle    text not null,                       -- e.g., "jdwhite.access"
+  system_id       uuid references public.systems(id) on delete set null,
+  name            text not null,
+  objective       text,
+  status          text default 'active' not null,      -- active | completed | archived
+  milestones      jsonb default '[]'::jsonb,           -- [{ text, completed }]
+  tasks           jsonb default '[]'::jsonb,           -- [{ text, completed }]
+  stack           jsonb default '[]'::jsonb,           -- ["Tool: role"]
+  assets          jsonb default '[]'::jsonb,           -- detected assets from discovery
+  architecture    text,                                -- full JYSON architecture text
+  created_at      timestamptz default now() not null,
+  updated_at      timestamptz default now() not null
+);
+
+-- ────────────────────────────────────────────────────────────
 -- Indexes for common query patterns
 -- ────────────────────────────────────────────────────────────
 create index if not exists idx_systems_clerk_user on public.systems(clerk_user_id);
+create index if not exists idx_builder_projects_clerk_user on public.builder_projects(clerk_user_id);
+create index if not exists idx_builder_projects_system on public.builder_projects(system_id);
 create index if not exists idx_blueprints_clerk_user on public.blueprints(clerk_user_id);
 create index if not exists idx_system_files_system on public.system_files(system_id);
 create index if not exists idx_access_keys_clerk_user on public.access_keys_preview(clerk_user_id);

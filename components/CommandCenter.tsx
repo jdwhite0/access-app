@@ -8,7 +8,8 @@ import AccessIdCard from './access/AccessIdCard'
 import { getOrCreateIdentity } from '@/lib/actions/identity'
 import { saveBlueprint, listBlueprints, deleteBlueprint as deleteBlueprintAction } from '@/lib/actions/blueprints'
 import { createSystem, listSystems, getSystem, deleteSystem as deleteSystemAction } from '@/lib/actions/systems'
-import type { Blueprint, System } from '@/types/db'
+import { createBuilderProject, listBuilderProjects } from '@/lib/actions/projects'
+import type { Blueprint, System, BuilderProject, Task, Milestone } from '@/types/db'
 
 /* ─── Activation sequence ─────────────────────────────────── */
 const ACTIVATION = [
@@ -165,11 +166,20 @@ function deriveSystemHandle(name: string): string {
 }
 
 /* ─── JYSON handoff payload ─────────────────────────────────── */
+interface JysonProjectData {
+  name: string
+  objective: string
+  milestones: string[]
+  tasks: string[]
+  stack: string[]
+}
+
 interface JysonPayload {
   source: 'jyson'
   name: string
   type: FlowType
   architecture: string
+  project?: JysonProjectData
 }
 
 function decodeJysonPayload(param: string): JysonPayload | null {
@@ -221,6 +231,8 @@ type HistoryItem =
   | { type: 'system-detail'; system: System }
   | { type: 'processing'; text: string }
   | { type: 'jyson-handoff'; payload: JysonPayload }
+  | { type: 'project-created'; project: BuilderProject }
+  | { type: 'project-list'; projects: BuilderProject[] }
 
 /* ─── Component ─────────────────────────────────────────────── */
 export default function CommandCenter() {
@@ -401,8 +413,27 @@ export default function CommandCenter() {
           }
           return [...next, { type: 'system-registered', system }]
         })
+
         if (system) {
           setSystemCount(c => c + 1)
+
+          // Auto-create Builder Project from JYSON payload
+          const projectData = jysonHandoff?.project
+          if (projectData) {
+            createBuilderProject({
+              name: projectData.name,
+              objective: projectData.objective,
+              systemId: system.id,
+              ownerHandle: accessId,
+              milestones: projectData.milestones.map(m => ({ text: m, completed: false } as Milestone)),
+              tasks: projectData.tasks.map(t => ({ text: t, completed: false } as Task)),
+              stack: projectData.stack,
+              architecture: jysonHandoff?.architecture,
+            }).then(project => {
+              if (project) setHistory(prev => [...prev, { type: 'project-created', project }])
+            }).catch(() => null)
+          }
+
           setJysonHandoff(null)
         }
       }
@@ -420,6 +451,18 @@ export default function CommandCenter() {
 
     /* Session */
     if (cmd === '/logout') { signOut(); return }
+
+    /* Builder Projects */
+    if (cmd === '/my-projects') {
+      push({ type: 'processing', text: 'loading projects...' })
+      const projects = await listBuilderProjects().catch(() => [])
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        return [...next, { type: 'project-list', projects }]
+      })
+      setInput('')
+      return
+    }
 
     /* Blueprint path starters */
     const FLOW_MAP: Record<string, FlowType> = {
@@ -1105,6 +1148,93 @@ export default function CommandCenter() {
                 >
                   /register-system
                 </button>
+              </div>
+            )}
+
+            {item.type === 'project-created' && (
+              <div className="mb-6 mt-4" style={{
+                padding: '18px 20px',
+                borderLeft: '2px solid var(--success)',
+                background: 'rgba(75,189,160,0.03)',
+              }}>
+                <div style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--success)', marginBottom: '12px' }}>
+                  ✓ BUILDER PROJECT CREATED
+                </div>
+                <div style={{ fontSize: '15px', color: 'var(--text)', fontWeight: 500, marginBottom: '6px' }}>
+                  {item.project.name}
+                </div>
+                {item.project.objective && (
+                  <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.7', marginBottom: '12px' }}>
+                    {item.project.objective}
+                  </div>
+                )}
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: '1.8', marginBottom: '14px' }}>
+                  {item.project.tasks.length > 0 && `${item.project.tasks.length} tasks  ·  `}
+                  {item.project.milestones.length > 0 && `${item.project.milestones.length} milestones  ·  `}
+                  {item.project.stack.length > 0 && `${item.project.stack.length} tools`}
+                </div>
+                {item.project.tasks.length > 0 && (
+                  <div style={{ marginBottom: '12px' }}>
+                    {item.project.tasks.slice(0, 3).map((task, ti) => (
+                      <div key={ti} style={{ display: 'flex', gap: '8px', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '1px', flexShrink: 0 }}>○</span>
+                        <span style={{ color: 'var(--text-dim)', fontSize: '11px', lineHeight: '1.5' }}>{task.text}</span>
+                      </div>
+                    ))}
+                    {item.project.tasks.length > 3 && (
+                      <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '6px' }}>
+                        +{item.project.tasks.length - 3} more tasks  ·  /my-projects to view all
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                  Type <span style={{ color: 'var(--accent)' }}>/my-projects</span> to view your workspace.
+                </div>
+              </div>
+            )}
+
+            {item.type === 'project-list' && (
+              <div className="mb-6 mt-2">
+                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
+                  BUILDER WORKSPACE
+                </div>
+                {item.projects.length === 0 ? (
+                  <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
+                    No active projects. Build something in JYSON and open it here.
+                  </div>
+                ) : (
+                  <>
+                    {item.projects.map((proj) => {
+                      const done = proj.tasks.filter(t => t.completed).length
+                      const total = proj.tasks.length
+                      const pct = total > 0 ? Math.round((done / total) * 100) : 0
+                      return (
+                        <div key={proj.id} style={{ padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'center' }}>
+                            <span style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 500 }}>{proj.name}</span>
+                            <span style={{ color: pct === 100 ? 'var(--success)' : 'var(--text-muted)', fontSize: '10px' }}>
+                              {pct === 100 ? '✓ Complete' : `${pct}%`}
+                            </span>
+                          </div>
+                          {proj.objective && (
+                            <div style={{ color: 'var(--text-dim)', fontSize: '11px', marginBottom: '6px', lineHeight: '1.5' }}>
+                              {proj.objective.slice(0, 100)}{proj.objective.length > 100 ? '…' : ''}
+                            </div>
+                          )}
+                          <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
+                            {done}/{total} tasks  ·  {new Date(proj.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </div>
+                          {total > 0 && (
+                            <div style={{ marginTop: '8px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', overflow: 'hidden' }}>
+                              <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', transition: 'width 0.4s ease' }} />
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </>
+                )}
               </div>
             )}
 

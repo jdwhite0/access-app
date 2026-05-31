@@ -53,6 +53,33 @@ export interface SystemFile {
   created_at: string
 }
 
+export interface Task {
+  text: string
+  completed: boolean
+}
+
+export interface Milestone {
+  text: string
+  completed: boolean
+}
+
+export interface BuilderProject {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  system_id: string | null
+  name: string
+  objective: string | null
+  status: 'active' | 'completed' | 'archived'
+  milestones: Milestone[]
+  tasks: Task[]
+  stack: string[]
+  assets: string[]
+  architecture: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface AccessKeyPreview {
   id: string
   clerk_user_id: string
