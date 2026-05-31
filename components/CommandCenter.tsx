@@ -107,6 +107,8 @@ export default function CommandCenter() {
   }
 
   const name = user?.firstName || user?.username || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'Builder'
+  // Access handle uses username (brand identity) over first name
+  const accessHandle = user?.username || user?.firstName?.toLowerCase() || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'user'
   const provider = user?.externalAccounts?.[0]?.provider?.replace('oauth_', '') || 'email'
 
   return (
@@ -222,7 +224,7 @@ export default function CommandCenter() {
             )}
             {item.type === 'output' && (
               <div className="mb-6">
-                <CommandOutput command={(item as { type: 'output'; command: string }).command} userName={user?.firstName ?? user?.username ?? undefined} />
+                <CommandOutput command={(item as { type: 'output'; command: string }).command} userName={accessHandle} />
               </div>
             )}
             {item.type === 'error' && (

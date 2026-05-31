@@ -17,10 +17,11 @@ export default function CommandOutput({ command, userName }: Props) {
             </thead>
             <tbody>
               {[
-                ['JD Productions',    'Creative + media production engine',        'Active'],
-                ['LINC',             'Value system — Love Is The New Currency',   'Active'],
-                ['ACCESS',           'Operating layer — identity + capability',   'Active'],
-                ['Future Systems',   'Additional worlds and operating layers',    'Coming Soon'],
+                ['JD AI System',     'AI operating system — the core intelligence brand',   'Active'],
+                ['JYSON',            'Public AI intelligence — powered by JD AI System',   'Active'],
+                ['ACCESS',           'Identity and capability gateway into the ecosystem', 'Active'],
+                ['LINC',             'Love Is The New Currency — value and culture layer', 'Active'],
+                ['Future Systems',   'Additional worlds and products — expanding',          'Coming Soon'],
               ].map(([s, d, st]) => (
                 <tr key={s}>
                   <td>{s}</td>
@@ -82,15 +83,17 @@ export default function CommandOutput({ command, userName }: Props) {
             <thead><tr><th>Tool</th><th>Role</th></tr></thead>
             <tbody>
               {[
-                ['Claude',      'Primary AI reasoning and execution layer'],
-                ['JYSON',       'Multi-model intelligence routing system'],
-                ['Ollama',      'Local AI model runtime'],
-                ['Obsidian',    'Knowledge base and second brain'],
-                ['GitHub',      'Version control and deployment pipeline'],
-                ['Next.js',     'Application framework'],
-                ['Three.js',    'WebGL 3D — portal and world rendering'],
-                ['Vercel',      'Global deployment infrastructure'],
-                ['Clerk',       'Identity and access management'],
+                ['JYSON',           'JD AI System — the public intelligence interface'],
+                ['Claude',          'AI reasoning and execution (powers JYSON via Anthropic)'],
+                ['GPT-4o',          'AI fast processing (powers JYSON via OpenAI)'],
+                ['Gemini',          'AI research layer (powers JYSON via Google)'],
+                ['Ollama',          'Local AI model runtime — private inference'],
+                ['Obsidian',        'Knowledge vault — second brain and memory layer'],
+                ['GitHub',          'Version control and deployment pipeline'],
+                ['Next.js',         'Application framework for ACCESS and ecosystem apps'],
+                ['Three.js',        'WebGL 3D — portal and world rendering on jdwhite.world'],
+                ['Vercel',          'Global deployment infrastructure'],
+                ['Clerk',           'Identity and access management'],
               ].map(([t, r]) => (
                 <tr key={t}><td>{t}</td><td>{r}</td></tr>
               ))}
@@ -186,12 +189,13 @@ export default function CommandOutput({ command, userName }: Props) {
       return (
         <Block label="CURRENT ECOSYSTEM STACK">
           {[
-            { layer: 'Frontend', items: ['Next.js', 'React', 'Three.js', 'Tailwind CSS'] },
-            { layer: 'Identity',  items: ['Clerk'] },
-            { layer: 'Knowledge', items: ['Obsidian', 'JYSON'] },
-            { layer: 'AI',        items: ['Claude', 'Ollama', 'JYSON (router)'] },
-            { layer: 'Infra',     items: ['Vercel', 'GitHub', 'Squarespace DNS'] },
-            { layer: 'Future',    items: ['Ecosystem API', 'AI routing layer', 'World builder'] },
+            { layer: 'Frontend',   items: ['Next.js', 'React', 'Three.js', 'Tailwind CSS'] },
+            { layer: 'Identity',   items: ['Clerk', 'ACCESS'] },
+            { layer: 'AI Brand',   items: ['JD AI System', 'JYSON (public interface)'] },
+            { layer: 'AI Models',  items: ['Claude', 'GPT-4o', 'Gemini', 'Ollama (local)'] },
+            { layer: 'Knowledge',  items: ['Obsidian vault', 'NotebookLM'] },
+            { layer: 'Infra',      items: ['Vercel', 'GitHub', 'Squarespace DNS'] },
+            { layer: 'Future',     items: ['ACCESS protocol', 'AI-to-AI network', 'World builder'] },
           ].map(({ layer, items }) => (
             <div key={layer} className="flex gap-6 py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div className="w-28 shrink-0 text-[10px] tracking-widest uppercase" style={{ color: 'var(--text-muted)' }}>{layer}</div>
@@ -305,27 +309,32 @@ export default function CommandOutput({ command, userName }: Props) {
 
     case '/access-id': {
       const handle = userName
-        ? `${userName.toLowerCase().replace(/\s+/g, '.')}.access`
+        ? `${userName.toLowerCase().replace(/\s+/g, '')}.access`
         : 'guest.access'
       const joined = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
       return (
         <Block label="ACCESS ID">
           <Prose>
-            Your ACCESS ID is your future digital presence inside the ecosystem.
-            One day, this ID will represent your AI system across the network.
+            Your ACCESS ID is your identity inside the JD AI System ecosystem.
+            This handle — not your first name, but your brand identity — will represent
+            your account, your AI system, and your presence across the network.
           </Prose>
           {[
-            ['Handle',  handle],
-            ['Status',  'Active'],
-            ['Joined',  joined],
-            ['AI Slot', 'Not connected — type /connect-ai'],
+            ['Handle',     handle],
+            ['Ecosystem',  'JD AI System'],
+            ['Status',     'Active'],
+            ['Joined',     joined],
+            ['AI System',  'Not connected — type /connect-ai'],
           ].map(([k, v]) => (
             <div key={k} style={{ display: 'flex', gap: '24px', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-              <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.14em', width: '72px', flexShrink: 0, textTransform: 'uppercase' }}>{k}</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.14em', width: '80px', flexShrink: 0, textTransform: 'uppercase' }}>{k}</span>
               <span style={{ color: k === 'Handle' ? 'var(--accent)' : 'var(--text-dim)', fontSize: '12px' }}>{v}</span>
             </div>
           ))}
-          <Note>Future: this ID will identify your account, systems, and AI presence across the network.</Note>
+          <Note>
+            JYSON is to JD AI System what Claude is to Anthropic.
+            Your ACCESS ID connects you to that ecosystem.
+          </Note>
         </Block>
       )
     }
