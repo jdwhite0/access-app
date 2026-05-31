@@ -1,10 +1,11 @@
 'use client'
 
-type Props = { command: string }
+type Props = { command: string; userName?: string }
 
 const DIVIDER = '─'.repeat(52)
+void DIVIDER
 
-export default function CommandOutput({ command }: Props) {
+export default function CommandOutput({ command, userName }: Props) {
   switch (command) {
 
     case '/systems':
@@ -207,14 +208,17 @@ export default function CommandOutput({ command }: Props) {
             <thead><tr><th>Command</th><th>Description</th></tr></thead>
             <tbody>
               {[
+                ['/start',       'Choose your path — what do you want to build?'],
+                ['/build',       'Guided build menu — AI system, business, content, and more'],
                 ['/systems',     'View all systems in the ecosystem'],
                 ['/blueprints',  'View available operation blueprints'],
                 ['/frameworks',  'View thinking and planning frameworks'],
                 ['/tools',       'View tools used across the ecosystem'],
-                ['/future',      'View planned future capabilities'],
-                ['/worlds',      'View all ecosystem worlds and domains'],
+                ['/access-id',   'View your ACCESS ID and future AI identity'],
                 ['/connect-ai',  'Explore AI system connection capability'],
+                ['/worlds',      'View all ecosystem worlds and domains'],
                 ['/view-stack',  'View the current technology stack'],
+                ['/future',      'View planned future capabilities'],
                 ['/help',        'Show this help reference'],
                 ['/logout',      'End session and exit'],
               ].map(([c, d]) => (
@@ -227,6 +231,104 @@ export default function CommandOutput({ command }: Props) {
           </table>
         </Block>
       )
+
+    case '/start':
+      return (
+        <Block label="START HERE">
+          <Prose>
+            ACCESS helps you explore the systems, tools, frameworks, and blueprints
+            used to build AI-powered digital infrastructure. Choose a path:
+          </Prose>
+          {[
+            ['1', 'Build an AI system',                  '/build ai-system'],
+            ['2', 'Build a business',                    '/build business'],
+            ['3', 'Build a content system',              '/build content'],
+            ['4', 'Understand the JD ecosystem',         '/systems'],
+            ['5', 'Connect my AI system',                '/connect-ai'],
+          ].map(([n, label, cmd]) => (
+            <div key={n} style={{ display: 'flex', gap: '16px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <span style={{ color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '11px', width: '16px', flexShrink: 0 }}>{n}</span>
+              <span style={{ color: 'var(--text-dim)', fontSize: '12px' }}>{label}</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginLeft: 'auto' }}>{cmd}</span>
+            </div>
+          ))}
+          <Note>Type a number or the command shown to begin.</Note>
+        </Block>
+      )
+
+    case '/build':
+      return (
+        <Block label="WHAT DO YOU WANT TO BUILD?">
+          {[
+            ['AI SYSTEM',       'Build a personal AI operating system around your work and identity.',  '/build ai-system'],
+            ['BUSINESS',        'Operations, revenue, capital, and growth architecture.',               '/build business'],
+            ['CONTENT SYSTEM',  'From idea to output — consistent, scalable content engine.',           '/build content'],
+            ['AUTOMATION',      'Remove repeatable manual work. Let systems run themselves.',           '/build automation'],
+            ['BRAND',           'Visual identity, voice, positioning, and market presence.',            '/build brand'],
+            ['DIGITAL PRESENCE','Establish your sovereign digital presence across the ecosystem.',      '/build presence'],
+          ].map(([name, desc, cmd]) => (
+            <div key={name} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <span style={{ color: 'var(--text)', fontSize: '11px', letterSpacing: '0.1em', fontFamily: 'var(--mono)' }}>{name}</span>
+                <span style={{ color: 'var(--accent)', fontSize: '9px', letterSpacing: '0.12em', fontFamily: 'var(--mono)' }}>{cmd}</span>
+              </div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '11px', lineHeight: 1.6 }}>{desc}</div>
+            </div>
+          ))}
+        </Block>
+      )
+
+    case '/build ai-system':
+      return (
+        <Block label="BUILD: AI SYSTEM">
+          <Prose>An AI operating system is built in 7 layers. Each layer is a decision.</Prose>
+          {[
+            ['1', 'Define purpose',      'What does your system help you do?'],
+            ['2', 'Choose interface',    'Terminal, web app, or voice?'],
+            ['3', 'Choose model',        'Claude, GPT-4o, Gemini, or local (Ollama)?'],
+            ['4', 'Create memory layer', 'Obsidian, Notion, or structured database?'],
+            ['5', 'Connect tools',       'Email, calendar, files, browser automation?'],
+            ['6', 'Add automation',      'Make, Zapier, or custom scripts?'],
+            ['7', 'Deploy',              'Vercel, local server, or both?'],
+          ].map(([n, step, desc]) => (
+            <div key={n} style={{ display: 'flex', gap: '12px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <span style={{ color: 'var(--accent)', fontSize: '10px', width: '14px', flexShrink: 0, paddingTop: '2px' }}>{n}</span>
+              <div>
+                <div style={{ color: 'var(--text)', fontSize: '12px', marginBottom: '2px' }}>{step}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>{desc}</div>
+              </div>
+            </div>
+          ))}
+          <Note>Type /blueprints to see the full AI Operating System blueprint.</Note>
+        </Block>
+      )
+
+    case '/access-id': {
+      const handle = userName
+        ? `${userName.toLowerCase().replace(/\s+/g, '.')}.access`
+        : 'guest.access'
+      const joined = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+      return (
+        <Block label="ACCESS ID">
+          <Prose>
+            Your ACCESS ID is your future digital presence inside the ecosystem.
+            One day, this ID will represent your AI system across the network.
+          </Prose>
+          {[
+            ['Handle',  handle],
+            ['Status',  'Active'],
+            ['Joined',  joined],
+            ['AI Slot', 'Not connected — type /connect-ai'],
+          ].map(([k, v]) => (
+            <div key={k} style={{ display: 'flex', gap: '24px', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.14em', width: '72px', flexShrink: 0, textTransform: 'uppercase' }}>{k}</span>
+              <span style={{ color: k === 'Handle' ? 'var(--accent)' : 'var(--text-dim)', fontSize: '12px' }}>{v}</span>
+            </div>
+          ))}
+          <Note>Future: this ID will identify your account, systems, and AI presence across the network.</Note>
+        </Block>
+      )
+    }
 
     default:
       return null

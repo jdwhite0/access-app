@@ -19,8 +19,10 @@ const ACTIVATION = [
 ]
 
 const AVAILABLE_COMMANDS = [
-  '/systems', '/blueprints', '/frameworks', '/tools',
-  '/future', '/worlds', '/connect-ai', '/view-stack', '/help', '/logout',
+  '/start', '/systems', '/blueprints', '/frameworks', '/tools',
+  '/build', '/build ai-system', '/build business', '/build content',
+  '/build automation', '/build brand', '/build presence',
+  '/future', '/worlds', '/connect-ai', '/access-id', '/view-stack', '/help', '/logout',
 ]
 
 type HistoryItem =
@@ -220,7 +222,7 @@ export default function CommandCenter() {
             )}
             {item.type === 'output' && (
               <div className="mb-6">
-                <CommandOutput command={(item as { type: 'output'; command: string }).command} />
+                <CommandOutput command={(item as { type: 'output'; command: string }).command} userName={user?.firstName ?? user?.username ?? undefined} />
               </div>
             )}
             {item.type === 'error' && (
