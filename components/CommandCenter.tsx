@@ -915,19 +915,23 @@ export default function CommandCenter() {
               <div className="mb-6 mt-4">
                 <div style={{ borderLeft: '2px solid var(--success)', padding: '14px 18px', background: 'rgba(75,189,160,0.03)' }}>
                   <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--success)', marginBottom: '12px' }}>
-                    ✓ SYSTEM REGISTERED
+                    ✓ ENTITY REGISTERED
                   </div>
                   <div style={{ fontSize: '16px', color: 'var(--text)', fontWeight: 500, marginBottom: '14px' }}>
                     {item.system.name}
                   </div>
-                  <Row k="System Identity" v={item.system.system_handle} color="var(--accent)" />
+                  <Row k="Entity Identity" v={item.system.system_handle} color="var(--accent)" />
                   <Row k="Owner" v={item.system.owner_handle} color="var(--text-dim)" />
                   <Row k="Type" v={FLOW_TYPE_LABELS[item.system.type as FlowType]} color="var(--text-dim)" />
-                  <Row k="Status" v="Active" color="var(--success)" />
+                  <Row k="Registry Status" v="Registered" color="var(--success)" />
+                  <Row k="Activation" v="Pending" color="rgba(251,191,36,0.8)" />
+                  <Row k="Capabilities" v="None assigned" color="var(--text-muted)" />
+                  <Row k="Connections" v="None" color="var(--text-muted)" />
                   <Row k="Created" v={new Date(item.system.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} color="var(--text-dim)" />
                   <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '14px', lineHeight: '1.7', fontFamily: 'var(--mono)' }}>
-                    Your system now has a persistent identity inside ACCESS.
-                    Type <span style={{ color: 'var(--accent)' }}>/my-systems</span> to view all registered systems.
+                    This entity now has a permanent identity inside ACCESS. Registration is the first step.
+                    Activation — connecting capabilities, tools, and interfaces — is next.
+                    Type <span style={{ color: 'var(--accent)' }}>/my-systems</span> to view all registered entities.
                   </p>
                 </div>
               </div>
@@ -948,11 +952,11 @@ export default function CommandCenter() {
             {item.type === 'blueprint-list' && (
               <div className="mb-6 mt-2">
                 <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
-                  MY BLUEPRINTS
+                  ARCHITECTURES
                 </div>
                 {item.blueprints.length === 0 ? (
                   <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                    No saved blueprints yet. Generate one with /build-ai-system or /start.
+                    No architectures yet. Begin with /start or /build-ai-system.
                   </div>
                 ) : (
                   <>
@@ -960,8 +964,8 @@ export default function CommandCenter() {
                       <div key={bp.id} style={{ display: 'flex', gap: '16px', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
                         <span style={{ color: 'var(--text-muted)', fontSize: '11px', width: '16px', flexShrink: 0 }}>{idx + 1}</span>
                         <div style={{ flex: 1 }}>
-                          <span style={{ color: 'var(--text)', fontSize: '12px' }}>{FLOW_TYPE_LABELS[bp.type as FlowType]} Blueprint</span>
-                          {bp.system_id && <span style={{ color: 'var(--accent)', fontSize: '10px', marginLeft: '10px' }}>↗ registered</span>}
+                          <span style={{ color: 'var(--text)', fontSize: '12px' }}>{FLOW_TYPE_LABELS[bp.type as FlowType]} Architecture</span>
+                          {bp.system_id && <span style={{ color: 'var(--accent)', fontSize: '10px', marginLeft: '10px' }}>↗ entity registered</span>}
                           <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginLeft: '12px' }}>
                             {new Date(bp.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
@@ -970,7 +974,7 @@ export default function CommandCenter() {
                       </div>
                     ))}
                     <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '12px', lineHeight: '1.7' }}>
-                      /open-blueprint [n]  ·  /delete-blueprint [n]  ·  /register-system to turn into a system
+                      /open-blueprint [n]  ·  /delete-blueprint [n]  ·  /register-system to create the entity
                     </div>
                   </>
                 )}
@@ -1025,7 +1029,7 @@ export default function CommandCenter() {
                 background: 'rgba(64,192,208,0.025)',
               }}>
                 <div style={{ fontSize: '9px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(64,192,208,0.6)', marginBottom: '12px' }}>
-                  ← ARCHITECTURE RECEIVED FROM JYSON
+                  ← ENTITY READY FOR REGISTRATION · JYSON
                 </div>
                 <div style={{ fontSize: '15px', color: 'var(--text)', fontWeight: 500, marginBottom: '6px' }}>
                   {item.payload.name}
@@ -1034,7 +1038,7 @@ export default function CommandCenter() {
                   {FLOW_TYPE_LABELS[item.payload.type]} · Value Architecture Engine
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.7', marginBottom: '16px' }}>
-                  Your build package has been imported. Register this system to claim its identity inside ACCESS.
+                  JYSON has structured this system. Register it here to assign it a permanent identity, ownership, and an activation path inside ACCESS.
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); handleCommand('/register-system') }}
@@ -1061,17 +1065,19 @@ export default function CommandCenter() {
             {item.type === 'system-detail' && (
               <div className="mb-6 mt-4">
                 <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
-                  SYSTEM
+                  ENTITY
                 </div>
                 <div style={{ fontSize: '16px', color: 'var(--text)', fontWeight: 500, marginBottom: '14px' }}>
                   {item.system.name}
                 </div>
-                <Row k="System Identity" v={item.system.system_handle} color="var(--accent)" />
+                <Row k="Entity Identity" v={item.system.system_handle} color="var(--accent)" />
                 <Row k="Owner" v={item.system.owner_handle} />
                 <Row k="Type" v={FLOW_TYPE_LABELS[item.system.type as FlowType]} />
-                <Row k="Status" v={item.system.status === 'active' ? 'Active' : item.system.status} color={item.system.status === 'active' ? 'var(--success)' : 'var(--gold)'} />
-                <Row k="Blueprint" v={item.system.blueprint_id ? 'Linked' : 'None'} />
-                <Row k="Network" v="Not yet connected" color="var(--text-muted)" />
+                <Row k="Registry Status" v={item.system.status === 'active' ? 'Active' : item.system.status} color={item.system.status === 'active' ? 'var(--success)' : 'var(--gold)'} />
+                <Row k="Activation" v={(item.system as System & { activation_status?: string }).activation_status ?? 'registered'} color={(item.system as System & { activation_status?: string }).activation_status === 'active' ? 'var(--success)' : 'rgba(251,191,36,0.8)'} />
+                <Row k="Capabilities" v="None assigned" color="var(--text-muted)" />
+                <Row k="Connections" v="None" color="var(--text-muted)" />
+                <Row k="Architecture" v={item.system.blueprint_id ? 'Linked' : 'None'} />
                 <Row k="Created" v={new Date(item.system.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />
                 {item.system.description && (
                   <div style={{ marginTop: '14px' }}>

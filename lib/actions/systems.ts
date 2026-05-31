@@ -29,6 +29,9 @@ export async function createSystem(input: CreateSystemInput): Promise<System | n
       type: input.type,
       description: input.description ?? null,
       status: 'active',
+      activation_status: 'registered',
+      capabilities: [],
+      connections: [],
       blueprint_id: input.blueprintId ?? null,
       created_at: new Date().toISOString(),
     }
@@ -56,6 +59,9 @@ export async function createSystem(input: CreateSystemInput): Promise<System | n
       type: input.type,
       description: input.description ?? null,
       status: 'active',
+      activation_status: 'registered',
+      capabilities: [],
+      connections: [],
       blueprint_id: input.blueprintId ?? null,
     })
     .select('*')

@@ -27,21 +27,33 @@ create table if not exists public.access_identities (
 
 -- ────────────────────────────────────────────────────────────
 -- systems
--- Each registered system is a distinct entity owned by a user.
--- The system itself has its own identity, separate from the owner.
+-- Every registered system is a distinct digital entity.
+-- It has its own identity, separate from its owner.
+-- Registration creates the entity. Activation makes it operational.
 -- ────────────────────────────────────────────────────────────
 create table if not exists public.systems (
-  id              uuid primary key default gen_random_uuid(),
-  clerk_user_id   text not null,
-  owner_handle    text not null,          -- e.g., "jdwhite.access"
-  system_handle   text unique not null,   -- e.g., "jdproductions.access"
-  name            text not null,          -- e.g., "JD Productions OS"
-  type            text not null,          -- ai | business | content | knowledge
-  description     text,
-  status          text default 'active' not null,
-  blueprint_id    uuid,
-  created_at      timestamptz default now() not null
+  id                  uuid primary key default gen_random_uuid(),
+  clerk_user_id       text not null,
+  owner_handle        text not null,              -- e.g., "jdwhite.access"
+  system_handle       text unique not null,       -- e.g., "jdproductions.access"
+  name                text not null,              -- e.g., "JD Productions OS"
+  type                text not null,              -- ai | business | content | knowledge
+  description         text,
+  status              text default 'active' not null,
+  activation_status   text default 'registered' not null,  -- registered | activating | active
+  capabilities        jsonb default '[]'::jsonb,           -- array of capability strings
+  connections         jsonb default '[]'::jsonb,           -- array of connected system handles
+  blueprint_id        uuid,
+  created_at          timestamptz default now() not null
 );
+
+-- ────────────────────────────────────────────────────────────
+-- Migration: run this if the table already exists
+-- alter table public.systems
+--   add column if not exists activation_status text default 'registered' not null,
+--   add column if not exists capabilities jsonb default '[]'::jsonb,
+--   add column if not exists connections jsonb default '[]'::jsonb;
+-- ────────────────────────────────────────────────────────────
 
 -- ────────────────────────────────────────────────────────────
 -- blueprints

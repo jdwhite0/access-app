@@ -1,5 +1,6 @@
 export type SystemType = 'ai' | 'business' | 'content' | 'knowledge'
 export type StatusType = 'active' | 'inactive' | 'archived'
+export type ActivationStatus = 'registered' | 'activating' | 'active'
 
 export interface Profile {
   id: string
@@ -19,12 +20,15 @@ export interface AccessIdentity {
 export interface System {
   id: string
   clerk_user_id: string
-  owner_handle: string  // e.g., "jdwhite.access"
-  system_handle: string // e.g., "jdproductions.access"
-  name: string          // e.g., "JD Productions OS"
+  owner_handle: string        // e.g., "jdwhite.access"
+  system_handle: string       // e.g., "jdproductions.access"
+  name: string                // e.g., "JD Productions OS"
   type: SystemType
   description: string | null
   status: StatusType
+  activation_status: ActivationStatus  // registered → activating → active
+  capabilities: string[]               // what this entity can do
+  connections: string[]                // system handles this entity connects to
   blueprint_id: string | null
   created_at: string
 }
