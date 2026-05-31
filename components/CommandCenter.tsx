@@ -5,6 +5,10 @@ import { useUser, useClerk } from '@clerk/nextjs'
 import CommandOutput from './CommandOutput'
 import BlueprintDisplay, { FlowType, FLOW_TYPE_LABELS, generateBlueprintText } from './access/BlueprintDisplay'
 import AccessIdCard from './access/AccessIdCard'
+import { getOrCreateIdentity } from '@/lib/actions/identity'
+import { saveBlueprint, listBlueprints, deleteBlueprint as deleteBlueprintAction } from '@/lib/actions/blueprints'
+import { createSystem, listSystems, getSystem, deleteSystem as deleteSystemAction } from '@/lib/actions/systems'
+import type { Blueprint, System } from '@/types/db'
 
 /* ─── Activation sequence ─────────────────────────────────── */
 const ACTIVATION = [
@@ -85,6 +89,7 @@ const AVAILABLE_COMMANDS = [
   '/start', '/presence', '/pathways',
   '/build-ai-system', '/build-business', '/build-content-system', '/build-knowledge-system',
   '/explore', '/my-id',
+  '/my-systems', '/register-system', '/open-system', '/system-status', '/delete-system',
   '/jd-ecosystem', '/systems', '/systems-registry', '/blueprints',
   '/frameworks', '/tools', '/capabilities',
   '/connect-ai', '/access-id', '/network', '/worlds', '/view-stack',
@@ -100,7 +105,8 @@ const SUGGESTIONS: Record<string, string[]> = {
   'ai':       ['/build-ai-system', '/systems-registry', '/connect-ai'],
   'connect':  ['/connect-ai', '/network'],
   'future':   ['/network', '/capabilities', '/pathways'],
-  'system':   ['/systems', '/systems-registry', '/view-stack'],
+  'system':   ['/my-systems', '/register-system', '/systems-registry'],
+  'register': ['/register-system', '/my-systems'],
   'plan':     ['/blueprints', '/build-ai-system'],
   'help':     ['/help'],
   'path':     ['/pathways', '/start'],
@@ -110,6 +116,7 @@ const SUGGESTIONS: Record<string, string[]> = {
   'save':     ['/save-blueprint', '/my-blueprints'],
   'explore':  ['/explore', '/start'],
   'knowledge':['/build-knowledge-system', '/blueprints'],
+  'delete':   ['/delete-system', '/delete-blueprint'],
 }
 
 function getSuggestions(cmd: string): string[] {
@@ -128,26 +135,9 @@ const NUMBER_MAP: Record<string, string> = {
   '5': '/explore',
 }
 
-/* ─── History types ────────────────────────────────────────── */
-type FlowState = { type: FlowType; step: number; answers: string[] }
-
-type SavedBlueprint = { id: string; type: FlowType; label: string; date: string; answers: string[] }
-
-type HistoryItem =
-  | { type: 'input'; text: string }
-  | { type: 'output'; command: string }
-  | { type: 'error'; text: string }
-  | { type: 'question'; text: string; qNum: number; total: number; label: string }
-  | { type: 'flow-intro'; flowType: FlowType }
-  | { type: 'blueprint'; flowType: FlowType; answers: string[]; id: string }
-  | { type: 'info'; text: string; success?: boolean }
-  | { type: 'id-card' }
-  | { type: 'blueprint-list'; blueprints: SavedBlueprint[] }
-
 /* ─── ACCESS ID derivation ─────────────────────────────────── */
 function deriveUsername(user: ReturnType<typeof useUser>['user']): string {
   if (!user) return 'guest-builder'
-  // Priority: GitHub username → Clerk username → email prefix → full name slug → guest-builder
   const github = user.externalAccounts?.find(a => (a.provider as string) === 'oauth_github')
   if (github?.username) return github.username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
   if (user.username) return user.username.toLowerCase().replace(/[^a-z0-9-]/g, '-')
@@ -162,16 +152,54 @@ function toAccessId(username: string): string {
   return `${username.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')}.access`
 }
 
-const LS_KEY = 'access_blueprints'
+function deriveSystemHandle(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+os\s*$/i, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    + '.access'
+}
 
-function loadBlueprints(): SavedBlueprint[] {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY) ?? '[]')
-  } catch { return [] }
+/* ─── Active flow types ─────────────────────────────────────── */
+type BlueprintFlow = {
+  kind: 'blueprint'
+  type: FlowType
+  step: number
+  answers: string[]
 }
-function saveBlueprints(list: SavedBlueprint[]) {
-  localStorage.setItem(LS_KEY, JSON.stringify(list))
+
+type RegisterFlow = {
+  kind: 'register'
+  step: 'name' | 'confirm-id'
+  blueprintType: FlowType | null
+  blueprintAnswers: string[] | null
+  blueprintDbId: string | null
+  suggestedHandle: string | null
+  name: string | null
 }
+
+type ActiveFlow = BlueprintFlow | RegisterFlow
+
+/* ─── History types ────────────────────────────────────────── */
+type HistoryItem =
+  | { type: 'input'; text: string }
+  | { type: 'output'; command: string }
+  | { type: 'error'; text: string }
+  | { type: 'question'; text: string; qNum: number; total: number; label: string }
+  | { type: 'flow-intro'; flowType: FlowType }
+  | { type: 'register-intro'; flowType: FlowType | null }
+  | { type: 'register-confirm'; suggestedHandle: string; name: string }
+  | { type: 'blueprint'; flowType: FlowType; answers: string[]; dbId: string | null }
+  | { type: 'system-registered'; system: System }
+  | { type: 'info'; text: string; success?: boolean }
+  | { type: 'id-card'; systemCount: number }
+  | { type: 'blueprint-list'; blueprints: Blueprint[] }
+  | { type: 'system-list'; systems: System[] }
+  | { type: 'system-detail'; system: System }
+  | { type: 'processing'; text: string }
 
 /* ─── Component ─────────────────────────────────────────────── */
 export default function CommandCenter() {
@@ -184,10 +212,11 @@ export default function CommandCenter() {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [cmdHistory, setCmdHistory] = useState<string[]>([])
   const [cmdIdx, setCmdIdx] = useState(-1)
-  const [flow, setFlow] = useState<FlowState | null>(null)
-  const [lastBlueprint, setLastBlueprint] = useState<{ flowType: FlowType; answers: string[]; id: string } | null>(null)
+  const [flow, setFlow] = useState<ActiveFlow | null>(null)
+  const [lastBlueprint, setLastBlueprint] = useState<{ flowType: FlowType; answers: string[]; dbId: string | null } | null>(null)
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [systemCount, setSystemCount] = useState(0)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -196,7 +225,7 @@ export default function CommandCenter() {
   const accessId = toAccessId(username)
   const displayName = user?.firstName || user?.username || username
 
-  // Activation sequence
+  /* ─── Activation ──────────────────────────────────────────── */
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     ACTIVATION.forEach(item => {
@@ -206,221 +235,342 @@ export default function CommandCenter() {
     return () => timers.forEach(clearTimeout)
   }, [])
 
-  // Auto-scroll
+  /* ─── Initialize identity in DB on first login ──────────────── */
+  useEffect(() => {
+    if (phase !== 'active') return
+    getOrCreateIdentity(accessId).catch(() => null)
+    listSystems().then(s => setSystemCount(s.length)).catch(() => null)
+  }, [phase, accessId])
+
+  /* ─── Auto-scroll ─────────────────────────────────────────── */
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [activationLines, history, phase])
 
-  // Focus input
+  /* ─── Focus input ─────────────────────────────────────────── */
   useEffect(() => {
     if (phase === 'active') setTimeout(() => inputRef.current?.focus(), 100)
   }, [phase])
 
-  /* ─── Blueprint action handlers ────────────────────────── */
-  const handleSaveBlueprint = useCallback((bp: { flowType: FlowType; answers: string[]; id: string }) => {
-    const list = loadBlueprints()
-    if (list.find(b => b.id === bp.id)) return
-    const entry: SavedBlueprint = {
-      id: bp.id,
-      type: bp.flowType,
-      label: FLOW_TYPE_LABELS[bp.flowType],
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
-      answers: bp.answers,
-    }
-    saveBlueprints([entry, ...list])
-    setSavedIds(prev => new Set([...prev, bp.id]))
-  }, [])
-
-  const handleCopyBlueprint = useCallback((bp: { flowType: FlowType; answers: string[]; id: string }) => {
+  /* ─── Blueprint action helpers ──────────────────────────────── */
+  const handleCopyBlueprint = useCallback((bp: { flowType: FlowType; answers: string[] }) => {
+    const key = `${bp.flowType}-${bp.answers[0]}`
     const text = generateBlueprintText(bp.flowType, bp.answers, username)
     navigator.clipboard.writeText(text).catch(() => {})
-    setCopiedId(bp.id)
+    setCopiedId(key)
     setTimeout(() => setCopiedId(null), 2500)
   }, [username])
 
-  const handleExportBlueprint = useCallback((bp: { flowType: FlowType; answers: string[]; id: string }) => {
+  const handleExportBlueprint = useCallback((bp: { flowType: FlowType; answers: string[] }) => {
     const text = generateBlueprintText(bp.flowType, bp.answers, username)
     const date = new Date().toISOString().slice(0, 10)
-    const filename = `access-blueprint-${bp.flowType}-${date}.md`
     const blob = new Blob([text], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url; a.download = filename; a.click()
+    a.href = url
+    a.download = `access-blueprint-${bp.flowType}-${date}.md`
+    a.click()
     URL.revokeObjectURL(url)
   }, [username])
 
-  /* ─── Command handler ───────────────────────────────────── */
-  const handleCommand = (raw: string) => {
+  /* ─── Command handler ───────────────────────────────────────── */
+  const push = useCallback((item: HistoryItem) => {
+    setHistory(prev => [...prev, item])
+  }, [])
+
+  const handleCommand = useCallback(async (raw: string) => {
     const trimmed = raw.trim()
     if (!trimmed) return
 
-    // If inside a Q&A flow, treat input as an answer
-    if (flow !== null) {
+    /* ── Inside blueprint Q&A flow ── */
+    if (flow?.kind === 'blueprint') {
       const def = FLOW_DEFS[flow.type]
       const newAnswers = [...flow.answers, trimmed]
 
       setCmdHistory(prev => [trimmed, ...prev])
       setCmdIdx(-1)
+      push({ type: 'input', text: trimmed })
 
       if (flow.step < def.questions.length - 1) {
         const nextStep = flow.step + 1
         setFlow({ ...flow, step: nextStep, answers: newAnswers })
-        setHistory(prev => [
-          ...prev,
-          { type: 'input', text: trimmed },
-          {
-            type: 'question',
-            text: def.questions[nextStep],
-            qNum: nextStep + 1,
-            total: def.questions.length,
-            label: def.answerLabels[nextStep],
-          },
-        ])
+        push({
+          type: 'question',
+          text: def.questions[nextStep],
+          qNum: nextStep + 1,
+          total: def.questions.length,
+          label: def.answerLabels[nextStep],
+        })
       } else {
-        // All questions answered — generate blueprint
-        const id = `${flow.type}-${Date.now()}`
-        const bp = { flowType: flow.type, answers: newAnswers, id }
-        setLastBlueprint(bp)
+        // All answers collected — save to DB
         setFlow(null)
-        setHistory(prev => [
-          ...prev,
-          { type: 'input', text: trimmed },
-          { type: 'blueprint', flowType: bp.flowType, answers: bp.answers, id: bp.id },
-        ])
+        push({ type: 'processing', text: 'saving blueprint...' })
+        const saved = await saveBlueprint(flow.type, newAnswers, accessId).catch(() => null)
+        const bp = { flowType: flow.type, answers: newAnswers, dbId: saved?.id ?? null }
+        setLastBlueprint(bp)
+        if (saved?.id) setSavedIds(prev => new Set([...prev, saved.id]))
+        setHistory(prev => {
+          const next = prev.filter(i => !(i.type === 'processing'))
+          return [...next, { type: 'blueprint', flowType: bp.flowType, answers: bp.answers, dbId: bp.dbId }]
+        })
       }
       setInput('')
       return
     }
 
+    /* ── Inside system registration flow ── */
+    if (flow?.kind === 'register') {
+      setCmdHistory(prev => [trimmed, ...prev])
+      setCmdIdx(-1)
+      push({ type: 'input', text: trimmed })
+
+      if (flow.step === 'name') {
+        const suggested = deriveSystemHandle(trimmed)
+        const updated: RegisterFlow = { ...flow, step: 'confirm-id', name: trimmed, suggestedHandle: suggested }
+        setFlow(updated)
+        push({ type: 'register-confirm', suggestedHandle: suggested, name: trimmed })
+      } else if (flow.step === 'confirm-id') {
+        // User either pressed enter (use suggested) or typed a custom handle
+        const isCustom = trimmed.length > 0 && trimmed !== flow.suggestedHandle
+        const finalHandle = isCustom
+          ? trimmed.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/\.access$/, '') + '.access'
+          : (flow.suggestedHandle ?? deriveSystemHandle(flow.name ?? 'my-system'))
+
+        const systemName = flow.name ?? 'My System'
+        setFlow(null)
+        push({ type: 'processing', text: 'registering system...' })
+
+        const system = await createSystem({
+          name: systemName,
+          systemHandle: finalHandle,
+          ownerHandle: accessId,
+          type: flow.blueprintType ?? 'ai',
+          description: flow.blueprintAnswers?.[0] ?? undefined,
+          blueprintId: flow.blueprintDbId ?? undefined,
+        }).catch(() => null)
+
+        setHistory(prev => {
+          const next = prev.filter(i => !(i.type === 'processing'))
+          if (!system) {
+            return [...next, { type: 'info', text: 'System registration failed. Please try again.' }]
+          }
+          return [...next, { type: 'system-registered', system }]
+        })
+        if (system) {
+          setSystemCount(c => c + 1)
+          // Reserve system handle in access_keys_preview (future networking)
+          // This is a no-op if Supabase is not configured — silently ignored
+        }
+      }
+      setInput('')
+      return
+    }
+
+    /* ── Standard command routing ── */
     let cmd = trimmed.toLowerCase()
     if (NUMBER_MAP[cmd]) cmd = NUMBER_MAP[cmd]
 
     setCmdHistory(prev => [cmd, ...prev])
     setCmdIdx(-1)
-    setHistory(prev => [...prev, { type: 'input', text: cmd }])
+    push({ type: 'input', text: cmd })
 
-    // ── Session ──
+    /* Session */
     if (cmd === '/logout') { signOut(); return }
 
-    // ── Blueprint flow starters ──
-    if (cmd === '/build-ai-system' || cmd === '/build-business' || cmd === '/build-content-system' || cmd === '/build-knowledge-system') {
-      const flowMap: Record<string, FlowType> = {
-        '/build-ai-system': 'ai',
-        '/build-business': 'business',
-        '/build-content-system': 'content',
-        '/build-knowledge-system': 'knowledge',
-      }
-      const ft = flowMap[cmd]
+    /* Blueprint path starters */
+    const FLOW_MAP: Record<string, FlowType> = {
+      '/build-ai-system': 'ai',
+      '/build-business': 'business',
+      '/build-content-system': 'content',
+      '/build-knowledge-system': 'knowledge',
+    }
+    if (FLOW_MAP[cmd]) {
+      const ft = FLOW_MAP[cmd]
       const def = FLOW_DEFS[ft]
-      setFlow({ type: ft, step: 0, answers: [] })
-      setHistory(prev => [
-        ...prev,
-        { type: 'flow-intro', flowType: ft },
-        { type: 'question', text: def.questions[0], qNum: 1, total: def.questions.length, label: def.answerLabels[0] },
-      ])
+      setFlow({ kind: 'blueprint', type: ft, step: 0, answers: [] })
+      push({ type: 'flow-intro', flowType: ft })
+      push({ type: 'question', text: def.questions[0], qNum: 1, total: def.questions.length, label: def.answerLabels[0] })
       setInput('')
       return
     }
 
-    // ── Blueprint actions ──
+    /* Register system */
+    if (cmd === '/register-system') {
+      const hasBlueprint = !!lastBlueprint
+      setFlow({
+        kind: 'register',
+        step: 'name',
+        blueprintType: lastBlueprint?.flowType ?? null,
+        blueprintAnswers: lastBlueprint?.answers ?? null,
+        blueprintDbId: lastBlueprint?.dbId ?? null,
+        suggestedHandle: null,
+        name: null,
+      })
+      push({ type: 'register-intro', flowType: hasBlueprint ? lastBlueprint!.flowType : null })
+      setInput('')
+      return
+    }
+
+    /* Blueprint save/copy/export */
     if (cmd === '/save-blueprint') {
       if (!lastBlueprint) {
-        setHistory(prev => [...prev, { type: 'info', text: 'No blueprint active. Generate one first with /build-ai-system or /start.' }])
+        push({ type: 'info', text: 'No blueprint active. Generate one first with /start or /build-ai-system.' })
+      } else if (lastBlueprint.dbId) {
+        push({ type: 'info', text: '✓ Blueprint already saved to your ACCESS workspace.', success: true })
       } else {
-        handleSaveBlueprint(lastBlueprint)
-        setHistory(prev => [...prev, { type: 'info', text: '✓ Blueprint saved to your ACCESS workspace.', success: true }])
+        push({ type: 'processing', text: 'saving...' })
+        const saved = await saveBlueprint(lastBlueprint.flowType, lastBlueprint.answers, accessId).catch(() => null)
+        setHistory(prev => {
+          const next = prev.filter(i => i.type !== 'processing')
+          return [...next, saved
+            ? { type: 'info', text: '✓ Blueprint saved to your ACCESS workspace.', success: true }
+            : { type: 'info', text: 'Could not save. Supabase may not be configured yet.' }
+          ]
+        })
+        if (saved) {
+          setLastBlueprint({ ...lastBlueprint, dbId: saved.id })
+          setSavedIds(prev => new Set([...prev, saved.id]))
+        }
       }
       setInput('')
       return
     }
     if (cmd === '/copy-blueprint') {
       if (!lastBlueprint) {
-        setHistory(prev => [...prev, { type: 'info', text: 'No blueprint active. Generate one first.' }])
+        push({ type: 'info', text: 'No blueprint active. Generate one first.' })
       } else {
         handleCopyBlueprint(lastBlueprint)
-        setHistory(prev => [...prev, { type: 'info', text: '✓ Blueprint copied to clipboard.', success: true }])
+        push({ type: 'info', text: '✓ Blueprint copied to clipboard.', success: true })
       }
       setInput('')
       return
     }
     if (cmd === '/export-blueprint') {
       if (!lastBlueprint) {
-        setHistory(prev => [...prev, { type: 'info', text: 'No blueprint active. Generate one first.' }])
+        push({ type: 'info', text: 'No blueprint active. Generate one first.' })
       } else {
         handleExportBlueprint(lastBlueprint)
-        setHistory(prev => [...prev, { type: 'info', text: '✓ Blueprint exported as .md file.', success: true }])
+        push({ type: 'info', text: '✓ Blueprint exported as .md file.', success: true })
       }
       setInput('')
       return
     }
     if (cmd === '/email-blueprint') {
-      setHistory(prev => [...prev, { type: 'info', text: 'Email export is coming soon. For now, use /export-blueprint or /copy-blueprint.' }])
+      push({ type: 'info', text: 'Email export is coming soon. Use /export-blueprint or /copy-blueprint for now.' })
       setInput('')
       return
     }
     if (cmd === '/start-over') {
       setFlow(null)
       setLastBlueprint(null)
-      setHistory(prev => [...prev, { type: 'output', command: '/start' }])
+      push({ type: 'output', command: '/start' })
       setInput('')
       return
     }
 
-    // ── My blueprints ──
+    /* My blueprints */
     if (cmd === '/my-blueprints') {
-      const list = loadBlueprints()
-      setHistory(prev => [...prev, { type: 'blueprint-list', blueprints: list }])
+      push({ type: 'processing', text: 'loading blueprints...' })
+      const list = await listBlueprints().catch(() => [])
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        return [...next, { type: 'blueprint-list', blueprints: list }]
+      })
       setInput('')
       return
     }
     if (cmd.startsWith('/open-blueprint ')) {
       const idx = parseInt(cmd.replace('/open-blueprint ', ''), 10) - 1
-      const list = loadBlueprints()
+      push({ type: 'processing', text: 'loading...' })
+      const list = await listBlueprints().catch(() => [])
       const bp = list[idx]
-      if (!bp) {
-        setHistory(prev => [...prev, { type: 'info', text: `Blueprint ${idx + 1} not found. Type /my-blueprints to see your list.` }])
-      } else {
-        const id = `${bp.type}-open-${Date.now()}`
-        const bpObj = { flowType: bp.type, answers: bp.answers, id }
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        if (!bp) return [...next, { type: 'info', text: `Blueprint ${idx + 1} not found. Type /my-blueprints to see your list.` }]
+        const bpObj = { flowType: bp.type as FlowType, answers: bp.answers as string[], dbId: bp.id }
         setLastBlueprint(bpObj)
-        setHistory(prev => [...prev, { type: 'blueprint', flowType: bp.type, answers: bp.answers, id }])
-      }
+        if (bp.id) setSavedIds(prev => new Set([...prev, bp.id]))
+        return [...next, { type: 'blueprint', flowType: bp.type as FlowType, answers: bp.answers as string[], dbId: bp.id }]
+      })
       setInput('')
       return
     }
     if (cmd.startsWith('/delete-blueprint ')) {
       const idx = parseInt(cmd.replace('/delete-blueprint ', ''), 10) - 1
-      const list = loadBlueprints()
-      if (!list[idx]) {
-        setHistory(prev => [...prev, { type: 'info', text: `Blueprint ${idx + 1} not found.` }])
+      push({ type: 'processing', text: 'deleting...' })
+      const list = await listBlueprints().catch(() => [])
+      const bp = list[idx]
+      if (!bp) {
+        setHistory(prev => [...prev.filter(i => i.type !== 'processing'), { type: 'info', text: `Blueprint ${idx + 1} not found.` }])
       } else {
-        const removed = list[idx]
-        saveBlueprints(list.filter((_, i) => i !== idx))
-        setHistory(prev => [...prev, { type: 'info', text: `✓ Deleted: ${removed.label} Blueprint`, success: true }])
+        await deleteBlueprintAction(bp.id).catch(() => null)
+        setHistory(prev => [...prev.filter(i => i.type !== 'processing'), { type: 'info', text: `✓ Deleted: ${FLOW_TYPE_LABELS[bp.type as FlowType]} Blueprint`, success: true }])
       }
       setInput('')
       return
     }
 
-    // ── Identity card ──
-    if (cmd === '/my-id') {
-      setHistory(prev => [...prev, { type: 'id-card' }])
+    /* My systems */
+    if (cmd === '/my-systems') {
+      push({ type: 'processing', text: 'loading systems...' })
+      const systems = await listSystems().catch(() => [])
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        return [...next, { type: 'system-list', systems }]
+      })
+      setSystemCount(systems.length)
       setInput('')
       return
     }
 
-    // ── Standard commands ──
+    /* /open-system <handle> or /system-status <handle> */
+    if (cmd.startsWith('/open-system ') || cmd.startsWith('/system-status ')) {
+      const handle = cmd.replace(/^\/(open-system|system-status)\s+/, '').trim()
+      const lookup = handle.includes('.access') ? handle : handle + '.access'
+      push({ type: 'processing', text: 'loading system...' })
+      const system = await getSystem(lookup).catch(() => null)
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        if (!system) return [...next, { type: 'info', text: `System "${lookup}" not found. Type /my-systems to see your list.` }]
+        return [...next, { type: 'system-detail', system }]
+      })
+      setInput('')
+      return
+    }
+
+    /* /delete-system <handle> */
+    if (cmd.startsWith('/delete-system ')) {
+      const handle = cmd.replace('/delete-system ', '').trim()
+      const lookup = handle.includes('.access') ? handle : handle + '.access'
+      push({ type: 'processing', text: 'archiving system...' })
+      const ok = await deleteSystemAction(lookup).catch(() => false)
+      setHistory(prev => {
+        const next = prev.filter(i => i.type !== 'processing')
+        return [...next, ok
+          ? { type: 'info', text: `✓ System "${lookup}" archived.`, success: true }
+          : { type: 'info', text: `System "${lookup}" not found or could not be deleted.` }
+        ]
+      })
+      if (ok) setSystemCount(c => Math.max(0, c - 1))
+      setInput('')
+      return
+    }
+
+    /* /my-id */
+    if (cmd === '/my-id') {
+      push({ type: 'id-card', systemCount })
+      setInput('')
+      return
+    }
+
+    /* Standard output commands */
     if (AVAILABLE_COMMANDS.includes(cmd)) {
-      setHistory(prev => [...prev, { type: 'output', command: cmd }])
+      push({ type: 'output', command: cmd })
     } else {
-      const suggestions = getSuggestions(cmd)
-      setHistory(prev => [
-        ...prev,
-        { type: 'error', text: `command not found: ${cmd}  —  try: ${suggestions.join('  ')}` },
-      ])
+      push({ type: 'error', text: `command not found: ${cmd}  —  try: ${getSuggestions(cmd).join('  ')}` })
     }
     setInput('')
-  }
+  }, [flow, lastBlueprint, accessId, username, systemCount, push, handleCopyBlueprint, handleExportBlueprint, signOut])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -437,6 +587,16 @@ export default function CommandCenter() {
       else { setCmdIdx(next); setInput(cmdHistory[next]) }
     }
   }
+
+  /* ─── Render helpers ─────────────────────────────────────── */
+  const divider = { borderTop: '1px solid rgba(255,255,255,0.06)', margin: '4px 0 16px' }
+
+  const Row = ({ k, v, color = 'var(--text-dim)' }: { k: string; v: string; color?: string }) => (
+    <div style={{ display: 'flex', gap: '24px', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'center' }}>
+      <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', width: '140px', flexShrink: 0 }}>{k}</span>
+      <span style={{ color, fontSize: '12px' }}>{v}</span>
+    </div>
+  )
 
   return (
     <div className="h-full flex flex-col" onClick={() => inputRef.current?.focus()}>
@@ -458,6 +618,12 @@ export default function CommandCenter() {
               <span style={{ color: 'var(--text-dim)' }}>id</span>{'  '}
               <span style={{ color: 'var(--accent)' }}>{accessId}</span>
             </span>
+            {systemCount > 0 && (
+              <span>
+                <span style={{ color: 'var(--text-dim)' }}>systems</span>{'  '}
+                <span style={{ color: 'var(--text)' }}>{systemCount}</span>
+              </span>
+            )}
             <span>
               <span style={{ color: 'var(--success)' }}>●</span>{'  '}connected
             </span>
@@ -481,16 +647,16 @@ export default function CommandCenter() {
         {/* Post-activation welcome */}
         {phase === 'active' && (
           <div className="fade-in mt-6">
-            <div className="mb-5" style={{ borderTop: '1px solid var(--border)' }} />
+            <div style={divider} />
 
-            <div style={{ marginBottom: '6px', color: 'var(--text)', fontSize: '0.92rem', fontWeight: 300, letterSpacing: '0.04em' }}>
+            <div style={{ marginBottom: '6px', color: 'var(--text)', fontSize: '0.92rem', fontWeight: 300 }}>
               Welcome, {displayName}.
             </div>
             <div style={{ color: 'var(--text-dim)', fontSize: '0.78rem', lineHeight: '1.7', marginBottom: '14px' }}>
               Your presence is active. Your ACCESS ID has been created.
             </div>
 
-            {/* ACCESS ID prominent display */}
+            {/* ACCESS ID block */}
             <div style={{
               display: 'inline-block',
               background: 'rgba(64,192,208,0.04)',
@@ -519,28 +685,26 @@ export default function CommandCenter() {
                 ['3', 'My content system',            '/build-content-system'],
                 ['4', 'My personal knowledge system', '/build-knowledge-system'],
                 ['5', 'I just want to explore',       '/explore'],
-              ].map(([n, label, cmd]) => (
-                <button
-                  key={n}
+              ].map(([n, label, cmd], idx) => (
+                <button key={n}
                   onClick={e => { e.stopPropagation(); handleCommand(n) }}
                   style={{
                     display: 'flex', gap: '20px', width: '100%', maxWidth: '520px',
                     alignItems: 'center', padding: '10px 0',
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    background: 'transparent', border: 'none',
-                    cursor: 'pointer', textAlign: 'left',
-                    borderTop: n === '1' ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                    borderTop: idx === 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                    background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
                   }}
                   onMouseEnter={e => {
-                    const num = e.currentTarget.querySelector('.path-num') as HTMLElement
-                    if (num) num.style.color = 'var(--accent)'
+                    const span = e.currentTarget.querySelector('.path-num') as HTMLElement
+                    if (span) span.style.color = 'var(--accent)'
                   }}
                   onMouseLeave={e => {
-                    const num = e.currentTarget.querySelector('.path-num') as HTMLElement
-                    if (num) num.style.color = 'var(--text-muted)'
+                    const span = e.currentTarget.querySelector('.path-num') as HTMLElement
+                    if (span) span.style.color = 'var(--text-muted)'
                   }}
                 >
-                  <span className="path-num" style={{ color: 'var(--text-muted)', fontFamily: 'var(--mono)', fontSize: '12px', width: '16px', flexShrink: 0, transition: 'color 0.12s' }}>{n}</span>
+                  <span className="path-num" style={{ color: 'var(--text-muted)', fontSize: '12px', width: '16px', flexShrink: 0, transition: 'color 0.12s' }}>{n}</span>
                   <span style={{ color: 'var(--text)', fontSize: '13px', flex: 1 }}>{label}</span>
                   <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '0.08em' }}>{cmd}</span>
                 </button>
@@ -550,13 +714,13 @@ export default function CommandCenter() {
             {/* Quick commands */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '6px', maxWidth: '600px', marginBottom: '16px' }}>
               {[
-                ['/my-id',           'Your ACCESS identity'],
-                ['/blueprints',      'View blueprints'],
-                ['/my-blueprints',   'Saved blueprints'],
-                ['/systems-registry','What AI systems look like'],
-                ['/tools',           'Tools in the ecosystem'],
-                ['/network',         'Future network vision'],
-                ['/help',            'All commands'],
+                ['/my-id',       'Your ACCESS identity'],
+                ['/my-systems',  'Registered systems'],
+                ['/my-blueprints','Saved blueprints'],
+                ['/blueprints',  'Reference blueprints'],
+                ['/tools',       'Tools in the ecosystem'],
+                ['/network',     'Future network vision'],
+                ['/help',        'All commands'],
               ].map(([cmd, label]) => (
                 <button key={cmd}
                   onClick={e => { e.stopPropagation(); handleCommand(cmd) }}
@@ -599,14 +763,19 @@ export default function CommandCenter() {
               </div>
             )}
 
+            {item.type === 'processing' && (
+              <div className="mb-2" style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                {item.text}<span className="cursor" />
+              </div>
+            )}
+
             {item.type === 'flow-intro' && (
-              <div className="mb-2" style={{
-                padding: '16px 20px',
+              <div className="mb-2 mt-2" style={{
+                padding: '14px 18px',
                 borderLeft: '2px solid rgba(64,192,208,0.3)',
                 background: 'rgba(64,192,208,0.02)',
-                marginTop: '8px',
               }}>
-                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '8px' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '6px' }}>
                   {FLOW_DEFS[item.flowType].label}
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.7' }}>
@@ -616,7 +785,7 @@ export default function CommandCenter() {
             )}
 
             {item.type === 'question' && (
-              <div className="mb-2 mt-4" style={{ paddingLeft: '2px' }}>
+              <div className="mb-1 mt-4">
                 <div style={{ fontSize: '9px', letterSpacing: '0.16em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '5px' }}>
                   Question {item.qNum} of {item.total}
                   <span style={{ color: 'rgba(64,192,208,0.4)', marginLeft: '10px' }}>{item.label}</span>
@@ -625,34 +794,96 @@ export default function CommandCenter() {
               </div>
             )}
 
-            {item.type === 'blueprint' && (
+            {item.type === 'register-intro' && (
+              <div className="mb-2 mt-4" style={{ padding: '14px 18px', borderLeft: '2px solid rgba(64,192,208,0.3)', background: 'rgba(64,192,208,0.02)' }}>
+                <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '6px' }}>
+                  REGISTER NEW SYSTEM
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.7', marginBottom: '10px' }}>
+                  {item.flowType
+                    ? `Your ${FLOW_TYPE_LABELS[item.flowType]} blueprint is ready to become a registered system.`
+                    : 'Every system in ACCESS receives its own identity — persistent and independent of your account.'
+                  }
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--text)' }}>
+                  What will you call this system?
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Example: JD Productions OS  ·  My Content Machine  ·  Knowledge Base AI
+                </div>
+              </div>
+            )}
+
+            {item.type === 'register-confirm' && (
+              <div className="mb-2 mt-4">
+                <div style={{ fontSize: '9px', letterSpacing: '0.16em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  SYSTEM IDENTITY
+                </div>
+                <div style={{ fontSize: '18px', color: 'var(--accent)', fontWeight: 300, letterSpacing: '0.08em', marginBottom: '10px' }}>
+                  {item.suggestedHandle}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-dim)', lineHeight: '1.7', marginBottom: '8px' }}>
+                  This will be your system's unique identifier inside ACCESS.
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                  Press ENTER to confirm this identity, or type a different name for the handle.
+                </div>
+              </div>
+            )}
+
+            {item.type === 'blueprint' && (() => {
+              const key = `${item.flowType}-${item.answers[0]}`
+              return (
+                <div className="mb-6 mt-4">
+                  <BlueprintDisplay
+                    flowType={item.flowType}
+                    answers={item.answers}
+                    username={username}
+                    savedState={item.dbId ? 'saved' : savedIds.has(item.dbId ?? '') ? 'saved' : 'unsaved'}
+                    copiedState={copiedId === key}
+                    onSave={() => {
+                      if (!item.dbId) handleCommand('/save-blueprint')
+                    }}
+                    onCopy={() => handleCopyBlueprint({ flowType: item.flowType, answers: item.answers })}
+                    onExport={() => handleExportBlueprint({ flowType: item.flowType, answers: item.answers })}
+                    onStartOver={() => handleCommand('/start-over')}
+                    onRegisterSystem={() => handleCommand('/register-system')}
+                  />
+                </div>
+              )
+            })()}
+
+            {item.type === 'system-registered' && (
               <div className="mb-6 mt-4">
-                <BlueprintDisplay
-                  flowType={item.flowType}
-                  answers={item.answers}
-                  username={username}
-                  savedState={savedIds.has(item.id) ? 'saved' : 'unsaved'}
-                  copiedState={copiedId === item.id}
-                  onSave={() => handleSaveBlueprint({ flowType: item.flowType, answers: item.answers, id: item.id })}
-                  onCopy={() => handleCopyBlueprint({ flowType: item.flowType, answers: item.answers, id: item.id })}
-                  onExport={() => handleExportBlueprint({ flowType: item.flowType, answers: item.answers, id: item.id })}
-                  onStartOver={() => {
-                    setFlow(null)
-                    setHistory(prev => [...prev, { type: 'output', command: '/start' }])
-                  }}
-                />
+                <div style={{ borderLeft: '2px solid var(--success)', padding: '14px 18px', background: 'rgba(75,189,160,0.03)' }}>
+                  <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--success)', marginBottom: '12px' }}>
+                    ✓ SYSTEM REGISTERED
+                  </div>
+                  <div style={{ fontSize: '16px', color: 'var(--text)', fontWeight: 500, marginBottom: '14px' }}>
+                    {item.system.name}
+                  </div>
+                  <Row k="System Identity" v={item.system.system_handle} color="var(--accent)" />
+                  <Row k="Owner" v={item.system.owner_handle} color="var(--text-dim)" />
+                  <Row k="Type" v={FLOW_TYPE_LABELS[item.system.type as FlowType]} color="var(--text-dim)" />
+                  <Row k="Status" v="Active" color="var(--success)" />
+                  <Row k="Created" v={new Date(item.system.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} color="var(--text-dim)" />
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '14px', lineHeight: '1.7', fontFamily: 'var(--mono)' }}>
+                    Your system now has a persistent identity inside ACCESS.
+                    Type <span style={{ color: 'var(--accent)' }}>/my-systems</span> to view all registered systems.
+                  </p>
+                </div>
               </div>
             )}
 
             {item.type === 'info' && (
-              <div className="mb-3 text-xs" style={{ color: item.success ? 'var(--success)' : 'var(--text-dim)', paddingLeft: '2px' }}>
+              <div className="mb-3" style={{ color: item.success ? 'var(--success)' : 'var(--text-dim)', fontSize: '12px' }}>
                 {item.text}
               </div>
             )}
 
             {item.type === 'id-card' && (
               <div className="mb-6 mt-4">
-                <AccessIdCard username={username} />
+                <AccessIdCard username={username} connectedSystems={item.systemCount} />
               </div>
             )}
 
@@ -671,28 +902,103 @@ export default function CommandCenter() {
                       <div key={bp.id} style={{ display: 'flex', gap: '16px', padding: '9px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
                         <span style={{ color: 'var(--text-muted)', fontSize: '11px', width: '16px', flexShrink: 0 }}>{idx + 1}</span>
                         <div style={{ flex: 1 }}>
-                          <span style={{ color: 'var(--text)', fontSize: '12px' }}>{bp.label} Blueprint</span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginLeft: '12px' }}>{bp.date}</span>
+                          <span style={{ color: 'var(--text)', fontSize: '12px' }}>{FLOW_TYPE_LABELS[bp.type as FlowType]} Blueprint</span>
+                          {bp.system_id && <span style={{ color: 'var(--accent)', fontSize: '10px', marginLeft: '10px' }}>↗ registered</span>}
+                          <span style={{ color: 'var(--text-muted)', fontSize: '10px', marginLeft: '12px' }}>
+                            {new Date(bp.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </span>
                         </div>
-                        <span style={{ color: 'var(--accent)', fontSize: '10px' }}>/open-blueprint {idx + 1}</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>/open-blueprint {idx + 1}</span>
                       </div>
                     ))}
                     <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '12px', lineHeight: '1.7' }}>
-                      /open-blueprint [n]  to reopen  ·  /delete-blueprint [n]  to remove
+                      /open-blueprint [n]  ·  /delete-blueprint [n]  ·  /register-system to turn into a system
                     </div>
                   </>
                 )}
               </div>
             )}
 
+            {item.type === 'system-list' && (
+              <div className="mb-6 mt-2">
+                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
+                  MY SYSTEMS
+                </div>
+                {item.systems.length === 0 ? (
+                  <div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>
+                      No registered systems yet.
+                    </div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                      Generate a blueprint and type <span style={{ color: 'var(--accent)' }}>/register-system</span> to create your first system.
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {item.systems.map((sys, idx) => (
+                      <div key={sys.id} style={{ padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', alignItems: 'center' }}>
+                          <span style={{ color: 'var(--text)', fontSize: '13px', fontWeight: 500 }}>{sys.name}</span>
+                          <span style={{ color: 'var(--success)', fontSize: '9px', letterSpacing: '0.12em' }}>ACTIVE</span>
+                        </div>
+                        <div style={{ color: 'var(--accent)', fontSize: '11px', marginBottom: '3px' }}>{sys.system_handle}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px' }}>
+                          {FLOW_TYPE_LABELS[sys.type as FlowType]}
+                          {'  ·  '}
+                          {new Date(sys.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '4px' }}>
+                          /open-system {sys.system_handle}
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '12px' }}>
+                      /open-system [handle]  ·  /delete-system [handle]
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {item.type === 'system-detail' && (
+              <div className="mb-6 mt-4">
+                <div style={{ fontSize: '10px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '14px' }}>
+                  SYSTEM
+                </div>
+                <div style={{ fontSize: '16px', color: 'var(--text)', fontWeight: 500, marginBottom: '14px' }}>
+                  {item.system.name}
+                </div>
+                <Row k="System Identity" v={item.system.system_handle} color="var(--accent)" />
+                <Row k="Owner" v={item.system.owner_handle} />
+                <Row k="Type" v={FLOW_TYPE_LABELS[item.system.type as FlowType]} />
+                <Row k="Status" v={item.system.status === 'active' ? 'Active' : item.system.status} color={item.system.status === 'active' ? 'var(--success)' : 'var(--gold)'} />
+                <Row k="Blueprint" v={item.system.blueprint_id ? 'Linked' : 'None'} />
+                <Row k="Network" v="Not yet connected" color="var(--text-muted)" />
+                <Row k="Created" v={new Date(item.system.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} />
+                {item.system.description && (
+                  <div style={{ marginTop: '14px' }}>
+                    <div style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '5px' }}>Description</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-dim)', lineHeight: '1.7' }}>{item.system.description}</div>
+                  </div>
+                )}
+                <div style={{ marginTop: '16px', fontSize: '10px', color: 'var(--text-muted)' }}>
+                  /delete-system {item.system.system_handle}  ·  /register-system to add another
+                </div>
+              </div>
+            )}
+
           </div>
         ))}
 
-        {/* Flow prompt indicator */}
+        {/* Flow indicator */}
         {phase === 'active' && flow && (
-          <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '4px', marginBottom: '4px', letterSpacing: '0.08em' }}>
-            answering question {flow.step + 1} of {FLOW_DEFS[flow.type].questions.length}
-            <span style={{ color: 'rgba(64,192,208,0.4)', marginLeft: '10px' }}>type your answer and press enter</span>
+          <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '4px', marginBottom: '4px', letterSpacing: '0.06em' }}>
+            {flow.kind === 'blueprint'
+              ? `answering question ${flow.step + 1} of ${FLOW_DEFS[flow.type].questions.length}  ·  type your answer`
+              : flow.step === 'name'
+              ? 'registering system  ·  type the system name'
+              : 'confirming system identity  ·  press enter or type a custom name'
+            }
           </div>
         )}
 

@@ -19,6 +19,7 @@ type Props = {
   onCopy: () => void
   onExport: () => void
   onStartOver: () => void
+  onRegisterSystem?: () => void
 }
 
 function deriveSystemName(purpose: string, suffix: string): string {
@@ -246,7 +247,7 @@ NEXT 3 STEPS
 export default function BlueprintDisplay({
   flowType, answers, username,
   savedState, copiedState,
-  onSave, onCopy, onExport, onStartOver,
+  onSave, onCopy, onExport, onStartOver, onRegisterSystem,
 }: Props) {
   const accessId = `${username.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-')}.access`
   const label = FLOW_TYPE_LABELS[flowType]
@@ -415,6 +416,38 @@ export default function BlueprintDisplay({
 
       {/* Action buttons */}
       <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: '18px' }}>
+
+        {/* Register system CTA */}
+        {onRegisterSystem && (
+          <div style={{ marginBottom: '18px', padding: '12px 16px', background: 'rgba(64,192,208,0.03)', border: '1px solid rgba(64,192,208,0.12)', borderRadius: '2px' }}>
+            <div style={{ fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '6px' }}>
+              Ready to make this real?
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--text-dim)', lineHeight: '1.65', marginBottom: '12px' }}>
+              Turn this blueprint into a registered system with its own identity inside ACCESS.
+            </div>
+            <button
+              onClick={onRegisterSystem}
+              style={{
+                background: 'rgba(64,192,208,0.08)',
+                border: '1px solid rgba(64,192,208,0.3)',
+                borderRadius: '2px',
+                padding: '9px 18px',
+                color: 'var(--accent)',
+                fontSize: '11px',
+                letterSpacing: '0.08em',
+                cursor: 'pointer',
+                fontFamily: 'var(--mono)',
+                transition: 'background 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(64,192,208,0.14)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(64,192,208,0.08)')}
+            >
+              /register-system
+            </button>
+          </div>
+        )}
+
         <div style={{ fontSize: '9px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '12px' }}>
           Save or Export
         </div>

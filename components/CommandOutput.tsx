@@ -577,10 +577,15 @@ export default function CommandOutput({ command, userName }: Props) {
     case '/help': {
       const sections: Array<{ heading?: string; cmd?: string; desc?: string }> = [
         { heading: 'Identity' },
-        { cmd: '/my-id',                     desc: 'Your ACCESS ID — username.access format' },
+        { cmd: '/my-id',                     desc: 'Your ACCESS ID — username.access — with system count' },
         { cmd: '/presence',                  desc: 'Your digital presence status in the ecosystem' },
-        { cmd: '/access-id',                 desc: 'Your ACCESS ID and future AI identity' },
         { cmd: '/pathways',                  desc: 'Builder stages: Explore → Learn → Build → Connect → Deploy → Network' },
+        { heading: 'Systems' },
+        { cmd: '/my-systems',                desc: 'All registered systems owned by your ACCESS identity' },
+        { cmd: '/register-system',           desc: 'Register a new system — give it a name and identity' },
+        { cmd: '/open-system [handle]',      desc: 'View system details by handle (e.g. jdproductions.access)' },
+        { cmd: '/system-status [handle]',    desc: 'System status and metadata' },
+        { cmd: '/delete-system [handle]',    desc: 'Archive a registered system' },
         { heading: 'Build' },
         { cmd: '/start',                     desc: 'Choose a path — generates a blueprint via Q&A' },
         { cmd: '/build-ai-system',           desc: 'Generate an AI system blueprint (5 questions)' },
@@ -588,28 +593,28 @@ export default function CommandOutput({ command, userName }: Props) {
         { cmd: '/build-content-system',      desc: 'Generate a content system blueprint (5 questions)' },
         { cmd: '/build-knowledge-system',    desc: 'Generate a knowledge system blueprint (5 questions)' },
         { heading: 'Blueprints' },
-        { cmd: '/my-blueprints',             desc: 'View your saved blueprints' },
-        { cmd: '/save-blueprint',            desc: 'Save current blueprint to ACCESS workspace' },
+        { cmd: '/my-blueprints',             desc: 'View blueprints saved to your ACCESS workspace' },
+        { cmd: '/save-blueprint',            desc: 'Save current blueprint to workspace' },
         { cmd: '/copy-blueprint',            desc: 'Copy current blueprint to clipboard' },
         { cmd: '/export-blueprint',          desc: 'Download current blueprint as .md file' },
-        { cmd: '/start-over',                desc: 'Clear current blueprint flow and choose a new path' },
+        { cmd: '/start-over',                desc: 'Clear current flow and choose a new path' },
         { cmd: '/open-blueprint [n]',        desc: 'Reopen a saved blueprint by number' },
         { cmd: '/delete-blueprint [n]',      desc: 'Delete a saved blueprint by number' },
         { heading: 'Explore' },
         { cmd: '/explore',                   desc: 'Browse systems, blueprints, tools, and frameworks' },
-        { cmd: '/blueprints',                desc: 'Pre-built operating architectures for reference' },
+        { cmd: '/blueprints',                desc: 'Reference blueprints with purpose, stack, next steps' },
         { cmd: '/frameworks',                desc: 'Mental models for thinking and building' },
         { cmd: '/tools',                     desc: 'Every tool in the ecosystem — in plain language' },
         { cmd: '/capabilities',              desc: 'What becomes possible when AI systems are connected' },
         { heading: 'Ecosystem' },
         { cmd: '/jd-ecosystem',              desc: 'Overview of the JD AI System ecosystem' },
-        { cmd: '/systems',                   desc: 'All systems in the ecosystem' },
+        { cmd: '/systems',                   desc: 'All systems in the JD ecosystem' },
         { cmd: '/systems-registry',          desc: 'What a registered AI system looks like (preview)' },
         { cmd: '/network',                   desc: 'Future vision: AI-to-AI network (preview)' },
         { cmd: '/worlds',                    desc: 'All worlds, domains, and their status' },
         { cmd: '/view-stack',                desc: 'Current technology stack' },
         { heading: 'Session' },
-        { cmd: '/connect-ai',                desc: 'Future: connect your own AI system' },
+        { cmd: '/connect-ai',                desc: 'Future: connect your AI system to the network' },
         { cmd: '/help',                      desc: 'Show this reference' },
         { cmd: '/logout',                    desc: 'End session' },
       ]
@@ -621,7 +626,7 @@ export default function CommandOutput({ command, userName }: Props) {
             </div>
           ) : (
             <div key={i} style={{ display: 'flex', gap: '24px', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.03)', alignItems: 'flex-start' }}>
-              <span style={{ color: 'var(--accent)', fontSize: '11px', width: '196px', flexShrink: 0 }}>{s.cmd}</span>
+              <span style={{ color: 'var(--accent)', fontSize: '11px', width: '220px', flexShrink: 0 }}>{s.cmd}</span>
               <span style={{ color: 'var(--text-dim)', fontSize: '11px' }}>{s.desc}</span>
             </div>
           ))}
@@ -629,6 +634,21 @@ export default function CommandOutput({ command, userName }: Props) {
         </Block>
       )
     }
+
+    /* ─── /my-systems ─── */
+    case '/my-systems':
+      return (
+        <Block label="MY SYSTEMS">
+          <Body>
+            Registered systems are persistent digital assets inside ACCESS.
+            Each system has its own identity, independent of your account.
+          </Body>
+          <div style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', marginBottom: '8px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Loading from registry...</div>
+          </div>
+          <Note>Type /my-systems again or /register-system to add your first system.</Note>
+        </Block>
+      )
 
     /* ─── /build-knowledge-system ─── */
     case '/build-knowledge-system':
