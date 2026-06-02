@@ -6,33 +6,27 @@ import { getFounderBlueprint } from '@/lib/actions/founder-blueprint'
 
 export type OnboardingStatus =
   | 'unauthenticated'
-  | 'no_identity'              // signed in, no ACCESS identity row
-  | 'identity_only'            // has identity, no blueprint (Regular User OR Founder not started)
-  | 'founder_blueprint_draft'  // Founder, blueprint saved but not exported
-  | 'founder_ready'            // Founder, blueprint exported/materialized — full access
-  | 'complete'                 // synonym for founder_ready / identity_only (depending on type)
+  | 'no_identity'    // signed in, no ACCESS identity row — must go through onboarding
+  | 'ready'          // has identity — can access dashboard regardless of blueprint state
 
 export type OnboardingState = {
   status: OnboardingStatus
-  /** Route to redirect to — null means the user is good where they are */
-  redirectTo: string | null
+  redirectTo: string
   handle: string | null
   isFounder: boolean
   hasBlueprint: boolean
   blueprintStatus: string | null
-  /** Whether all required setup is done for this account type */
   setupComplete: boolean
 }
 
 /**
- * Determines the current user's onboarding completion state.
- * Used by route guards to redirect first-time or incomplete users.
+ * Routing gate for authenticated users landing on /.
  *
- * Rules:
- * - No identity → /onboarding (must claim handle and select account type)
- * - Has identity, no blueprint → Regular User → dashboard allowed
- * - Has identity, blueprint draft → Founder, must export → /founder
- * - Has identity, blueprint exported/materialized → Founder fully set up → dashboard
+ * One rule: if you have an ACCESS identity, you go to /dashboard.
+ * Blueprint status is never a routing gate — it only affects what the
+ * dashboard and companion show. The wizard is enrichment, not a wall.
+ *
+ * Only no_identity forces /onboarding.
  */
 export async function getOnboardingState(): Promise<OnboardingState> {
   const { userId } = await auth()
@@ -63,44 +57,17 @@ export async function getOnboardingState(): Promise<OnboardingState> {
     }
   }
 
+  // Identity exists — user owns the dashboard regardless of blueprint state
   const blueprint = await getFounderBlueprint()
   const hasBlueprint = !!blueprint?.spec
   const blueprintStatus = blueprint?.spec?.status ?? null
-  const isFounder = hasBlueprint
 
-  if (!hasBlueprint) {
-    // Identity exists, no blueprint — Regular User path or Founder who hasn't started.
-    // Allow dashboard access. Dashboard shows "Start Founder Blueprint" prompt.
-    return {
-      status: 'identity_only',
-      redirectTo: '/dashboard',
-      handle: identity.handle,
-      isFounder: false,
-      hasBlueprint: false,
-      blueprintStatus: null,
-      setupComplete: true,
-    }
-  }
-
-  if (blueprintStatus === 'draft') {
-    return {
-      status: 'founder_blueprint_draft',
-      redirectTo: '/founder',
-      handle: identity.handle,
-      isFounder: true,
-      hasBlueprint: true,
-      blueprintStatus,
-      setupComplete: false,
-    }
-  }
-
-  // Blueprint is exported or materialized — Founder is fully set up
   return {
-    status: 'founder_ready',
-    redirectTo: null,
+    status: 'ready',
+    redirectTo: '/dashboard',
     handle: identity.handle,
-    isFounder: true,
-    hasBlueprint: true,
+    isFounder: hasBlueprint,
+    hasBlueprint,
     blueprintStatus,
     setupComplete: true,
   }
