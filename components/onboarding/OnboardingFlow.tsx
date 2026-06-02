@@ -70,17 +70,14 @@ export default function OnboardingFlow() {
       <div className="founder-wizard founder-wizard--onboarding">
         <div className="founder-wizard-card fade-in">
           <header className="founder-wizard-hero">
-            <h1 className="founder-wizard-hero-title">Welcome to ACCESS</h1>
+            <h1 className="founder-wizard-hero-title">You're gaining access.</h1>
             <p className="founder-wizard-hero-subtitle">
-              Let's set up your account. This takes less than two minutes.
+              ACCESS is the door to AI infrastructure. Tell us how you're coming through it.
             </p>
           </header>
 
           <div className="founder-wizard-section">
-            <h2 className="founder-wizard-section-title">How are you using ACCESS?</h2>
-            <p className="founder-wizard-body">
-              Choose what fits you. This determines how the system is built for you.
-            </p>
+            <h2 className="founder-wizard-section-title">Who are you?</h2>
           </div>
 
           <div className="onboarding-account-types">
@@ -92,8 +89,8 @@ export default function OnboardingFlow() {
               <span className="onboarding-type-glyph">◫</span>
               <span className="onboarding-type-name">Founder</span>
               <span className="onboarding-type-desc">
-                For creators, founders, and business builders. You get a full Founder OS —
-                organizations, products, experiences, and your own JYSON intelligence companion.
+                Creators, founders, and business builders. You get a full Founder OS —
+                your own AI infrastructure, connected systems, and JYSON as your intelligence layer.
               </span>
             </button>
 
@@ -105,8 +102,8 @@ export default function OnboardingFlow() {
               <span className="onboarding-type-glyph">◎</span>
               <span className="onboarding-type-name">User</span>
               <span className="onboarding-type-desc">
-                For everyday users and consumers. Access content, tools, and experiences
-                inside the ACCESS ecosystem.
+                Everyday users and consumers. You gain access to AI-powered tools,
+                content, and experiences built on the ACCESS platform.
               </span>
             </button>
           </div>
