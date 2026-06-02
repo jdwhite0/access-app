@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs'
-import AppSystemNav from '@/components/access/AppSystemNav'
+import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { fetchJysonCompanionContext } from '@/lib/actions/jyson-companion'
 import type { CompanionDiagnostic } from '@/lib/jyson-bridge/companion-diagnostic'
 import type { CompanionWorldDiagnostics } from '@/lib/jyson-bridge/companion-world-diagnostic'
@@ -55,6 +55,9 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
           repairAction: 'repair_connection',
           panelActions: ['retry_loading', 'view_diagnostics'],
           steps: [],
+          cloudReady: false,
+          localReady: false,
+          connectorOnline: false,
         })
         setWorldDiagnostics(null)
       })
@@ -77,14 +80,13 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
 
   if (!isLoaded || loading) {
     return (
-      <div className="jyson-companion">
-        <AppSystemNav active="companion" />
+      <AccessAppLayout variant="companion">
         <div className="jyson-companion jyson-companion--center">
           <p className="jyson-companion-muted">
             Loading your world<span className="cursor" />
           </p>
         </div>
-      </div>
+      </AccessAppLayout>
     )
   }
 
@@ -124,18 +126,27 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
           repairAction: 'repair_connection',
           panelActions: ['generate_access_world', 'retry_loading', 'view_diagnostics'],
           steps: ['Generate ACCESS world', 'Retry loading'],
+          cloudReady: false,
+          localReady: false,
+          connectorOnline: false,
         }}
         onLoaded={handleRepaired}
       />
     )
   }
 
+  // Show cloud/local warning when companion is loaded but local context is pending
+  const localPending =
+    ctx.companionState.status === 'cloud_package_ready' ||
+    ctx.companionState.status === 'local_sync_pending'
+  const agentWarning = localPending
+    ? 'Loaded from cloud. Local Founder OS not yet synced to this machine.'
+    : undefined
+
   return (
     <CompanionLoadedView
       ctx={ctx}
-      agentWarning={
-        diagnostic?.status === 'missing_agent_context' ? diagnostic.message : undefined
-      }
+      agentWarning={agentWarning}
     />
   )
 }
@@ -168,8 +179,8 @@ function CompanionLoadedView({
   const identitySummary = ctx.summary.consumer.split('\n').slice(0, 4).join(' ')
 
   return (
+    <AccessAppLayout variant="companion" userLabel={ctx.handle}>
     <div className="jyson-companion">
-      <AppSystemNav active="companion" accessId={ctx.handle} />
       <header className="jyson-companion-header jyson-companion-header--below-nav">
         <div>
           <p className="jyson-companion-eyebrow">JYSON · COMPANION</p>
@@ -178,12 +189,22 @@ function CompanionLoadedView({
       </header>
 
       <main className="jyson-companion-main fade-in">
-        <section className="jyson-companion-card">
+        <section id="overview" className="jyson-companion-card">
           {agentWarning && (
             <p className="jyson-companion-warn">{agentWarning}</p>
           )}
           <h1 className="jyson-companion-greeting">Hello {firstName}.</h1>
           <p className="jyson-companion-loaded">Your ACCESS world is loaded.</p>
+
+          <div className="jyson-hybrid-state">
+            <span className={`jyson-hybrid-badge ${ctx.companionState.cloudReady ? 'ok' : 'pending'}`}>
+              {ctx.companionState.cloudReady ? '◈ Cloud package ready' : '○ Cloud package pending'}
+            </span>
+            <span className={`jyson-hybrid-badge ${ctx.companionState.localConnected ? 'ok' : 'pending'}`}>
+              {ctx.companionState.localConnected ? '◉ Local OS connected' : '○ Local OS sync pending'}
+            </span>
+          </div>
+
           <p className="jyson-companion-sub">
             JYSON reads your handle and blueprint. ACCESS remains the source of truth.
           </p>
@@ -208,9 +229,17 @@ function CompanionLoadedView({
             </div>
           </div>
 
-          <div className="jyson-companion-block">
+          <div id="memory" className="jyson-companion-block">
             <span className="jyson-companion-label">Identity summary</span>
             <p className="jyson-companion-body">{identitySummary}</p>
+          </div>
+
+          <div id="projects" className="jyson-companion-block">
+            <span className="jyson-companion-label">Projects &amp; catalog</span>
+            <p className="jyson-companion-body muted">
+              {ctx.products.length} products · {ctx.experiences.length} experiences ·{' '}
+              {ctx.organizations.length} organizations
+            </p>
           </div>
 
           <div className="jyson-companion-block">
@@ -245,7 +274,16 @@ function CompanionLoadedView({
             </div>
           </div>
 
-          <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
+          <div id="agents">
+            <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
+          </div>
+
+          <div id="diagnostics" className="jyson-companion-block">
+            <span className="jyson-companion-label">Diagnostics</span>
+            <p className="jyson-companion-body muted">
+              Package {ctx.layers.agentContext ? 'linked' : 'pending'} · Read-only companion mode
+            </p>
+          </div>
 
           <p className="jyson-companion-footnote">
             Read-only companion · Intent routing only · No chat · No LLM · P10
@@ -253,5 +291,6 @@ function CompanionLoadedView({
         </section>
       </main>
     </div>
+    </AccessAppLayout>
   )
 }

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import FounderBlueprintWizard from '@/components/founder/FounderBlueprintWizard'
@@ -21,7 +22,9 @@ export default async function FounderPage() {
           backgroundSize: '48px 48px',
         }}
       />
-      <FounderBlueprintWizard />
+      <Suspense fallback={null}>
+        <FounderBlueprintWizard />
+      </Suspense>
     </div>
   )
 }

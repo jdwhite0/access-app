@@ -22,6 +22,42 @@ export default function AccessOsWorkspace({
   selectedKey,
   onSelectKey,
 }: Props) {
+  if (activeModule === 'dashboard') {
+    return (
+      <section className="access-os-workspace" aria-label="Dashboard">
+        <header className="access-os-workspace-header">
+          <p className="access-os-workspace-eyebrow">ACCESS OS</p>
+          <h1 className="access-os-workspace-title">Dashboard</h1>
+          <p className="access-os-workspace-sub">
+            Your operating surface. Open Registry, Founder, or Companion from the
+            navigation rail.
+          </p>
+        </header>
+        <div className="access-os-placeholder-grid">
+          <a href="/registry" className="access-os-placeholder-card access-os-stat-card">
+            <span className="access-os-placeholder-label">Registry</span>
+            <span className="access-os-placeholder-value">◇</span>
+          </a>
+          <a href="/founder" className="access-os-placeholder-card access-os-stat-card">
+            <span className="access-os-placeholder-label">Founder</span>
+            <span className="access-os-placeholder-value">◫</span>
+          </a>
+          <a href="/companion" className="access-os-placeholder-card access-os-stat-card">
+            <span className="access-os-placeholder-label">Companion</span>
+            <span className="access-os-placeholder-value">◎</span>
+          </a>
+          <a
+            href="/internal/command-center"
+            className="access-os-placeholder-card access-os-stat-card"
+          >
+            <span className="access-os-placeholder-label">Command Center</span>
+            <span className="access-os-placeholder-value">◈</span>
+          </a>
+        </div>
+      </section>
+    )
+  }
+
   if (activeModule !== 'registry') {
     return (
       <section className="access-os-workspace" aria-label="Workspace">

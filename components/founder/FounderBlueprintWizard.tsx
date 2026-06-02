@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useAuth, useClerk, useUser } from '@clerk/nextjs'
-import AppSystemNav from '@/components/access/AppSystemNav'
+import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { getOrCreateIdentity } from '@/lib/actions/identity'
 import {
   exportFounderBlueprintYaml,
@@ -52,6 +53,7 @@ export default function FounderBlueprintWizard() {
   const { isLoaded, isSignedIn } = useAuth()
   const { redirectToSignIn } = useClerk()
   const { user } = useUser()
+  const searchParams = useSearchParams()
 
   const [step, setStep] = useState<WizardStep>('sign-in')
   const [spec, setSpec] = useState<FounderBlueprintSpec | null>(null)
@@ -73,6 +75,17 @@ export default function FounderBlueprintWizard() {
   useEffect(() => {
     setPendingDisplayName(displayNameDefault)
   }, [displayNameDefault])
+
+  useEffect(() => {
+    const stepParam = searchParams.get('step')
+    if (
+      stepParam &&
+      STEPS.includes(stepParam as WizardStep) &&
+      stepParam !== 'sign-in'
+    ) {
+      setStep(stepParam as WizardStep)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (!isLoaded) return
@@ -282,8 +295,8 @@ export default function FounderBlueprintWizard() {
   const navHandle = spec?.founder.access_handle ?? proposedHandle
 
   return (
+    <AccessAppLayout variant="founder" userLabel={navHandle}>
     <div className="founder-wizard">
-      <AppSystemNav active="founder" accessId={navHandle} />
       <header className="founder-wizard-header founder-wizard-header--below-nav">
         <div>
           <p className="founder-wizard-eyebrow">Founder Blueprint</p>
@@ -366,6 +379,7 @@ export default function FounderBlueprintWizard() {
         )}
       </main>
     </div>
+    </AccessAppLayout>
   )
 }
 
@@ -628,8 +642,8 @@ function ReviewStep({
     <section className="founder-wizard-panel">
       <h2 className="founder-wizard-h2">Review your blueprint</h2>
       <p className="founder-wizard-lead">
-        Confirm everything looks right. Save keeps your blueprint in ACCESS. Export downloads a file
-        you can use to generate your Founder OS.
+        Confirm everything looks right. Save keeps your blueprint in ACCESS. Export generates your
+        Founder OS package and opens the path to JYSON Companion.
       </p>
 
       <pre className="founder-wizard-preview">{JSON.stringify(spec, null, 2)}</pre>
@@ -641,25 +655,32 @@ function ReviewStep({
         <p className="founder-wizard-muted">Last exported: {new Date(exportedAt).toLocaleString()}</p>
       )}
       {founderOsReady && (
-        <p className="founder-wizard-status">Founder OS Ready — {founderOsReady}</p>
+        <div className="founder-wizard-os-ready">
+          <p className="founder-wizard-status">Founder OS Ready — package generated.</p>
+          <Link href="/companion" className="auth-primary-btn founder-wizard-cta">
+            Open JYSON Companion →
+          </Link>
+        </div>
       )}
 
-      <div className="founder-wizard-actions">
-        <button type="button" className="founder-wizard-btn-secondary" disabled={busy} onClick={onBack}>
-          Back
-        </button>
-        <button
-          type="button"
-          className="founder-wizard-btn-secondary"
-          disabled={busy}
-          onClick={() => void onSave()}
-        >
-          {busy ? 'Working…' : 'Save'}
-        </button>
-        <button type="button" className="auth-primary-btn" disabled={busy} onClick={() => void onExport()}>
-          {busy ? 'Working…' : 'Export blueprint'}
-        </button>
-      </div>
+      {!founderOsReady && (
+        <div className="founder-wizard-actions">
+          <button type="button" className="founder-wizard-btn-secondary" disabled={busy} onClick={onBack}>
+            Back
+          </button>
+          <button
+            type="button"
+            className="founder-wizard-btn-secondary"
+            disabled={busy}
+            onClick={() => void onSave()}
+          >
+            {busy ? 'Working…' : 'Save'}
+          </button>
+          <button type="button" className="auth-primary-btn" disabled={busy} onClick={() => void onExport()}>
+            {busy ? 'Working…' : 'Export & Generate Founder OS'}
+          </button>
+        </div>
+      )}
     </section>
   )
 }

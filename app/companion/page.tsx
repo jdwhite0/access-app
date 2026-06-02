@@ -1,5 +1,7 @@
+import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import CompanionHashScroll from '@/components/navigation/CompanionHashScroll'
 import JysonCompanionPanel from '@/components/jyson/JysonCompanionPanel'
 import { PRIMARY_TEST_HANDLE } from '@/lib/access-handle/constants'
 import { loadJysonContextFromAccessHandle } from '@/lib/jyson-bridge/load-jyson-context'
@@ -40,7 +42,10 @@ export default async function CompanionPage({ searchParams }: CompanionPageProps
           backgroundSize: '48px 48px',
         }}
       />
-      <JysonCompanionPanel devFixtureContext={devFixtureContext} />
+      <CompanionHashScroll />
+      <Suspense fallback={null}>
+        <JysonCompanionPanel devFixtureContext={devFixtureContext} />
+      </Suspense>
     </div>
   )
 }

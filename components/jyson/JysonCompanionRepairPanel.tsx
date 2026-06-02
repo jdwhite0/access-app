@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import AppSystemNav from '@/components/access/AppSystemNav'
+import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import {
   generateAccessWorld,
   getCompanionDiagnostics,
@@ -80,9 +80,8 @@ export default function JysonCompanionRepairPanel({
     : ['generate_access_world', 'retry_loading', 'view_diagnostics']
 
   return (
-    <div className="jyson-companion">
-      <AppSystemNav active="companion" accessId={diagnostic.handle ?? null} />
-      <div className="jyson-companion jyson-companion--center">
+    <AccessAppLayout variant="companion" userLabel={diagnostic.handle ?? null}>
+    <div className="jyson-companion jyson-companion--center">
       <div className="jyson-companion-card jyson-repair-card fade-in">
         <p className="jyson-companion-eyebrow">JYSON · COMPANION</p>
         <h1 className="jyson-companion-title">{diagnostic.title}</h1>
@@ -193,7 +192,7 @@ export default function JysonCompanionRepairPanel({
           </Link>
         )}
       </div>
-      </div>
     </div>
+    </AccessAppLayout>
   )
 }

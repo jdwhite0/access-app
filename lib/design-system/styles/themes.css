@@ -1,0 +1,90 @@
+/**
+ * ACCESS OS design tokens → CSS variables.
+ * Night is default (:root); day via html[data-theme="day"].
+ */
+
+:root,
+html[data-theme='night'] {
+  --bg: #030303;
+  --bg-elevated: #050505;
+  --surface: #0a0a0a;
+  --surface-raised: #111111;
+  --os-surface: #0a0a0a;
+  --os-surface-raised: #111111;
+  --os-surface-hover: rgba(64, 192, 208, 0.06);
+  --os-border-strong: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f0f0f0;
+  --text-dim: rgba(240, 240, 240, 0.55);
+  --text-muted: rgba(240, 240, 240, 0.28);
+  --accent: #40c0d0;
+  --accent-glow: rgba(64, 192, 208, 0.08);
+  --accent-muted: rgba(64, 192, 208, 0.45);
+  --success: #4abda0;
+  --success-muted: rgba(74, 189, 160, 0.12);
+  --warning: #c9a46a;
+  --warning-muted: rgba(201, 164, 106, 0.1);
+  --error: #e07b52;
+  --error-muted: rgba(224, 123, 82, 0.12);
+  --info: #40c0d0;
+  --info-muted: rgba(64, 192, 208, 0.1);
+  --on-accent: #030303;
+  --gold: #c9a46a;
+  --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --ds-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --ds-shadow-glow: 0 0 24px rgba(64, 192, 208, 0.12);
+  --ds-radius-sm: 2px;
+  --ds-radius-md: 3px;
+  --ds-radius-lg: 6px;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-status-operational: #4abda0;
+  --ds-status-degraded: #c9a46a;
+  --ds-status-blocked: #e07b52;
+  --ds-status-offline: #6b7280;
+  --os-topbar-height: 48px;
+  --os-rail-width: 200px;
+  --os-context-width: 300px;
+  --ds-touch-min: 44px;
+  --mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+}
+
+html[data-theme='day'] {
+  --bg: #e4eaee;
+  --bg-elevated: #dce3e8;
+  --surface: #f2f5f7;
+  --surface-raised: #ffffff;
+  --os-surface: #f2f5f7;
+  --os-surface-raised: #ffffff;
+  --os-surface-hover: rgba(64, 192, 208, 0.1);
+  --os-border-strong: rgba(12, 22, 32, 0.18);
+  --border: rgba(12, 22, 32, 0.12);
+  --text: #0f1419;
+  --text-dim: rgba(15, 20, 25, 0.72);
+  --text-muted: rgba(15, 20, 25, 0.48);
+  --accent: #1a8fa0;
+  --accent-glow: rgba(64, 192, 208, 0.14);
+  --accent-muted: rgba(26, 143, 160, 0.55);
+  --success: #2d8a6e;
+  --success-muted: rgba(45, 138, 110, 0.14);
+  --warning: #9a7b3c;
+  --warning-muted: rgba(154, 123, 60, 0.12);
+  --error: #b85a3a;
+  --error-muted: rgba(184, 90, 58, 0.12);
+  --info: #1a8fa0;
+  --info-muted: rgba(64, 192, 208, 0.12);
+  --on-accent: #ffffff;
+  --gold: #9a7b3c;
+  --ds-shadow-sm: 0 2px 8px rgba(12, 22, 32, 0.08);
+  --ds-shadow-md: 0 8px 24px rgba(12, 22, 32, 0.1);
+  --ds-shadow-glow: 0 0 20px rgba(64, 192, 208, 0.15);
+  --ds-status-operational: #2d8a6e;
+  --ds-status-degraded: #9a7b3c;
+  --ds-status-blocked: #b85a3a;
+  --ds-status-offline: #64748b;
+}

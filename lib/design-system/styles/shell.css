@@ -1,0 +1,229 @@
+/* ACCESS OS — design system shell + mobile */
+
+.access-ds-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100dvh;
+  background: var(--bg);
+  font-family: var(--mono);
+}
+
+.access-ds-shell__topbar {
+  flex-shrink: 0;
+  min-height: var(--os-topbar-height);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding: 0 var(--ds-space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--os-surface);
+}
+
+.access-ds-shell__topbar-inner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.access-ds-shell__body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--os-rail-width) minmax(0, 1fr);
+}
+
+.access-ds-shell__body--with-context {
+  grid-template-columns: var(--os-rail-width) minmax(0, 1fr) var(--os-context-width);
+}
+
+.access-ds-shell__rail {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--os-surface);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.access-ds-shell__main {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--ds-space-6) var(--ds-space-8) 40px;
+  background: var(--bg);
+}
+
+.access-ds-shell__context {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--os-surface);
+  overflow-y: auto;
+  min-width: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.access-ds-shell__mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ds-touch-min);
+  min-height: var(--ds-touch-min);
+  margin-right: var(--ds-space-2);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--ds-radius-md);
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.access-ds-shell__backdrop {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  :root,
+  html[data-theme='night'],
+  html[data-theme='day'] {
+    --os-context-width: 260px;
+    --os-rail-width: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root,
+  html[data-theme='night'],
+  html[data-theme='day'] {
+    --os-rail-width: min(280px, 85vw);
+  }
+
+  .access-ds-shell__mobile-toggle {
+    display: inline-flex;
+  }
+
+  .access-ds-shell__body,
+  .access-ds-shell__body--with-context {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  .access-ds-shell__rail {
+    position: fixed;
+    top: var(--os-topbar-height);
+    left: 0;
+    bottom: 0;
+    width: var(--os-rail-width);
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--ds-shadow-md);
+  }
+
+  .access-ds-shell.is-rail-open .access-ds-shell__rail {
+    transform: translateX(0);
+  }
+
+  .access-ds-shell__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: var(--os-topbar-height);
+    z-index: 35;
+    background: var(--ds-overlay, rgba(3, 3, 3, 0.55));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  html[data-theme='day'] .access-ds-shell__backdrop {
+    --ds-overlay: rgba(15, 20, 25, 0.35);
+  }
+
+  .access-ds-shell.is-rail-open .access-ds-shell__backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .access-ds-shell__main {
+    padding: var(--ds-space-5) var(--ds-space-4) 32px;
+  }
+
+  .access-ds-shell__context {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: min(40vh, 280px);
+  }
+
+  .access-ds-shell__body--with-context {
+    grid-template-rows: 1fr auto;
+  }
+
+  .access-ds-shell__body--with-context .access-ds-shell__context {
+    grid-column: 1;
+  }
+
+  /* Legacy access-os-shell mobile parity */
+  .access-os-shell .access-os-rail-item,
+  .access-ds-nav-item {
+    min-height: var(--ds-touch-min);
+    padding: 12px 14px;
+  }
+
+  .access-os-workspace,
+  .access-ds-shell__main {
+    padding: var(--ds-space-5) var(--ds-space-4) 32px;
+  }
+
+  .access-os-topbar,
+  .access-ds-shell__topbar {
+    padding: 0 var(--ds-space-4);
+  }
+
+  .access-os-body {
+    grid-template-columns: 1fr;
+  }
+
+  .access-os-rail {
+    position: fixed;
+    top: var(--os-topbar-height);
+    left: 0;
+    bottom: 0;
+    width: min(280px, 85vw);
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--ds-shadow-md);
+  }
+
+  .access-os-shell.access-os-rail-open .access-os-rail {
+    transform: translateX(0);
+  }
+
+  .access-os-shell .access-os-rail-title,
+  .access-os-shell.access-os-rail-open .access-os-rail-title,
+  .access-os-shell .access-os-rail-label,
+  .access-os-shell.access-os-rail-open .access-os-rail-label,
+  .access-os-shell .access-os-rail-soon,
+  .access-os-shell.access-os-rail-open .access-os-rail-soon {
+    display: block;
+  }
+
+  @media (max-width: 1024px) {
+    .access-os-shell:not(.access-os-rail-open) .access-os-rail-title,
+    .access-os-shell:not(.access-os-rail-open) .access-os-rail-label,
+    .access-os-shell:not(.access-os-rail-open) .access-os-rail-soon {
+      display: none;
+    }
+  }
+}

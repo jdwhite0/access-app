@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
+import AccessUniversalShell from '@/components/navigation/AccessUniversalShell'
 import AccessOsLeftRail from './AccessOsLeftRail'
 import AccessOsWorkspace from './AccessOsWorkspace'
 import AccessOsContextPanel from './AccessOsContextPanel'
@@ -9,9 +10,13 @@ import { useRegistryData } from './useRegistryData'
 import type { OsModuleId } from './types'
 import type { RegistryRowKey } from './registry-types'
 
-export default function AccessOsShell() {
+type AccessOsShellProps = {
+  initialModule?: OsModuleId
+}
+
+export default function AccessOsShell({ initialModule = 'dashboard' }: AccessOsShellProps) {
   const { user, isLoaded } = useUser()
-  const [activeModule, setActiveModule] = useState<OsModuleId>('registry')
+  const [activeModule, setActiveModule] = useState<OsModuleId>(initialModule)
   const [selectedKey, setSelectedKey] = useState<RegistryRowKey | null>(null)
 
   const { summary, loading, identityError, accessId } = useRegistryData(user, isLoaded)
@@ -25,40 +30,32 @@ export default function AccessOsShell() {
   const topbarUser = summary?.identityHandle ?? accessId ?? displayName ?? 'Operator'
 
   return (
-    <div className="access-os-shell">
-      <header className="access-os-topbar">
-        <div className="access-os-topbar-trail">
-          <span className="access-os-topbar-root">JD AI Systems</span>
-          <span className="access-os-topbar-sep" aria-hidden>
-            /
-          </span>
-          <span className="access-os-topbar-current">ACCESS OS</span>
-          <span className="access-os-topbar-badge">Live</span>
-        </div>
-        <div className="access-os-topbar-meta">
-          <span className="access-os-topbar-user">
-            {isLoaded ? topbarUser : '…'}
-          </span>
-        </div>
-      </header>
-
-      <div className="access-os-body">
-        <AccessOsLeftRail activeModule={activeModule} onSelect={setActiveModule} />
-        <AccessOsWorkspace
-          activeModule={activeModule}
-          summary={summary}
-          loading={loading}
-          identityError={identityError}
-          selectedKey={selectedKey}
-          onSelectKey={setSelectedKey}
-        />
-        <AccessOsContextPanel
-          summary={summary}
-          loading={loading}
-          identityError={identityError}
-          selectedKey={selectedKey}
-        />
-      </div>
-    </div>
+    <AccessUniversalShell
+      userLabel={isLoaded ? topbarUser : '…'}
+      moduleSlot={
+        activeModule === 'registry' ? (
+          <AccessOsLeftRail activeModule={activeModule} onSelect={setActiveModule} />
+        ) : null
+      }
+      context={
+        activeModule === 'registry' ? (
+          <AccessOsContextPanel
+            summary={summary}
+            loading={loading}
+            identityError={identityError}
+            selectedKey={selectedKey}
+          />
+        ) : null
+      }
+    >
+      <AccessOsWorkspace
+        activeModule={activeModule}
+        summary={summary}
+        loading={loading}
+        identityError={identityError}
+        selectedKey={selectedKey}
+        onSelectKey={setSelectedKey}
+      />
+    </AccessUniversalShell>
   )
 }

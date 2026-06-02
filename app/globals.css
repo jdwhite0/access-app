@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "../lib/design-system/styles/themes.css";
+@import "../lib/design-system/styles/components.css";
+@import "../lib/design-system/styles/shell.css";
+@import "../lib/navigation/styles/access-nav.css";
 
 :root {
   --bg:           #030303;
@@ -23,6 +27,15 @@ html, body {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  body:has(.access-os-shell),
+  body:has(.access-ds-shell) {
+    overflow: auto;
+    height: auto;
+    min-height: 100dvh;
+  }
 }
 
 @keyframes blink {
@@ -1723,6 +1736,81 @@ html, body {
   letter-spacing: 0.04em;
 }
 
+/* ── Topbar navigation links ──────────────────────────── */
+.access-os-topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+}
+
+.access-os-topbar-nav-link {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.access-os-topbar-nav-link:hover {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.25);
+  background: rgba(64, 192, 208, 0.04);
+}
+
+/* ── Topbar sign-out button ───────────────────────────── */
+.access-os-topbar-signout {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.access-os-topbar-signout:hover {
+  color: var(--text);
+  border-color: rgba(240, 240, 240, 0.2);
+}
+
+/* ── AppSystemNav sign-out button ─────────────────────── */
+.app-system-nav-signout {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: color 0.15s, border-color 0.15s;
+  margin-left: 8px;
+}
+
+.app-system-nav-signout:hover {
+  color: var(--text);
+  border-color: rgba(240, 240, 240, 0.2);
+}
+
+@media (max-width: 640px) {
+  .access-os-topbar-nav {
+    display: none;
+  }
+}
+
 .access-os-body {
   flex: 1;
   min-height: 0;
@@ -2096,16 +2184,79 @@ html, body {
   }
 }
 
-@media (max-width: 768px) {
-  .access-os-body {
-    grid-template-columns: var(--os-rail-width) minmax(0, 1fr);
-    grid-template-rows: 1fr auto;
-  }
+/* Mobile shell layout: lib/design-system/styles/shell.css */
 
-  .access-os-context {
-    grid-column: 1 / -1;
-    border-left: none;
-    border-top: 1px solid var(--border);
-    max-height: 220px;
-  }
+/* ── Onboarding account type selection ──────────────────────────────────── */
+.onboarding-account-types {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.onboarding-type-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary, #e2e8f0);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.onboarding-type-card:hover {
+  border-color: var(--accent, rgba(64,192,208,0.5));
+}
+
+.onboarding-type-card.is-selected {
+  border-color: var(--accent, #40c0d0);
+  background: rgba(64,192,208,0.06);
+}
+
+.onboarding-type-glyph {
+  font-size: 1.25rem;
+  opacity: 0.7;
+}
+
+.onboarding-type-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.onboarding-type-desc {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+/* ── JYSON hybrid state badges ──────────────────────────────────────────── */
+.jyson-hybrid-state {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.jyson-hybrid-badge {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.jyson-hybrid-badge.ok {
+  color: var(--accent, #40c0d0);
+  border-color: var(--accent, #40c0d0);
+  opacity: 0.85;
+}
+
+.jyson-hybrid-badge.pending {
+  color: var(--text-muted, #64748b);
+  border-color: var(--border, rgba(255,255,255,0.15));
 }

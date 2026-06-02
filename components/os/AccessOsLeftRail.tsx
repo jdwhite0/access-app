@@ -9,14 +9,8 @@ type Props = {
 
 export default function AccessOsLeftRail({ activeModule, onSelect }: Props) {
   return (
-    <nav className="access-os-rail" aria-label="ACCESS modules">
-      <div className="access-os-rail-brand">
-        <span className="access-os-rail-mark" aria-hidden>
-          ◈
-        </span>
-        <span className="access-os-rail-title">ACCESS</span>
-      </div>
-
+    <div className="access-os-module-rail" aria-label="Registry modules">
+      <p className="access-nav-section-label">Registry</p>
       <ul className="access-os-rail-list">
         {OS_MODULES.map((mod) => {
           const isActive = mod.id === activeModule
@@ -54,6 +48,6 @@ export default function AccessOsLeftRail({ activeModule, onSelect }: Props) {
           )
         })}
       </ul>
-    </nav>
+    </div>
   )
 }
