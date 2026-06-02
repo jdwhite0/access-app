@@ -73,7 +73,7 @@ export async function getOnboardingState(): Promise<OnboardingState> {
     // Allow dashboard access. Dashboard shows "Start Founder Blueprint" prompt.
     return {
       status: 'identity_only',
-      redirectTo: null,
+      redirectTo: '/dashboard',
       handle: identity.handle,
       isFounder: false,
       hasBlueprint: false,
