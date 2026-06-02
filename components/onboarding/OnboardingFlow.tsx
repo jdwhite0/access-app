@@ -77,9 +77,9 @@ export default function OnboardingFlow() {
           </header>
 
           <div className="founder-wizard-section">
-            <h2 className="founder-wizard-section-title">Who are you in ACCESS?</h2>
+            <h2 className="founder-wizard-section-title">How are you using ACCESS?</h2>
             <p className="founder-wizard-body">
-              Your account type determines how ACCESS works for you.
+              Choose what fits you. This determines how the system is built for you.
             </p>
           </div>
 
@@ -92,7 +92,8 @@ export default function OnboardingFlow() {
               <span className="onboarding-type-glyph">◫</span>
               <span className="onboarding-type-name">Founder</span>
               <span className="onboarding-type-desc">
-                Build your digital empire. Define your organizations, products, and experiences. Power JYSON Companion.
+                For creators, founders, and business builders. You get a full Founder OS —
+                organizations, products, experiences, and your own JYSON intelligence companion.
               </span>
             </button>
 
@@ -102,9 +103,10 @@ export default function OnboardingFlow() {
               onClick={() => setAccountType('user')}
             >
               <span className="onboarding-type-glyph">◎</span>
-              <span className="onboarding-type-name">Regular User</span>
+              <span className="onboarding-type-name">User</span>
               <span className="onboarding-type-desc">
-                Use ACCESS to manage systems, track projects, and connect your digital world.
+                For everyday users and consumers. Access content, tools, and experiences
+                inside the ACCESS ecosystem.
               </span>
             </button>
           </div>
@@ -149,7 +151,7 @@ export default function OnboardingFlow() {
         <div className="founder-wizard-id-block">
           <span className="founder-wizard-label">Account type</span>
           <p className="founder-wizard-id-value">
-            {accountType === 'founder' ? 'Founder' : 'Regular User'}
+            {accountType === 'founder' ? 'Founder' : 'User'}
           </p>
         </div>
 
