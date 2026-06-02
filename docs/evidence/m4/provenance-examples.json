@@ -1,0 +1,62 @@
+[
+  {
+    "id": "87181898-7009-49fe-abfa-6f7229066419",
+    "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+    "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+    "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+    "source_ref": "28be3a89534d8e3b8bdba21cc3b83974",
+    "source_path": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
+    "source_vault_key": "primary_vault",
+    "content_hash": "ded76dc318ef5f37f29284751777fd83f9e601f5e1900c62199341a886a3d70a",
+    "sync_version": 1,
+    "last_synced_at": "2026-06-02T19:08:05.665+00:00"
+  },
+  {
+    "id": "7b3135e9-f65a-4ee2-9c75-a0ac32b6d9e5",
+    "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+    "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+    "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+    "source_ref": "c8dea8fdc191ca07629313c440c520ee",
+    "source_path": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
+    "source_vault_key": "JD_AI_System",
+    "content_hash": "324efb1a7e410da117f8e8c326050bbeb3c9c7abdf4d496e394eca6381487417",
+    "sync_version": 1,
+    "last_synced_at": "2026-06-02T19:10:14.91+00:00"
+  },
+  {
+    "id": "c21136d8-b359-49e8-ac97-e535220c4583",
+    "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+    "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+    "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+    "source_ref": "0c83fa776701606704aec60ad354bfef",
+    "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-VAULT-ARCHITECTURE.md",
+    "source_vault_key": "primary_vault",
+    "content_hash": "cadf3fa6ba3dd04971f48b42618e1e43dd7af4ce64b5ad7286ab8f4c344546df",
+    "sync_version": 1,
+    "last_synced_at": "2026-06-02T19:08:06.219+00:00"
+  },
+  {
+    "id": "fc001430-c3d4-4034-acbc-a8b5a3de6bdb",
+    "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+    "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+    "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+    "source_ref": "4274e1f7e546962ed921a4925dd78d41",
+    "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV.md",
+    "source_vault_key": "JD_AI_System",
+    "content_hash": "8cd82de6474f1098697b33f9202c86ad1b2d513d8248a6088b4cef48fbb03117",
+    "sync_version": 1,
+    "last_synced_at": "2026-06-02T19:10:15.18+00:00"
+  },
+  {
+    "id": "3344084f-56dc-4e48-8255-d9b82246ac8a",
+    "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+    "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+    "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+    "source_ref": "710f657f1b505d8211b7466613d1314d",
+    "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-FRANCHISE-ROADMAP.md",
+    "source_vault_key": "JD_AI_System",
+    "content_hash": "0d555077591c994080784e82497b947830d4e405cf4728c0048e9f7094759f8a",
+    "sync_version": 1,
+    "last_synced_at": "2026-06-02T19:10:15.047+00:00"
+  }
+]

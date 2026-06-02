@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export { classifiedErrorResponse } from './platform-response'
+
 export function jsonOk<T>(body: T, status = 200) {
   return NextResponse.json(body, { status })
 }

@@ -77,7 +77,11 @@ async function probeRpc(
   fn: string,
   args: Record<string, unknown>
 ): Promise<StepResult> {
-  const { error } = await supabase.rpc(fn, args)
+  // Dynamic RPC probe — not in generated Database types
+  const client = supabase as unknown as {
+    rpc: (n: string, a: Record<string, unknown>) => Promise<{ error: { message?: string; code?: string } | null }>
+  }
+  const { error } = await client.rpc(fn, args)
   const msg = error?.message ?? ''
   if (
     error &&
@@ -136,14 +140,20 @@ async function main() {
     }
     log('connector registered: FAIL (no token file)')
   } else {
-    tokenData = JSON.parse(readFileSync(tokenPath, 'utf8'))
-    const exp = tokenData.expiresAt ? new Date(tokenData.expiresAt).getTime() : 0
+    const parsed = JSON.parse(readFileSync(tokenPath, 'utf8')) as {
+      deviceId: string
+      token: string
+      permissions?: string[]
+      expiresAt?: string
+    }
+    tokenData = parsed
+    const exp = parsed.expiresAt ? new Date(parsed.expiresAt).getTime() : 0
     const expired = exp > 0 && exp < Date.now()
     report['1_connector_registered'] = expired
       ? { pass: false, blocker: 'Device token expired — re-register' }
       : {
           pass: true,
-          detail: `deviceId=${tokenData.deviceId}, permissions=${(tokenData.permissions ?? []).join(',')}`,
+          detail: `deviceId=${parsed.deviceId}, permissions=${(parsed.permissions ?? []).join(',')}`,
         }
     log(`connector registered: ${expired ? 'FAIL (expired)' : 'OK'}`)
   }

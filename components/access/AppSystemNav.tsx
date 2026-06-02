@@ -1,23 +1,25 @@
 'use client'
 
 import Link from 'next/link'
+import { useClerk } from '@clerk/nextjs'
 
 const JYSON_URL = process.env.NEXT_PUBLIC_JYSON_URL ?? 'https://jyson.vercel.app'
 
 export type AppNavSection = 'terminal' | 'founder' | 'companion' | 'project'
 
 type NavItem = {
-  id: AppNavSection | 'jyson-external'
+  id: AppNavSection | 'jyson-external' | 'command-center'
   label: string
   href: string
   external?: boolean
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'terminal', label: 'Terminal', href: '/' },
+  { id: 'terminal', label: 'Dashboard', href: '/' },
   { id: 'founder', label: 'Blueprint', href: '/founder' },
   { id: 'companion', label: 'Companion', href: '/companion' },
-  { id: 'jyson-external', label: 'JYSON Portal', href: JYSON_URL, external: true },
+  { id: 'command-center', label: 'System', href: '/internal/command-center' },
+  { id: 'jyson-external', label: 'JYSON', href: JYSON_URL, external: true },
 ]
 
 type AppSystemNavProps = {
@@ -28,6 +30,8 @@ type AppSystemNavProps = {
 }
 
 export default function AppSystemNav({ active, accessId, compact = false }: AppSystemNavProps) {
+  const { signOut } = useClerk()
+
   return (
     <header
       className={`app-system-nav${compact ? ' app-system-nav--compact' : ''}`}
@@ -45,7 +49,7 @@ export default function AppSystemNav({ active, accessId, compact = false }: AppS
 
       <nav className="app-system-nav-links">
         {NAV_ITEMS.map((item) => {
-          const isActive = item.id === active
+          const isActive = item.id === active || (item.id === 'terminal' && active === 'terminal')
           const className = `app-system-nav-link${isActive ? ' is-active' : ''}`
 
           if (item.external) {
@@ -73,12 +77,21 @@ export default function AppSystemNav({ active, accessId, compact = false }: AppS
         })}
       </nav>
 
-      {accessId && (
-        <div className="app-system-nav-meta">
-          <span className="app-system-nav-meta-label">id</span>
-          <span className="app-system-nav-meta-value">{accessId}</span>
-        </div>
-      )}
+      <div className="app-system-nav-meta">
+        {accessId && (
+          <>
+            <span className="app-system-nav-meta-label">id</span>
+            <span className="app-system-nav-meta-value">{accessId}</span>
+          </>
+        )}
+        <button
+          type="button"
+          className="app-system-nav-signout"
+          onClick={() => signOut({ redirectUrl: '/' })}
+        >
+          Sign out
+        </button>
+      </div>
     </header>
   )
 }

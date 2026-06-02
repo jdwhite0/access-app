@@ -1,29 +1,39 @@
 {
   "mode": "sync-plan",
-  "generatedAt": "2026-06-02T04:51:05.615Z",
-  "identityHandle": "jerry.access",
+  "generatedAt": "2026-06-02T19:10:13.382Z",
+  "identityHandle": "jdevinwhite2.access",
   "vaultKey": "JD_AI_System",
   "applyToCloud": false,
   "planned": [
     {
-      "objectType": "blueprint",
+      "objectType": "project",
       "action": "would_upsert",
-      "name": "schema",
-      "sourcePath": ".audit/access-app/supabase/schema.sql",
-      "sourceRef": "74e04158fa50ba5276057d9b604a3c79",
+      "name": "ACCESS",
+      "sourcePath": "JD Command Vault/projects/ACCESS/_START_HERE.md",
+      "sourceRef": "8c6bb9ce4788b5981357a3709779dbe3",
       "sourceKind": "vault_import",
-      "reason": "Schema reference (metadata only)",
-      "contentHash": "8b9c02d2afa09f0a840f82423aec5a91980f8012f12c715fbe9cb500cc676f18"
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "bea2a9641bcaf50b05b782936e66e1392e25ac1bddf04edde397d203f8100675"
     },
     {
-      "objectType": "blueprint",
+      "objectType": "project",
       "action": "would_upsert",
-      "name": "schema_v2",
-      "sourcePath": ".audit/access-app/supabase/schema_v2.sql",
-      "sourceRef": "c5acf1de28ddd76a91af24b8d2a3b8ca",
+      "name": "Bridge_Video",
+      "sourcePath": "JD Command Vault/projects/Bridge_Video/_START_HERE.md",
+      "sourceRef": "793de613be4441f953df01618268d825",
       "sourceKind": "vault_import",
-      "reason": "Schema reference (metadata only)",
-      "contentHash": "3f1423283a40b36d384e41a9d86fe428dc2fe4bbe4f8eaba0c57a4703d4fa092"
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "2b82ee71e603ac0e18a024fee91a61b908449a74be72a34e4e6cbaaff0e7a904"
+    },
+    {
+      "objectType": "project",
+      "action": "would_upsert",
+      "name": "Forever_Thriven",
+      "sourcePath": "JD Command Vault/projects/Forever_Thriven/_START_HERE.md",
+      "sourceRef": "179a6b8316912ed1207d8b98755c289c",
+      "sourceKind": "vault_import",
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "ce600058875e85682a379cf8d46ca670df92e9ce0c0690d9b8d7571fe77d119d"
     },
     {
       "objectType": "system",
@@ -34,6 +44,16 @@
       "sourceKind": "vault_import",
       "contentHash": "324efb1a7e410da117f8e8c326050bbeb3c9c7abdf4d496e394eca6381487417",
       "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "project",
+      "action": "would_upsert",
+      "name": "JYSON",
+      "sourcePath": "JD Command Vault/projects/JYSON/_START_HERE.md",
+      "sourceRef": "12cef4404e4c6b38160445c0d7625d85",
+      "sourceKind": "vault_import",
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "da23f1e45f16853ff03831e4ff6961cb59882eb28b5dfeecabe588262e36c11c"
     },
     {
       "objectType": "system",
@@ -96,6 +116,16 @@
       "contentHash": "30db526e34056145c526a258b2d70aaaf67819d4bb2804212c311b950e15b23a"
     },
     {
+      "objectType": "project",
+      "action": "would_upsert",
+      "name": "White_Lane",
+      "sourcePath": "JD Command Vault/projects/White_Lane/_START_HERE.md",
+      "sourceRef": "e980ae94b35a1087045772cd3c4df6b3",
+      "sourceKind": "vault_import",
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "880e8f1922dd3045a233ba5e2fe1d4ff9768afe3689e96b6f38f9c5531411b7e"
+    },
+    {
       "objectType": "blueprint",
       "action": "would_upsert",
       "name": "schema",
@@ -143,7 +173,7 @@
       "sourceRef": "82edd9a97da9d1bfa11abe1783285330",
       "sourceKind": "vault_import",
       "reason": "Schema reference (metadata only)",
-      "contentHash": "0d78827b44a45e47b4f0a49c2aea824328e05060c3096dd99a75a4146771daaf"
+      "contentHash": "ce93b93894181aefb424e4a3cf8e67fd28ffd2b64b888079efda6b04bd01c897"
     },
     {
       "objectType": "blueprint",
@@ -154,6 +184,26 @@
       "sourceKind": "vault_import",
       "reason": "Schema reference (metadata only)",
       "contentHash": "0c947cee472258b355291f49643c4d88517125293c4a4b41c1e402cb7fdca0eb"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema",
+      "sourcePath": "archive/audit-access-app-2026-06-02/supabase/schema.sql",
+      "sourceRef": "65c821814c579ec6cbec33167741badd",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "dde5465a92bd02fe632968656fdb281a16035ad4e3430cc3e84eefe77dfdd5e9"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v2",
+      "sourcePath": "archive/audit-access-app-2026-06-02/supabase/schema_v2.sql",
+      "sourceRef": "0b44a5bb7e25a71479bd085ffa1f23b2",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "d932e9fe7f1f74e91196d99e2ad1614d0a469fa338b2cdff3af9acd24a1e8006"
     },
     {
       "objectType": "agent",
@@ -278,12 +328,12 @@
   ],
   "counts": {
     "system": 5,
-    "project": 2,
+    "project": 7,
     "agent": 1,
     "blueprint": 8,
     "workflow": 2,
     "asset": 1,
     "offer": 8,
-    "skip": 826
+    "skip": 971
   }
 }

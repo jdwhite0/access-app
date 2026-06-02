@@ -1,0 +1,19 @@
+{
+  "id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+  "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+  "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+  "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+  "run_type": "connector_apply",
+  "status": "completed",
+  "started_at": "2026-06-02T19:10:14.607224+00:00",
+  "completed_at": "2026-06-02T19:10:16.93+00:00",
+  "stats": {
+    "errors": 0,
+    "skipped": 0,
+    "upserted": 32,
+    "conflicts": 0,
+    "rollbackSnapshots": 0
+  },
+  "error_message": null,
+  "created_at": "2026-06-02T19:10:14.607224+00:00"
+}

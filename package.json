@@ -25,7 +25,10 @@
     "platform:verify-m0": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-platform-m0.ts",
     "e2e:m4": "node scripts/preflight-access-app-root.mjs && tsx scripts/e2e-m4-vault-sync.ts",
     "m4:validate": "node scripts/preflight-access-app-root.mjs && tsx scripts/m4-full-validation.ts",
-    "m4:dry-run": "node scripts/preflight-access-app-root.mjs && tsx scripts/m4-dry-run.ts"
+    "m4:dry-run": "node scripts/preflight-access-app-root.mjs && tsx scripts/m4-dry-run.ts",
+    "platform-health:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-platform-health.ts",
+    "registry:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-canonical-registry.ts",
+    "status-page:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-status-page.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.4.2",

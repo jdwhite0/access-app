@@ -1,0 +1,14 @@
+{
+  "id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+  "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+  "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+  "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+  "status": "active",
+  "token_jti": "840b498e-44b4-43b9-bdcc-7da798f17e66",
+  "permissions": [
+    "heartbeat",
+    "sync:apply",
+    "sync:enqueue"
+  ],
+  "last_seen_at": "2026-06-02T19:10:10.768+00:00"
+}

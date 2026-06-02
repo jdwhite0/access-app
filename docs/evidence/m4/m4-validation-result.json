@@ -7,13 +7,610 @@
     },
     "0_api_reachable": {
       "status": 200,
-      "url": "http://localhost:3000"
+      "url": "https://app-iota-inky-62.vercel.app"
     },
-    "registry_before": null,
+    "registry_before": {
+      "counts": {
+        "agents": 1,
+        "assets": 1,
+        "offers": 8,
+        "vaults": 0,
+        "systems": 5,
+        "projects": 7,
+        "workflows": 2,
+        "blueprints": 8,
+        "connections": 2
+      },
+      "syncStatus": "never",
+      "identityHandle": "jdevinwhite2.access",
+      "registryCounts": {
+        "agents": 1,
+        "assets": 1,
+        "offers": 8,
+        "vaults": 0,
+        "systems": 5,
+        "projects": 7,
+        "workflows": 2,
+        "blueprints": 8,
+        "connections": 2
+      },
+      "vaultConnection": {
+        "status": "connected",
+        "vaultKey": "JD_AI_System",
+        "lastSeenAt": "2026-06-02T19:09:04.236+00:00",
+        "lastSyncAt": null,
+        "displayName": "JD_AI_System Intelligence Vault",
+        "connectorType": "local_connector",
+        "lastSyncStatus": null
+      },
+      "connectionsCount": 2,
+      "identityCreatedAt": "2026-06-02T02:53:31.313836+00:00"
+    },
     "1_2_3_device_register": {
-      "ok": false,
-      "stdout": "{\n  \"ok\": false,\n  \"error\": \"Invalid or expired pairing code.\"\n}\n"
+      "ok": true,
+      "stdout": "{\n  \"ok\": true,\n  \"error\": null\n}\n"
+    },
+    "3_jwt_heartbeat": {
+      "status": 200,
+      "ok": true
+    },
+    "4_scan": {
+      "ok": true
+    },
+    "5_compile": {
+      "ok": true
+    },
+    "6_sync_plan": {
+      "ok": true
+    },
+    "7_apply": {
+      "ok": true
+    },
+    "10_sync_run": {
+      "id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+      "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+      "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+      "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+      "run_type": "connector_apply",
+      "status": "completed",
+      "started_at": "2026-06-02T19:10:14.607224+00:00",
+      "completed_at": "2026-06-02T19:10:16.93+00:00",
+      "stats": {
+        "errors": 0,
+        "skipped": 0,
+        "upserted": 32,
+        "conflicts": 0,
+        "rollbackSnapshots": 0
+      },
+      "error_message": null,
+      "created_at": "2026-06-02T19:10:14.607224+00:00"
+    },
+    "audit_trail": [
+      {
+        "id": "b1671129-b6f8-4bc8-87e2-bc0ad84f79a3",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "run_completed",
+        "object_type": null,
+        "source_ref": null,
+        "payload": {
+          "errors": 0,
+          "skipped": 0,
+          "upserted": 32,
+          "conflicts": 0
+        },
+        "created_at": "2026-06-02T19:10:16.994888+00:00"
+      },
+      {
+        "id": "9b934f8b-65a4-40d0-ba2e-ee8cadfcf5ba",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "196ae48c2c3f5ea37b8dfbecc93cc103",
+        "payload": {
+          "id": "d6139deb-83b1-4085-93ed-14ae333913d9",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.926888+00:00"
+      },
+      {
+        "id": "cca22821-a170-4285-9171-18e9a37a25f1",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "08d9b232f52acbf50ea6217a8b05e4c7",
+        "payload": {
+          "id": "dde85eb2-9882-49ed-8eb3-865a91b94068",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.861293+00:00"
+      },
+      {
+        "id": "7853ef61-80a1-444b-bc64-3e50fd799551",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "6106453921df74cd943aea3487d59f2b",
+        "payload": {
+          "id": "cdeec7f0-e524-426c-8139-fcd6a6fbe8e9",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.764831+00:00"
+      },
+      {
+        "id": "b40d207b-ceff-4f18-9f99-f844db813527",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "f26e4f45c10883179c453aee592f85b6",
+        "payload": {
+          "id": "e0978475-8ad9-482c-b8a1-8ac9d699f5b5",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.685215+00:00"
+      },
+      {
+        "id": "1567562b-6c89-43eb-bafe-1ff8a2cd260f",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "93ada331aff8450aa496f39c46541b18",
+        "payload": {
+          "id": "9c4e27e2-bbfd-4c0d-b750-ccc0aad4790a",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.615274+00:00"
+      },
+      {
+        "id": "e760069c-d532-45cd-bb8b-549ad89dff36",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "84f8e67d1aaebb5ce55f36bc867d950a",
+        "payload": {
+          "id": "2d6e7938-dbde-43d6-a15d-59219f07f4c3",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.548222+00:00"
+      },
+      {
+        "id": "c1b79cc4-28d6-48a6-bd4d-706656e50213",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "7463e44dc2b96ac136fc68de5e7aa733",
+        "payload": {
+          "id": "1d035acd-4ebf-4195-bbc3-73011f32df5b",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.48197+00:00"
+      },
+      {
+        "id": "21bedcee-a614-41c9-82ca-a66a35151368",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "offer",
+        "source_ref": "69b1b1e613da5fcdffc8cbe2e0488b3c",
+        "payload": {
+          "id": "5a8585af-0927-4e18-9b17-75d71340a966",
+          "table": "offers"
+        },
+        "created_at": "2026-06-02T19:10:16.412475+00:00"
+      },
+      {
+        "id": "f6154bf0-74a8-42c2-a63a-a41d917fcc7b",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "asset",
+        "source_ref": "0e59fc936782162b7b9faf68b712e63a",
+        "payload": {
+          "id": "ebc91169-1884-40ef-972e-846b1fc58561",
+          "table": "assets"
+        },
+        "created_at": "2026-06-02T19:10:16.349388+00:00"
+      },
+      {
+        "id": "cffea67d-11c2-405d-90a3-b9c8d7e197dc",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "workflow",
+        "source_ref": "26e83cb04bd4ba59b82decd18c26bab2",
+        "payload": {
+          "id": "9a88c1fd-4320-416d-956b-4eda21bfb654",
+          "table": "workflows"
+        },
+        "created_at": "2026-06-02T19:10:16.231845+00:00"
+      },
+      {
+        "id": "4fb24ca3-42a6-4f90-b18b-56c1aed420ab",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "workflow",
+        "source_ref": "17ba47c38a88e4d662fb990e377428b1",
+        "payload": {
+          "id": "f2b06615-dc02-434d-8224-2ca67ffb2686",
+          "table": "workflows"
+        },
+        "created_at": "2026-06-02T19:10:16.167688+00:00"
+      },
+      {
+        "id": "4689764e-bead-461b-ad74-36c0d81542b9",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "agent",
+        "source_ref": "19ac28f89f9f310035eda8c2f11d15f5",
+        "payload": {
+          "id": "04ea8056-a7db-464b-9dea-a61752ffa7d0",
+          "table": "agents"
+        },
+        "created_at": "2026-06-02T19:10:16.095653+00:00"
+      },
+      {
+        "id": "438c0ee8-88f3-494a-84ba-582bb9533c79",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "0b44a5bb7e25a71479bd085ffa1f23b2",
+        "payload": {
+          "id": "7750f9d0-4079-43e1-88f2-53b6a497f763",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:16.022778+00:00"
+      },
+      {
+        "id": "5b672a56-cb88-4098-8f33-15c9cf6ba170",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "65c821814c579ec6cbec33167741badd",
+        "payload": {
+          "id": "1e609af4-52fb-4940-8062-8079e84f3b04",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.952337+00:00"
+      },
+      {
+        "id": "333b611c-53b9-489a-bd90-7e4cd1d87c72",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "107b3bf4adc8e795cad7bddd00efe6e8",
+        "payload": {
+          "id": "db7d0daf-ef1f-48f8-be02-301e8838de45",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.880741+00:00"
+      },
+      {
+        "id": "d471b240-7073-4329-a992-980eb90f1028",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "82edd9a97da9d1bfa11abe1783285330",
+        "payload": {
+          "id": "31510654-73e6-4fef-b07c-6a3a688e34a8",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.811373+00:00"
+      },
+      {
+        "id": "c804bdf2-7e7e-426a-8925-271f47124cc8",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "03bd86a39c59c73057fba4140a763675",
+        "payload": {
+          "id": "3c2aca87-13d5-4859-b25f-dce821528093",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.752833+00:00"
+      },
+      {
+        "id": "a2c3bec2-b346-4b74-a7fa-086e783b8a0e",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "c6107acc2b15c68ab03ca50333703f42",
+        "payload": {
+          "id": "41454fb7-f472-47ec-9bf1-a1b79faee1d2",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.68715+00:00"
+      },
+      {
+        "id": "ed0374a3-e365-43f5-b3ee-0d8c7fbfd2de",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "e1751d2f6e4fd19ee2de4d19242afd30",
+        "payload": {
+          "id": "40a03cd8-394a-4ad4-8cda-3b117bc82dec",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.623503+00:00"
+      },
+      {
+        "id": "8a8061b7-c3bf-4b07-a68d-171160942650",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "blueprint",
+        "source_ref": "cd021b9ac548f46eca4b8c6f3f202844",
+        "payload": {
+          "id": "4b18e695-f49f-4848-a39e-c9022ae81b62",
+          "table": "blueprints"
+        },
+        "created_at": "2026-06-02T19:10:15.55386+00:00"
+      },
+      {
+        "id": "9b13d136-a23e-4625-9ff7-2a3858c4e734",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "project",
+        "source_ref": "e980ae94b35a1087045772cd3c4df6b3",
+        "payload": {
+          "id": "2b7aef2f-729d-432e-96cf-2399803ccde7",
+          "table": "builder_projects"
+        },
+        "created_at": "2026-06-02T19:10:15.486474+00:00"
+      },
+      {
+        "id": "b532aeb8-4a30-463d-a18c-36b5ae16fd05",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "project",
+        "source_ref": "89e29311a87387ed8ab937cd375d58e0",
+        "payload": {
+          "id": "43305e2a-00e8-4a29-887c-2a4065c5b366",
+          "table": "builder_projects"
+        },
+        "created_at": "2026-06-02T19:10:15.42508+00:00"
+      },
+      {
+        "id": "7d682c86-bf5e-46cc-a085-4c0008a1fae6",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "project",
+        "source_ref": "7436e876b3c03aad345ec448e4cae972",
+        "payload": {
+          "id": "63318913-d054-460e-a649-81ef5f72eb11",
+          "table": "builder_projects"
+        },
+        "created_at": "2026-06-02T19:10:15.346356+00:00"
+      },
+      {
+        "id": "d8a4995e-40f2-43d2-a85b-73d5ffa8ef18",
+        "sync_run_id": "b78c1f42-361c-4e0c-ae4d-1b9f861693d6",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "connector_device_id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+        "event_type": "row_upserted",
+        "object_type": "system",
+        "source_ref": "018136ce0ddfebb552ae397b6cc228da",
+        "payload": {
+          "id": "a89f42ac-1677-4697-b81c-23c4ac518b57",
+          "table": "systems"
+        },
+        "created_at": "2026-06-02T19:10:15.281469+00:00"
+      }
+    ],
+    "1_device_record": {
+      "id": "4fe3b6ab-a257-4439-8665-e49638bf2d1e",
+      "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+      "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+      "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+      "status": "active",
+      "token_jti": "840b498e-44b4-43b9-bdcc-7da798f17e66",
+      "permissions": [
+        "heartbeat",
+        "sync:apply",
+        "sync:enqueue"
+      ],
+      "last_seen_at": "2026-06-02T19:10:10.768+00:00"
+    },
+    "11_registry_summary_after": {
+      "counts": {
+        "agents": 2,
+        "assets": 2,
+        "offers": 16,
+        "vaults": 0,
+        "systems": 10,
+        "projects": 14,
+        "workflows": 4,
+        "blueprints": 16,
+        "connections": 2
+      },
+      "syncStatus": "completed",
+      "identityHandle": "jdevinwhite2.access",
+      "registryCounts": {
+        "agents": 2,
+        "assets": 2,
+        "offers": 16,
+        "vaults": 0,
+        "systems": 10,
+        "projects": 14,
+        "workflows": 4,
+        "blueprints": 16,
+        "connections": 2
+      },
+      "vaultConnection": {
+        "status": "connected",
+        "vaultKey": "JD_AI_System",
+        "lastSeenAt": "2026-06-02T19:10:10.768+00:00",
+        "lastSyncAt": "2026-06-02T19:10:16.953+00:00",
+        "displayName": "JD_AI_System Intelligence Vault",
+        "connectorType": "local_connector",
+        "lastSyncStatus": "completed"
+      },
+      "connectionsCount": 2,
+      "identityCreatedAt": "2026-06-02T02:53:31.313836+00:00"
+    },
+    "9_provenance": [
+      {
+        "id": "87181898-7009-49fe-abfa-6f7229066419",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "source_ref": "28be3a89534d8e3b8bdba21cc3b83974",
+        "source_path": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
+        "source_vault_key": "primary_vault",
+        "content_hash": "ded76dc318ef5f37f29284751777fd83f9e601f5e1900c62199341a886a3d70a",
+        "sync_version": 1,
+        "last_synced_at": "2026-06-02T19:08:05.665+00:00"
+      },
+      {
+        "id": "7b3135e9-f65a-4ee2-9c75-a0ac32b6d9e5",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "source_ref": "c8dea8fdc191ca07629313c440c520ee",
+        "source_path": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
+        "source_vault_key": "JD_AI_System",
+        "content_hash": "324efb1a7e410da117f8e8c326050bbeb3c9c7abdf4d496e394eca6381487417",
+        "sync_version": 1,
+        "last_synced_at": "2026-06-02T19:10:14.91+00:00"
+      },
+      {
+        "id": "c21136d8-b359-49e8-ac97-e535220c4583",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "source_ref": "0c83fa776701606704aec60ad354bfef",
+        "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-VAULT-ARCHITECTURE.md",
+        "source_vault_key": "primary_vault",
+        "content_hash": "cadf3fa6ba3dd04971f48b42618e1e43dd7af4ce64b5ad7286ab8f4c344546df",
+        "sync_version": 1,
+        "last_synced_at": "2026-06-02T19:08:06.219+00:00"
+      },
+      {
+        "id": "fc001430-c3d4-4034-acbc-a8b5a3de6bdb",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "source_ref": "4274e1f7e546962ed921a4925dd78d41",
+        "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV.md",
+        "source_vault_key": "JD_AI_System",
+        "content_hash": "8cd82de6474f1098697b33f9202c86ad1b2d513d8248a6088b4cef48fbb03117",
+        "sync_version": 1,
+        "last_synced_at": "2026-06-02T19:10:15.18+00:00"
+      },
+      {
+        "id": "3344084f-56dc-4e48-8255-d9b82246ac8a",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "vault_connection_id": "7938d761-cf74-4cdc-bea9-4f160dd85101",
+        "source_ref": "710f657f1b505d8211b7466613d1314d",
+        "source_path": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-FRANCHISE-ROADMAP.md",
+        "source_vault_key": "JD_AI_System",
+        "content_hash": "0d555077591c994080784e82497b947830d4e405cf4728c0048e9f7094759f8a",
+        "sync_version": 1,
+        "last_synced_at": "2026-06-02T19:10:15.047+00:00"
+      }
+    ],
+    "12_identity_scoped": {
+      "ok": true,
+      "foreignRows": 0
+    },
+    "13_rls": {
+      "enforced": true,
+      "note": "tenant JWT client"
     }
   },
-  "passed": false
+  "passed": true,
+  "identityId": "a64a0644-ec30-4a22-a332-10cd9223a559"
 }

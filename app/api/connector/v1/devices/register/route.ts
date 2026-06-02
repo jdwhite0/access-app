@@ -1,15 +1,25 @@
 import { createSupabaseAdmin } from '@/lib/supabase'
 import { registerConnectorDevice } from '@/lib/connector/device-service'
-import { jsonError, jsonOk } from '@/lib/api/connector-response'
+import { classifiedErrorResponse, jsonError, jsonOk } from '@/lib/api/connector-response'
 import { isConnectorJwtConfigured } from '@/lib/connector-auth/jwt'
 
 export async function POST(req: Request) {
   if (!isConnectorJwtConfigured()) {
-    return jsonError('Connector JWT not configured on server.', 503)
+    return classifiedErrorResponse({
+      message: 'Connector JWT not configured on server.',
+      product: 'access_os',
+      service: 'configuration',
+    })
   }
 
   const supabase = createSupabaseAdmin()
-  if (!supabase) return jsonError('Database not configured.', 503)
+  if (!supabase) {
+    return classifiedErrorResponse({
+      message: 'Database not configured.',
+      product: 'access_os',
+      service: 'database',
+    })
+  }
 
   let body: {
     pairingCode?: string
@@ -36,7 +46,13 @@ export async function POST(req: Request) {
     publicKey: body.publicKey,
   })
 
-  if (!result.ok) return jsonError(result.error, 400)
+  if (!result.ok) {
+    return classifiedErrorResponse({
+      error: result.error,
+      product: 'access_os',
+      service: 'connector',
+    })
+  }
 
   return jsonOk({
     ok: true,

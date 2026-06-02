@@ -1,8 +1,4 @@
 {
-  "checkedAt": "2026-06-02T04:52:00.000Z",
-  "path": "packages/access-connector",
-  "patterns": ["SERVICE_ROLE", "service_role", "createSupabaseAdmin", "SUPABASE_SERVICE"],
   "clean": true,
-  "matches": [],
-  "conclusion": "Connector package contains zero service-role or Supabase admin client references."
+  "matches": []
 }

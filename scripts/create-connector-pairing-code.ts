@@ -19,7 +19,7 @@ function log(message: string) {
   console.log(`${LOG} ${message}`)
 }
 
-function fail(message: string, detail?: string) {
+function fail(message: string, detail?: string): never {
   console.error(`${LOG} ERROR: ${message}`)
   if (detail) console.error(`${LOG}        ${detail}`)
   process.exit(1)

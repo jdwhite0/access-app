@@ -1,3 +1,16 @@
+/**
+ * ACCESS OS companion world diagnostic — hybrid cloud+local model.
+ *
+ * Check order:
+ *   1. Auth / environment gates
+ *   2. Identity gate
+ *   3. Blueprint row + validation
+ *   4. CLOUD GATE — blueprint export status (draft → block; exported → cloud_package_ready)
+ *   5. LOCAL UPGRADE — filesystem checks (upgrade to local_founder_os_ready / companion_ready)
+ *
+ * The local filesystem is an upgrade path, not a requirement gate.
+ * Production (Vercel) runs in cloud mode and relies on Supabase blueprint state.
+ */
 import { access } from 'node:fs/promises'
 import { join } from 'node:path'
 import { auth } from '@clerk/nextjs/server'
@@ -47,16 +60,28 @@ function push(checks: DiagnosticCheck[], id: string, label: string, ok: boolean,
   checks.push({ id, label, ok, detail })
 }
 
-/**
- * Deep diagnostic pass for companion load (no side effects except getOrCreate on repair flows).
- */
+const STATUS_FIX: Partial<Record<CompanionDiagnosticStatus, string>> = {
+  companion_ready: 'JYSON Companion is fully connected.',
+  local_founder_os_ready: 'Local Founder OS connected.',
+  local_sync_pending: 'Cloud package ready. Connect your local machine to sync.',
+  cloud_package_ready: 'Companion loading from cloud.',
+  blueprint_draft: 'Export your Founder Blueprint to activate the companion.',
+  blueprint_missing: 'Complete your Founder Blueprint in the wizard.',
+  identity_missing: 'Create your ACCESS identity and blueprint.',
+  connector_offline: 'Start your local ACCESS connector to sync.',
+  sync_error: 'Regenerate your Founder OS package.',
+  auth_missing: 'Sign in and restart the dev server if Clerk middleware was just added.',
+  unknown_error: 'Retry loading.',
+}
+
 export async function diagnoseCompanionWorld(options?: {
   ensureIdentity?: boolean
 }): Promise<CompanionWorldDiagnostics> {
   const checks: DiagnosticCheck[] = []
-  let status: CompanionDiagnosticStatus = 'ready'
+  let status: CompanionDiagnosticStatus = 'companion_ready'
   let statusDetail: Parameters<typeof diagnosticForStatus>[1] = {}
 
+  // ── 1. Environment ────────────────────────────────────────────────────────
   push(
     checks,
     'clerk_env',
@@ -78,6 +103,7 @@ export async function diagnoseCompanionWorld(options?: {
       : 'No Supabase — local/ephemeral blueprint only (dev mode)'
   )
 
+  // ── 2. Auth ───────────────────────────────────────────────────────────────
   let userId: string | null = null
   try {
     const authResult = await auth()
@@ -96,10 +122,9 @@ export async function diagnoseCompanionWorld(options?: {
     statusDetail = { error: msg }
   }
 
-  if (!userId) {
-    return finalize(checks, status, statusDetail)
-  }
+  if (!userId) return finalize(checks, status, statusDetail)
 
+  // ── 3. Identity ───────────────────────────────────────────────────────────
   const derivedHandle = await deriveAccessHandleForSession()
   push(
     checks,
@@ -115,7 +140,7 @@ export async function diagnoseCompanionWorld(options?: {
     identity = created.identity
     if (created.error) {
       push(checks, 'identity', 'ACCESS identity', false, created.error)
-      status = 'missing_identity'
+      status = 'identity_missing'
       statusDetail = { handle: derivedHandle, error: created.error }
       return finalize(checks, status, statusDetail)
     }
@@ -127,11 +152,11 @@ export async function diagnoseCompanionWorld(options?: {
     'ACCESS identity',
     !!identity?.handle,
     identity?.handle
-      ? `Linked handle ${identity.handle}`
+      ? `Handle: ${identity.handle}`
       : 'No access_identities row for this Clerk user'
   )
   if (!identity?.handle) {
-    status = 'missing_identity'
+    status = 'identity_missing'
     statusDetail = { handle: derivedHandle }
     return finalize(checks, status, statusDetail)
   }
@@ -147,18 +172,13 @@ export async function diagnoseCompanionWorld(options?: {
       false,
       `Profile suggests ${derivedHandle}, identity has ${handle}`
     )
-    if (status === 'ready') status = 'unknown_error'
+    if (status === 'companion_ready') status = 'unknown_error'
     statusDetail.error = 'ACCESS handle mismatch with current Clerk profile'
   } else {
-    push(
-      checks,
-      'handle_match',
-      'Clerk profile vs saved handle',
-      true,
-      handle
-    )
+    push(checks, 'handle_match', 'Clerk profile vs saved handle', true, handle)
   }
 
+  // ── 4. Blueprint row + validation ─────────────────────────────────────────
   const blueprintRow = await getFounderBlueprint()
   push(
     checks,
@@ -173,7 +193,7 @@ export async function diagnoseCompanionWorld(options?: {
   )
 
   if (!blueprintRow?.spec) {
-    status = 'missing_blueprint'
+    status = 'blueprint_missing'
     return finalize(checks, status, statusDetail)
   }
 
@@ -209,8 +229,8 @@ export async function diagnoseCompanionWorld(options?: {
       false,
       `Identity ${handle} vs blueprint ${founderHandle}`
     )
-    status = 'unknown_error'
-    statusDetail.error = 'founder_os_id / handle mismatch between identity and blueprint'
+    if (status === 'companion_ready') status = 'unknown_error'
+    statusDetail.error = 'Handle mismatch between identity and blueprint'
   } else {
     push(checks, 'handle_blueprint_sync', 'Identity ↔ blueprint handle', true, handle)
   }
@@ -226,15 +246,68 @@ export async function diagnoseCompanionWorld(options?: {
     founderOsId === expectedOsId,
     `${founderOsId}${founderOsId !== expectedOsId ? ` (expected ${expectedOsId})` : ''}`
   )
-  if (founderOsId !== expectedOsId) {
+  if (founderOsId !== expectedOsId && status === 'companion_ready') {
     status = 'unknown_error'
     statusDetail.error = 'founder_os_id does not match handle convention'
   }
 
+  // ── 5. CLOUD GATE: blueprint export status ────────────────────────────────
+  // This is the primary readiness gate. Local filesystem is a secondary upgrade.
+  const blueprintExported = spec.status === 'exported' || spec.status === 'materialized'
+  push(
+    checks,
+    'blueprint_status',
+    'Blueprint cloud status',
+    blueprintExported,
+    blueprintExported
+      ? `${spec.status} — companion can load from cloud`
+      : 'Draft — export your blueprint to activate the companion'
+  )
+
+  if (!blueprintExported) {
+    // Blueprint is saved but not exported. Companion cannot load yet.
+    status = 'blueprint_draft'
+    return finalize(checks, status, statusDetail)
+  }
+
+  // Blueprint is exported — companion CAN load from cloud.
+  // Mark cloud as ready; we will try local as an upgrade below.
+  if (status === 'companion_ready') status = 'cloud_package_ready'
+  statusDetail.cloudReady = true
+
+  // ── 6. LOCAL UPGRADE: filesystem checks ───────────────────────────────────
+  // These are not gates — they upgrade the companion state to use local data.
   const packagePath = packagePathForHandle(founderHandle ?? handle)
   statusDetail.packagePath = packagePath
 
-  const pkgRoot = process.env.FOUNDER_OS_OUTPUT_ROOT ?? join(process.cwd(), '..', 'founder-os')
+  const hasOutputRoot = !!process.env.FOUNDER_OS_OUTPUT_ROOT
+  const isServerless =
+    !hasOutputRoot && (!!process.env.VERCEL || process.env.NODE_ENV === 'production')
+
+  if (isServerless) {
+    push(
+      checks,
+      'local_runtime',
+      'Local Founder OS (cloud mode)',
+      false,
+      'Cloud deployment — local filesystem not available'
+    )
+    push(
+      checks,
+      'agent_context',
+      'Agent context (local)',
+      false,
+      'Not available in cloud deployment — companion loads from blueprint'
+    )
+    if (status === 'cloud_package_ready') status = 'local_sync_pending'
+    statusDetail.error =
+      'Cloud deployment — local Founder OS not available. Companion loads from cloud.'
+    return finalize(checks, status, statusDetail)
+  }
+
+  // Local mode: check if the output root exists
+  const pkgRoot =
+    process.env.FOUNDER_OS_OUTPUT_ROOT ?? join(process.cwd(), '..', 'founder-os')
   push(
     checks,
     'package_root',
@@ -243,55 +316,54 @@ export async function diagnoseCompanionWorld(options?: {
     pkgRoot
   )
 
+  // Check if the specific package folder exists
   const hasPackageDir = await pathExists(packagePath)
   push(
     checks,
     'package_dir',
-    'Founder OS package folder',
+    'Local Founder OS folder',
     hasPackageDir,
     packagePath
   )
 
   if (!hasPackageDir) {
-    status = 'missing_founder_os'
+    // Cloud package ready but local folder not materialized yet
+    if (status === 'cloud_package_ready') status = 'local_sync_pending'
     return finalize(checks, status, statusDetail)
   }
 
+  // Local package exists — check its completeness
   const hasManifest = await pathExists(join(packagePath, 'manifest.json'))
-  push(
-    checks,
-    'manifest',
-    'manifest.json',
-    hasManifest,
-    hasManifest ? 'Present' : 'Missing'
-  )
+  push(checks, 'manifest', 'manifest.json', hasManifest, hasManifest ? 'Present' : 'Missing')
   if (!hasManifest) {
-    status = 'missing_manifest'
+    status = 'sync_error'
+    statusDetail.error = 'manifest.json missing from local Founder OS package'
     return finalize(checks, status, statusDetail)
   }
 
   const hasRegistry = await pathExists(join(packagePath, 'registry.yaml'))
-  push(
-    checks,
-    'registry',
-    'registry.yaml',
-    hasRegistry,
-    hasRegistry ? 'Present' : 'Missing'
-  )
+  push(checks, 'registry', 'registry.yaml', hasRegistry, hasRegistry ? 'Present' : 'Missing')
   if (!hasRegistry) {
-    status = 'missing_registry'
+    status = 'sync_error'
+    statusDetail.error = 'registry.yaml missing from local Founder OS package'
     return finalize(checks, status, statusDetail)
   }
 
+  // Local package is complete — upgrade from cloud_package_ready
+  status = 'local_founder_os_ready'
+  statusDetail.localReady = true
+
+  // ── 7. AGENT CONTEXT: optional upgrade to companion_ready ─────────────────
   try {
     const { loadJysonRuntimeModules } = await import('@/lib/jyson-bridge/jyson-runtime-loader')
     const { buildAgentContext } = await loadJysonRuntimeModules()
     await buildAgentContext(packagePath)
-    push(checks, 'agent_context', 'AgentContext (P6)', true, 'Loaded from package')
+    push(checks, 'agent_context', 'Agent context (local)', true, 'Loaded from local package')
+    status = 'companion_ready'
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
-    push(checks, 'agent_context', 'AgentContext (P6)', false, msg)
-    status = 'missing_agent_context'
+    push(checks, 'agent_context', 'Agent context (local)', false, msg)
+    // Stays at local_founder_os_ready — companion still loads from local filesystem
     statusDetail.error = msg
   }
 
@@ -305,21 +377,16 @@ function finalize(
 ): CompanionWorldDiagnostics {
   const failed = checks.filter((c) => !c.ok)
   const missingStep = failed[0]?.label ?? 'All checks passed'
-  const recommendedFix =
-    status === 'missing_blueprint'
-      ? 'Complete your Founder Blueprint in the wizard.'
-      : status === 'missing_founder_os' ||
-          status === 'missing_manifest' ||
-          status === 'missing_registry'
-        ? 'Generate your ACCESS world from the canonical blueprint.'
-        : status === 'missing_identity'
-          ? 'Create your ACCESS identity and blueprint.'
-          : status === 'auth_missing'
-            ? 'Sign in and restart the dev server if Clerk middleware was just added.'
-            : status === 'missing_agent_context'
-              ? 'Repair the Founder OS package and retry.'
-              : failed[0]?.detail ?? 'Retry loading.'
+  const recommendedFix = STATUS_FIX[status] ?? failed[0]?.detail ?? 'Retry loading.'
 
-  const diagnostic = diagnosticForStatus(status, detail)
+  const cloudReady = (
+    status === 'cloud_package_ready' ||
+    status === 'local_sync_pending' ||
+    status === 'local_founder_os_ready' ||
+    status === 'companion_ready'
+  )
+  const localReady = status === 'local_founder_os_ready' || status === 'companion_ready'
+
+  const diagnostic = diagnosticForStatus(status, { ...detail, cloudReady, localReady })
   return { checks, missingStep, recommendedFix, diagnostic }
 }

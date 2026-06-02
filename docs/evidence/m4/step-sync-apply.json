@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "stdout": "{\n  \"ok\": true,\n  \"error\": null,\n  \"report\": {\n    \"ok\": true,\n    \"syncRunId\": \"b78c1f42-361c-4e0c-ae4d-1b9f861693d6\",\n    \"stats\": {\n      \"upserted\": 32,\n      \"skipped\": 0,\n      \"conflicts\": 0,\n      \"errors\": 0\n    }\n  }\n}\n",
+  "stderr": ""
+}

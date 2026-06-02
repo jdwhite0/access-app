@@ -1,5 +1,14 @@
 'use server'
 
+/**
+ * Hybrid cloud+local companion world resolver.
+ *
+ * Load order:
+ *   1. Run world diagnostic (cloud gate → local upgrade)
+ *   2. If cloud_package_ready or better → load context from Supabase blueprint
+ *   3. Try local agent context upgrade if local_founder_os_ready or companion_ready
+ *   4. Return JysonContext with companionState reflecting exact tier
+ */
 import { auth } from '@clerk/nextjs/server'
 import {
   buildAccessHandleContext,
@@ -13,7 +22,10 @@ import {
   diagnoseCompanionWorld,
   type CompanionWorldDiagnostics,
 } from '@/lib/jyson-bridge/companion-world-diagnostic'
-import { diagnosticForStatus } from '@/lib/jyson-bridge/companion-diagnostic'
+import {
+  diagnosticForStatus,
+  type CompanionDiagnosticStatus,
+} from '@/lib/jyson-bridge/companion-diagnostic'
 import type { JysonContext } from '@/lib/jyson-bridge/types'
 import type { AccessHandleContext } from '@/lib/access-handle/types'
 import type { FounderBlueprintSpec } from '@/types/founder-blueprint'
@@ -23,6 +35,14 @@ export type CompanionLoadResult = {
   diagnostic: import('@/lib/jyson-bridge/companion-diagnostic').CompanionDiagnostic
   worldDiagnostics?: CompanionWorldDiagnostics
 }
+
+/** Statuses where the companion CAN load a context (cloud or local). */
+const LOADABLE_STATUSES: ReadonlySet<CompanionDiagnosticStatus> = new Set([
+  'cloud_package_ready',
+  'local_sync_pending',
+  'local_founder_os_ready',
+  'companion_ready',
+])
 
 async function tryLoadAgentContext(
   packagePath: string
@@ -39,7 +59,8 @@ async function tryLoadAgentContext(
 
 function accessToJysonContext(
   access: AccessHandleContext,
-  agentContextLoaded: boolean
+  agentContextLoaded: boolean,
+  worldStatus: CompanionDiagnosticStatus
 ): JysonContext {
   return {
     handle: access.ownershipAnchor,
@@ -71,12 +92,24 @@ function accessToJysonContext(
       accessHandleContext: true,
       agentContext: agentContextLoaded,
     },
+    companionState: {
+      status: worldStatus,
+      cloudReady:
+        worldStatus === 'cloud_package_ready' ||
+        worldStatus === 'local_sync_pending' ||
+        worldStatus === 'local_founder_os_ready' ||
+        worldStatus === 'companion_ready',
+      localConnected:
+        worldStatus === 'local_founder_os_ready' || worldStatus === 'companion_ready',
+      connectorOnline: false,
+    },
   }
 }
 
 async function loadContextFromSpec(
   handle: string,
-  spec: FounderBlueprintSpec
+  spec: FounderBlueprintSpec,
+  worldStatus: CompanionDiagnosticStatus
 ): Promise<{ context: JysonContext | null; agentLoaded: boolean; error?: string }> {
   const built = await buildAccessHandleContext(handle)
   let access = built.context
@@ -88,11 +121,17 @@ async function loadContextFromSpec(
   }
   const packagePath = access.userSystemPackagePath
   if (!packagePath) {
-    return { context: accessToJysonContext(access, false), agentLoaded: false }
+    return {
+      context: accessToJysonContext(access, false, worldStatus),
+      agentLoaded: false,
+    }
   }
   const agent = await tryLoadAgentContext(packagePath)
+  const finalStatus: CompanionDiagnosticStatus = agent.loaded
+    ? 'companion_ready'
+    : worldStatus
   return {
-    context: accessToJysonContext(access, agent.loaded),
+    context: accessToJysonContext(access, agent.loaded, finalStatus),
     agentLoaded: agent.loaded,
     error: agent.error,
   }
@@ -108,37 +147,36 @@ function enrichDiagnostic(
   }
 }
 
-/**
- * Full companion load: identity → blueprint → package → AgentContext → JysonContext.
- */
 export async function resolveCompanionWorld(): Promise<CompanionLoadResult> {
   try {
     const { userId } = await auth()
     if (!userId) {
-      const d = diagnosticForStatus('auth_missing')
-      return { context: null, diagnostic: d }
+      return { context: null, diagnostic: diagnosticForStatus('auth_missing') }
     }
 
     const world = await diagnoseCompanionWorld()
     const diag = enrichDiagnostic(world)
 
-    if (
-      world.diagnostic.status !== 'ready' &&
-      world.diagnostic.status !== 'missing_agent_context'
-    ) {
+    // Only proceed to context loading if the world diagnostic says we can.
+    if (!LOADABLE_STATUSES.has(world.diagnostic.status)) {
       return { context: null, diagnostic: diag, worldDiagnostics: world }
     }
 
+    // Ensure identity exists (create if missing during repair flows)
     const derivedHandle = await deriveAccessHandleForSession()
     const { identity, error: identityError } = await getOrCreateIdentity(derivedHandle)
     if (!identity?.handle) {
-      const d = diagnosticForStatus('missing_identity', {
+      const d = diagnosticForStatus('identity_missing', {
         handle: derivedHandle,
         error: identityError,
       })
       return {
         context: null,
-        diagnostic: { ...d, missingStep: 'ACCESS identity', recommendedFix: identityError ?? d.body },
+        diagnostic: {
+          ...d,
+          missingStep: 'ACCESS identity',
+          recommendedFix: identityError ?? d.body,
+        },
         worldDiagnostics: world,
       }
     }
@@ -155,54 +193,32 @@ export async function resolveCompanionWorld(): Promise<CompanionLoadResult> {
     const handle = blueprintResult.spec.founder.access_handle
     const { context, agentLoaded, error: agentError } = await loadContextFromSpec(
       handle,
-      blueprintResult.spec
+      blueprintResult.spec,
+      world.diagnostic.status
     )
 
     if (!context) {
-      return {
-        context: null,
-        diagnostic: diag,
-        worldDiagnostics: world,
-      }
+      return { context: null, diagnostic: diag, worldDiagnostics: world }
     }
 
-    if (!agentLoaded && world.diagnostic.status === 'missing_agent_context') {
-      return {
-        context,
-        diagnostic: {
-          ...diag,
-          message: agentError ?? diag.message,
-        },
-        worldDiagnostics: world,
-      }
-    }
-
-    if (!agentLoaded) {
-      return {
-        context,
-        diagnostic: {
-          ...diagnosticForStatus('missing_agent_context', {
-            handle,
-            founderOsId: context.userSystemId,
-            packagePath: context.userSystemPackagePath,
-            error: agentError,
-          }),
-          missingStep: world.missingStep,
-          recommendedFix: world.recommendedFix,
-        },
-        worldDiagnostics: world,
-      }
-    }
+    // Context loaded — return with enriched diagnostic reflecting actual state
+    const finalStatus: CompanionDiagnosticStatus = agentLoaded
+      ? 'companion_ready'
+      : world.diagnostic.status
 
     return {
       context,
       diagnostic: {
-        ...diagnosticForStatus('ready', {
+        ...diagnosticForStatus(finalStatus, {
           handle: context.handle,
           founderOsId: context.userSystemId,
           packagePath: context.userSystemPackagePath,
+          error: agentLoaded ? undefined : agentError,
+          cloudReady: true,
+          localReady: agentLoaded || world.diagnostic.localReady,
         }),
-        agentContextLoaded: true,
+        missingStep: world.missingStep,
+        recommendedFix: world.recommendedFix,
       },
       worldDiagnostics: world,
     }
@@ -218,7 +234,7 @@ export async function resolveCompanionWorld(): Promise<CompanionLoadResult> {
         diagnostic: {
           ...diagnosticForStatus('auth_missing'),
           message,
-          body: 'Clerk proxy is missing or the dev server needs a restart (access-app/proxy.ts).',
+          body: 'Clerk proxy is missing or the dev server needs a restart.',
           canRepair: false,
         },
       }

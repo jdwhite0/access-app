@@ -1,54 +1,60 @@
 {
-  "identityHandle": "jerry.access",
+  "identityHandle": "jdevinwhite2.access",
   "vaultKey": "JD_AI_System",
   "scan": {
-    "scannedAt": "2026-06-02T04:51:05.088Z",
+    "scannedAt": "2026-06-02T19:10:11.759Z",
     "vaultKey": "JD_AI_System",
     "vaultRootLabel": "JD_Ai_System",
-    "fileCount": 853,
-    "totalBytes": 154329676,
+    "fileCount": 1003,
+    "totalBytes": 156254641,
     "byExtension": {
-      ".md": 418,
-      ".tsx": 58,
-      ".json": 105,
-      ".sh": 10,
-      ".ts": 174,
-      ".css": 6,
-      ".sql": 8,
+      ".md": 508,
+      ".tsx": 64,
+      ".json": 126,
+      ".sh": 11,
+      ".ts": 206,
       ".html": 62,
       ".yml": 3,
-      ".yaml": 9
+      ".css": 6,
+      ".yaml": 9,
+      ".sql": 8
     },
     "byTopLevel": {
       ".agents": 59,
-      ".audit": 31,
       ".claude": 1,
       ".mcp.json": 1,
       ".stitch": 1,
+      "ACCESS_WORKSPACE.md": 1,
       "AI_SYSTEM_ARCHITECTURE.md": 1,
       "CANONICAL_WEBSITE_GENERATION_WORKFLOW.md": 1,
       "ECOSYSTEM_ARCHITECTURE.md": 1,
       "ECOSYSTEM_DOMAIN_ARCHITECTURE.md": 1,
-      "JD Command Vault": 281,
+      "JD Command Vault": 286,
+      "JD_AI_SYSTEMS_CANONICAL_REGISTRY.md": 1,
+      "JD_AI_SYSTEMS_COMMAND_CENTER_ARCHITECTURE.md": 1,
       "OLLAMA_LOCAL_CODING_SETUP.md": 1,
       "README.md": 1,
+      "STATUS_PAGE_ARCHITECTURE.md": 1,
       "STITCH_SYSTEM_ARCHITECTURE.md": 1,
       "access-agent-runtime": 7,
-      "access-app": 190,
+      "access-app": 249,
       "active": 2,
+      "archive": 32,
       "blueprints": 2,
       "builder app": 1,
       "claude 3.md": 1,
       "claude.md": 1,
       "command_center": 26,
       "dashboards": 1,
+      "docs": 1,
       "engines": 3,
       "founder-os": 16,
       "founder-runtime": 7,
-      "jyson": 46,
+      "jdai-content-engine": 67,
+      "jyson": 52,
       "jyson-runtime": 7,
       "landing_page": 76,
-      "logs": 7,
+      "logs": 14,
       "master doctrine": 8,
       "package.json": 1,
       "prompts": 6,
@@ -474,223 +480,6 @@
         "kind": "file"
       },
       {
-        "relativePath": ".audit/access-app/AGENTS.md",
-        "extension": ".md",
-        "sizeBytes": 327,
-        "modifiedAt": "2026-06-01T16:14:02.934Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/CLAUDE.md",
-        "extension": ".md",
-        "sizeBytes": 11,
-        "modifiedAt": "2026-06-01T16:14:02.934Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/README.md",
-        "extension": ".md",
-        "sizeBytes": 1450,
-        "modifiedAt": "2026-06-01T16:14:02.935Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/app/globals.css",
-        "extension": ".css",
-        "sizeBytes": 10153,
-        "modifiedAt": "2026-06-01T16:14:02.936Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/app/layout.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 569,
-        "modifiedAt": "2026-06-01T16:14:02.936Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/app/page.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 1131,
-        "modifiedAt": "2026-06-01T16:14:02.937Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/app/projects/[id]/page.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 17914,
-        "modifiedAt": "2026-06-01T16:14:02.937Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/app/sso-callback/page.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 589,
-        "modifiedAt": "2026-06-01T16:14:02.938Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/CommandCenter.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 75368,
-        "modifiedAt": "2026-06-01T16:14:02.939Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/CommandOutput.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 49545,
-        "modifiedAt": "2026-06-01T16:14:02.941Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/TerminalLanding.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 7904,
-        "modifiedAt": "2026-06-01T16:14:02.942Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/access/AccessIdCard.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 2110,
-        "modifiedAt": "2026-06-01T16:14:02.942Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/access/BlueprintDisplay.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 15610,
-        "modifiedAt": "2026-06-01T16:14:02.943Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/components/access/RegistryPanel.tsx",
-        "extension": ".tsx",
-        "sizeBytes": 6412,
-        "modifiedAt": "2026-06-01T16:14:02.944Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/agents.ts",
-        "extension": ".ts",
-        "sizeBytes": 1786,
-        "modifiedAt": "2026-06-01T16:14:02.944Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/assets.ts",
-        "extension": ".ts",
-        "sizeBytes": 1793,
-        "modifiedAt": "2026-06-01T16:14:02.945Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/blueprints.ts",
-        "extension": ".ts",
-        "sizeBytes": 2159,
-        "modifiedAt": "2026-06-01T16:14:02.945Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/identity.ts",
-        "extension": ".ts",
-        "sizeBytes": 1882,
-        "modifiedAt": "2026-06-01T16:14:02.945Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/offers.ts",
-        "extension": ".ts",
-        "sizeBytes": 1803,
-        "modifiedAt": "2026-06-01T16:14:02.946Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/projects.ts",
-        "extension": ".ts",
-        "sizeBytes": 3972,
-        "modifiedAt": "2026-06-01T16:14:02.946Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/registry.ts",
-        "extension": ".ts",
-        "sizeBytes": 2545,
-        "modifiedAt": "2026-06-01T16:14:02.947Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/systems.ts",
-        "extension": ".ts",
-        "sizeBytes": 3275,
-        "modifiedAt": "2026-06-01T16:14:02.947Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/vaults.ts",
-        "extension": ".ts",
-        "sizeBytes": 1735,
-        "modifiedAt": "2026-06-01T16:14:02.947Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/actions/workflows.ts",
-        "extension": ".ts",
-        "sizeBytes": 1759,
-        "modifiedAt": "2026-06-01T16:14:02.948Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/lib/supabase.ts",
-        "extension": ".ts",
-        "sizeBytes": 680,
-        "modifiedAt": "2026-06-01T16:14:02.948Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/next.config.ts",
-        "extension": ".ts",
-        "sizeBytes": 133,
-        "modifiedAt": "2026-06-01T16:14:02.948Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/package.json",
-        "extension": ".json",
-        "sizeBytes": 597,
-        "modifiedAt": "2026-06-01T16:14:02.950Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/supabase/schema.sql",
-        "extension": ".sql",
-        "sizeBytes": 9583,
-        "modifiedAt": "2026-06-01T16:14:02.953Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/supabase/schema_v2.sql",
-        "extension": ".sql",
-        "sizeBytes": 7128,
-        "modifiedAt": "2026-06-01T16:14:02.953Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/tsconfig.json",
-        "extension": ".json",
-        "sizeBytes": 666,
-        "modifiedAt": "2026-06-01T16:14:02.954Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": ".audit/access-app/types/db.ts",
-        "extension": ".ts",
-        "sizeBytes": 3882,
-        "modifiedAt": "2026-06-01T16:14:02.954Z",
-        "kind": "file"
-      },
-      {
         "relativePath": ".claude/settings.local.json",
         "extension": ".json",
         "sizeBytes": 782,
@@ -709,6 +498,13 @@
         "extension": ".md",
         "sizeBytes": 4159,
         "modifiedAt": "2026-05-20T19:27:57.948Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "ACCESS_WORKSPACE.md",
+        "extension": ".md",
+        "sizeBytes": 1536,
+        "modifiedAt": "2026-06-02T09:07:27.112Z",
         "kind": "file"
       },
       {
@@ -742,22 +538,22 @@
       {
         "relativePath": "JD Command Vault/AGENT_BOOT.md",
         "extension": ".md",
-        "sizeBytes": 4622,
-        "modifiedAt": "2026-05-30T20:46:21.344Z",
+        "sizeBytes": 5333,
+        "modifiedAt": "2026-06-02T09:27:51.136Z",
         "kind": "file"
       },
       {
         "relativePath": "JD Command Vault/brain/2026-05-30.md",
         "extension": ".md",
-        "sizeBytes": 0,
-        "modifiedAt": "2026-05-30T09:07:55.377Z",
+        "sizeBytes": 274,
+        "modifiedAt": "2026-06-02T07:06:19.119Z",
         "kind": "file"
       },
       {
         "relativePath": "JD Command Vault/brain/Vault Map.md",
         "extension": ".md",
-        "sizeBytes": 9055,
-        "modifiedAt": "2026-05-20T19:28:12.992Z",
+        "sizeBytes": 9894,
+        "modifiedAt": "2026-06-02T07:09:16.295Z",
         "kind": "file"
       },
       {
@@ -917,8 +713,8 @@
       {
         "relativePath": "JD Command Vault/daily/today.md",
         "extension": ".md",
-        "sizeBytes": 2264,
-        "modifiedAt": "2026-05-20T14:06:36.486Z",
+        "sizeBytes": 5917,
+        "modifiedAt": "2026-06-02T07:07:38.994Z",
         "kind": "file"
       },
       {
@@ -957,6 +753,27 @@
         "kind": "file"
       },
       {
+        "relativePath": "JD Command Vault/projects/ACCESS/_START_HERE.md",
+        "extension": ".md",
+        "sizeBytes": 2099,
+        "modifiedAt": "2026-06-02T07:05:50.638Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "JD Command Vault/projects/Bridge_Video/_START_HERE.md",
+        "extension": ".md",
+        "sizeBytes": 1239,
+        "modifiedAt": "2026-06-02T07:05:57.025Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "JD Command Vault/projects/Forever_Thriven/_START_HERE.md",
+        "extension": ".md",
+        "sizeBytes": 1330,
+        "modifiedAt": "2026-06-02T07:06:12.769Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
         "extension": ".md",
         "sizeBytes": 11527,
@@ -982,6 +799,13 @@
         "extension": ".md",
         "sizeBytes": 5696,
         "modifiedAt": "2026-05-30T20:48:01.135Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "JD Command Vault/projects/JYSON/_START_HERE.md",
+        "extension": ".md",
+        "sizeBytes": 2070,
+        "modifiedAt": "2026-06-02T07:05:39.063Z",
         "kind": "file"
       },
       {
@@ -1552,6 +1376,13 @@
         "kind": "file"
       },
       {
+        "relativePath": "JD Command Vault/projects/White_Lane/_START_HERE.md",
+        "extension": ".md",
+        "sizeBytes": 1012,
+        "modifiedAt": "2026-06-02T07:06:06.104Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "JD Command Vault/systems/APPLE_NOTES_FINANCIAL_PIPELINE.md",
         "extension": ".md",
         "sizeBytes": 10362,
@@ -1624,8 +1455,8 @@
       {
         "relativePath": "JD Command Vault/systems/GRAPH_HEALTH_REPORT.md",
         "extension": ".md",
-        "sizeBytes": 7250,
-        "modifiedAt": "2026-05-30T20:48:26.690Z",
+        "sizeBytes": 8792,
+        "modifiedAt": "2026-06-02T07:08:55.716Z",
         "kind": "file"
       },
       {
@@ -1645,8 +1476,8 @@
       {
         "relativePath": "JD Command Vault/systems/MCP_STATUS.md",
         "extension": ".md",
-        "sizeBytes": 4008,
-        "modifiedAt": "2026-05-19T18:14:57.649Z",
+        "sizeBytes": 4310,
+        "modifiedAt": "2026-06-02T07:08:06.647Z",
         "kind": "file"
       },
       {
@@ -1701,8 +1532,8 @@
       {
         "relativePath": "JD Command Vault/systems/SYSTEM_STATUS.md",
         "extension": ".md",
-        "sizeBytes": 6761,
-        "modifiedAt": "2026-05-30T20:48:36.131Z",
+        "sizeBytes": 6708,
+        "modifiedAt": "2026-06-02T07:08:27.923Z",
         "kind": "file"
       },
       {
@@ -2707,6 +2538,20 @@
         "kind": "file"
       },
       {
+        "relativePath": "JD_AI_SYSTEMS_CANONICAL_REGISTRY.md",
+        "extension": ".md",
+        "sizeBytes": 6935,
+        "modifiedAt": "2026-06-02T09:27:57.094Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "JD_AI_SYSTEMS_COMMAND_CENTER_ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 24210,
+        "modifiedAt": "2026-06-02T08:58:42.446Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "OLLAMA_LOCAL_CODING_SETUP.md",
         "extension": ".md",
         "sizeBytes": 5340,
@@ -2718,6 +2563,13 @@
         "extension": ".md",
         "sizeBytes": 10072,
         "modifiedAt": "2026-05-20T03:22:54.908Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "STATUS_PAGE_ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 19056,
+        "modifiedAt": "2026-06-02T09:01:56.726Z",
         "kind": "file"
       },
       {
@@ -2777,6 +2629,20 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/ACCESS_AGENT.md",
+        "extension": ".md",
+        "sizeBytes": 2456,
+        "modifiedAt": "2026-06-02T09:27:57.094Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/ACCESS_STRUCTURE.md",
+        "extension": ".md",
+        "sizeBytes": 1699,
+        "modifiedAt": "2026-06-02T05:58:46.714Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/AGENTS.md",
         "extension": ".md",
         "sizeBytes": 327,
@@ -2793,183 +2659,106 @@
       {
         "relativePath": "access-app/DEVELOPER_GUIDE.md",
         "extension": ".md",
-        "sizeBytes": 10171,
-        "modifiedAt": "2026-06-02T01:57:13.420Z",
+        "sizeBytes": 10592,
+        "modifiedAt": "2026-06-02T05:59:01.341Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/README.md",
         "extension": ".md",
-        "sizeBytes": 1450,
-        "modifiedAt": "2026-06-01T16:39:47.611Z",
+        "sizeBytes": 500,
+        "modifiedAt": "2026-06-02T05:59:20.463Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/REPOSITORY_MAP.md",
         "extension": ".md",
-        "sizeBytes": 15202,
-        "modifiedAt": "2026-06-02T01:57:29.084Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/ACCESS_AGENT.md",
-        "extension": ".md",
-        "sizeBytes": 26618,
-        "modifiedAt": "2026-06-02T01:07:17.633Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/JYSON.md",
-        "extension": ".md",
-        "sizeBytes": 3316,
-        "modifiedAt": "2026-06-01T13:10:17.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/README.md",
-        "extension": ".md",
-        "sizeBytes": 2803,
-        "modifiedAt": "2026-06-01T13:13:14.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/architecture/ACCESS_DATABASE_SCHEMA_v1_0.md",
-        "extension": ".md",
-        "sizeBytes": 4004,
-        "modifiedAt": "2026-05-31T23:02:43.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/architecture/ACCESS_GRAPH_ARCHITECTURE_v1_0.md",
-        "extension": ".md",
-        "sizeBytes": 5216,
-        "modifiedAt": "2026-05-31T23:02:05.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/architecture/ACCESS_INFORMATION_ARCHITECTURE_V1_0.md",
-        "extension": ".md",
-        "sizeBytes": 2334,
-        "modifiedAt": "2026-06-01T13:23:21.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/architecture/ACCESS_REGISTRY_ARCHITECTURE_v1_0.md",
-        "extension": ".md",
-        "sizeBytes": 4692,
-        "modifiedAt": "2026-05-31T22:59:54.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/architecture/ACCESS_WORLD_MAP_ARCHITECTURE_v1_0.md",
-        "extension": ".md",
-        "sizeBytes": 4072,
-        "modifiedAt": "2026-05-31T23:34:44.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/doctrine/ACCESS_DOCTRINE_v1_0.md",
-        "extension": ".md",
-        "sizeBytes": 3494,
-        "modifiedAt": "2026-05-31T22:41:06.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/ecosystem/JD_AI_Systems_Ecosystem_Architecture_v1 2.md",
-        "extension": ".md",
-        "sizeBytes": 3664,
-        "modifiedAt": "2026-05-31T20:48:05.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/vision/ACCESS_Brand_Identity_System_v1 2.md",
-        "extension": ".md",
-        "sizeBytes": 4027,
-        "modifiedAt": "2026-05-31T20:07:05.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/vision/ACCESS_Brand_World_v1 2.md",
-        "extension": ".md",
-        "sizeBytes": 4721,
-        "modifiedAt": "2026-05-31T20:32:06.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/vision/ACCESS_PLATFORM_MAP_V1_0.md",
-        "extension": ".md",
-        "sizeBytes": 2585,
-        "modifiedAt": "2026-06-01T13:19:58.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/vision/ACCESS_PRODUCT_VISION_V1_0.md",
-        "extension": ".md",
-        "sizeBytes": 2782,
-        "modifiedAt": "2026-06-01T13:17:12.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/docs/vision/ACCESS_USER_JOURNEY_V1_0.md",
-        "extension": ".md",
-        "sizeBytes": 2830,
-        "modifiedAt": "2026-06-01T13:18:56.000Z",
-        "kind": "file"
-      },
-      {
-        "relativePath": "access-app/access app/prompts/JYSON.md",
-        "extension": ".md",
-        "sizeBytes": 3316,
-        "modifiedAt": "2026-06-01T13:10:17.000Z",
+        "sizeBytes": 15056,
+        "modifiedAt": "2026-06-02T05:59:50.338Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/devices/register/route.ts",
         "extension": ".ts",
-        "sizeBytes": 1295,
-        "modifiedAt": "2026-06-02T04:35:38.079Z",
+        "sizeBytes": 1608,
+        "modifiedAt": "2026-06-02T08:36:25.946Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/devices/revoke/route.ts",
         "extension": ".ts",
-        "sizeBytes": 843,
-        "modifiedAt": "2026-06-02T04:35:41.092Z",
+        "sizeBytes": 1215,
+        "modifiedAt": "2026-06-02T08:36:36.443Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/devices/rotate/route.ts",
         "extension": ".ts",
-        "sizeBytes": 1329,
-        "modifiedAt": "2026-06-02T04:35:39.821Z",
+        "sizeBytes": 1701,
+        "modifiedAt": "2026-06-02T08:36:48.905Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/heartbeat/route.ts",
         "extension": ".ts",
-        "sizeBytes": 847,
-        "modifiedAt": "2026-06-02T04:35:38.742Z",
+        "sizeBytes": 1122,
+        "modifiedAt": "2026-06-02T08:36:57.775Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/sync/apply/route.ts",
         "extension": ".ts",
-        "sizeBytes": 968,
-        "modifiedAt": "2026-06-02T04:36:50.819Z",
+        "sizeBytes": 1254,
+        "modifiedAt": "2026-06-02T08:37:09.308Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/connector/v1/sync/enqueue/route.ts",
         "extension": ".ts",
-        "sizeBytes": 918,
-        "modifiedAt": "2026-06-02T04:35:42.358Z",
+        "sizeBytes": 1303,
+        "modifiedAt": "2026-06-02T08:37:19.854Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/api/internal/command-center/route.ts",
+        "extension": ".ts",
+        "sizeBytes": 607,
+        "modifiedAt": "2026-06-02T09:01:28.492Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/app/api/internal/handle-context/route.ts",
         "extension": ".ts",
-        "sizeBytes": 1183,
-        "modifiedAt": "2026-06-02T01:06:59.412Z",
+        "sizeBytes": 1461,
+        "modifiedAt": "2026-06-02T08:37:34.937Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/api/internal/platform-health/route.ts",
+        "extension": ".ts",
+        "sizeBytes": 1234,
+        "modifiedAt": "2026-06-02T09:01:29.607Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/api/platform/status/developer/route.ts",
+        "extension": ".ts",
+        "sizeBytes": 693,
+        "modifiedAt": "2026-06-02T09:01:28.376Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/api/platform/status/operator/route.ts",
+        "extension": ".ts",
+        "sizeBytes": 1079,
+        "modifiedAt": "2026-06-02T09:01:46.524Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/api/platform/status/route.ts",
+        "extension": ".ts",
+        "sizeBytes": 712,
+        "modifiedAt": "2026-06-02T09:01:24.799Z",
         "kind": "file"
       },
       {
@@ -2991,6 +2780,20 @@
         "extension": ".css",
         "sizeBytes": 42648,
         "modifiedAt": "2026-06-02T03:54:01.476Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/internal/command-center/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 20337,
+        "modifiedAt": "2026-06-02T09:10:09.995Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/internal/status/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 5007,
+        "modifiedAt": "2026-06-02T09:01:45.541Z",
         "kind": "file"
       },
       {
@@ -3019,6 +2822,13 @@
         "extension": ".tsx",
         "sizeBytes": 589,
         "modifiedAt": "2026-06-01T16:39:47.613Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/app/status/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 3809,
+        "modifiedAt": "2026-06-02T09:01:41.556Z",
         "kind": "file"
       },
       {
@@ -3082,6 +2892,13 @@
         "extension": ".tsx",
         "sizeBytes": 7855,
         "modifiedAt": "2026-06-02T03:12:54.263Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/components/command-center/DashboardRefresher.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 1267,
+        "modifiedAt": "2026-06-02T08:59:09.976Z",
         "kind": "file"
       },
       {
@@ -3169,6 +2986,13 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/components/status-page/StatusBadge.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 1081,
+        "modifiedAt": "2026-06-02T09:01:35.501Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/docs/FUTURE_JYSON_COMPANION_UI.md",
         "extension": ".md",
         "sizeBytes": 825,
@@ -3176,10 +3000,38 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/docs/JD_AI_SYSTEMS_HEALTH_ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 4829,
+        "modifiedAt": "2026-06-02T08:56:23.801Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/docs/M4_E2E_RUNBOOK.md",
         "extension": ".md",
         "sizeBytes": 1565,
         "modifiedAt": "2026-06-02T04:39:27.313Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/M4_VALIDATION_REPORT.md",
+        "extension": ".md",
+        "sizeBytes": 7181,
+        "modifiedAt": "2026-06-02T04:51:42.341Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/M5_COMMAND_CENTER_ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 54557,
+        "modifiedAt": "2026-06-02T08:58:43.291Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/M6_PLATFORM_DEPLOYMENT_ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 21343,
+        "modifiedAt": "2026-06-02T09:27:57.617Z",
         "kind": "file"
       },
       {
@@ -3232,38 +3084,255 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/docs/evidence/m4/SECURITY_VALIDATION_SUMMARY.md",
+        "extension": ".md",
+        "sizeBytes": 1359,
+        "modifiedAt": "2026-06-02T04:51:44.502Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/connector-device-record.json",
+        "extension": ".json",
+        "sizeBytes": 433,
+        "modifiedAt": "2026-06-02T19:09:07.785Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/local-pipeline-evidence.json",
+        "extension": ".json",
+        "sizeBytes": 603,
+        "modifiedAt": "2026-06-02T04:51:32.404Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/m4-dry-run-result.json",
+        "extension": ".json",
+        "sizeBytes": 1779,
+        "modifiedAt": "2026-06-02T07:45:36.450Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/docs/evidence/m4/m4-validation-result.json",
         "extension": ".json",
-        "sizeBytes": 429,
-        "modifiedAt": "2026-06-02T04:48:43.371Z",
+        "sizeBytes": 24857,
+        "modifiedAt": "2026-06-02T19:09:08.966Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/docs/evidence/m4/pairing-code.json",
         "extension": ".json",
-        "sizeBytes": 65,
-        "modifiedAt": "2026-06-02T04:48:42.276Z",
+        "sizeBytes": 128,
+        "modifiedAt": "2026-06-02T19:10:08.830Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/provenance-examples.json",
+        "extension": ".json",
+        "sizeBytes": 2909,
+        "modifiedAt": "2026-06-02T19:09:08.578Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/registry-after.json",
+        "extension": ".json",
+        "sizeBytes": 9640,
+        "modifiedAt": "2026-06-02T19:09:08.506Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/registry-before-counts.json",
+        "extension": ".json",
+        "sizeBytes": 460,
+        "modifiedAt": "2026-06-02T04:51:30.878Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/docs/evidence/m4/registry-before.json",
         "extension": ".json",
-        "sizeBytes": 230,
-        "modifiedAt": "2026-06-02T04:48:41.911Z",
+        "sizeBytes": 9641,
+        "modifiedAt": "2026-06-02T19:10:08.601Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/registry-sync-plan.json",
+        "extension": ".json",
+        "sizeBytes": 13516,
+        "modifiedAt": "2026-06-02T19:09:06.483Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/rls-test.json",
+        "extension": ".json",
+        "sizeBytes": 64,
+        "modifiedAt": "2026-06-02T19:09:08.965Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/docs/evidence/m4/security-connector-grep.json",
         "extension": ".json",
         "sizeBytes": 36,
-        "modifiedAt": "2026-06-02T04:48:41.236Z",
+        "modifiedAt": "2026-06-02T19:10:07.440Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/step-heartbeat.json",
+        "extension": ".json",
+        "sizeBytes": 89,
+        "modifiedAt": "2026-06-02T19:10:10.739Z",
         "kind": "file"
       },
       {
         "relativePath": "access-app/docs/evidence/m4/step-register.json",
         "extension": ".json",
-        "sizeBytes": 273,
-        "modifiedAt": "2026-06-02T04:48:43.371Z",
+        "sizeBytes": 90,
+        "modifiedAt": "2026-06-02T19:10:10.514Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/step-sync-apply.json",
+        "extension": ".json",
+        "sizeBytes": 385,
+        "modifiedAt": "2026-06-02T19:09:07.548Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/sync-audit-events.json",
+        "extension": ".json",
+        "sizeBytes": 16012,
+        "modifiedAt": "2026-06-02T19:09:07.687Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/sync-run-record.json",
+        "extension": ".json",
+        "sizeBytes": 585,
+        "modifiedAt": "2026-06-02T19:09:07.618Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/vault-compile-summary.json",
+        "extension": ".json",
+        "sizeBytes": 13508,
+        "modifiedAt": "2026-06-02T19:09:05.788Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/evidence/m4/vault-scan-report.json",
+        "extension": ".json",
+        "sizeBytes": 229042,
+        "modifiedAt": "2026-06-02T19:09:05.076Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/ACCESS_AGENT.md",
+        "extension": ".md",
+        "sizeBytes": 27040,
+        "modifiedAt": "2026-06-02T08:41:03.235Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/JYSON.md",
+        "extension": ".md",
+        "sizeBytes": 3316,
+        "modifiedAt": "2026-06-01T13:10:17.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/README.md",
+        "extension": ".md",
+        "sizeBytes": 777,
+        "modifiedAt": "2026-06-02T05:58:49.736Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/architecture/ACCESS_DATABASE_SCHEMA_v1_0.md",
+        "extension": ".md",
+        "sizeBytes": 4004,
+        "modifiedAt": "2026-05-31T23:02:43.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/architecture/ACCESS_GRAPH_ARCHITECTURE_v1_0.md",
+        "extension": ".md",
+        "sizeBytes": 5216,
+        "modifiedAt": "2026-05-31T23:02:05.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/architecture/ACCESS_INFORMATION_ARCHITECTURE_V1_0.md",
+        "extension": ".md",
+        "sizeBytes": 2334,
+        "modifiedAt": "2026-06-01T13:23:21.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/architecture/ACCESS_REGISTRY_ARCHITECTURE_v1_0.md",
+        "extension": ".md",
+        "sizeBytes": 4692,
+        "modifiedAt": "2026-05-31T22:59:54.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/architecture/ACCESS_WORLD_MAP_ARCHITECTURE_v1_0.md",
+        "extension": ".md",
+        "sizeBytes": 4072,
+        "modifiedAt": "2026-05-31T23:34:44.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/doctrine/ACCESS_DOCTRINE_v1_0.md",
+        "extension": ".md",
+        "sizeBytes": 3494,
+        "modifiedAt": "2026-05-31T22:41:06.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/ecosystem/JD_AI_Systems_Ecosystem_Architecture_v1 2.md",
+        "extension": ".md",
+        "sizeBytes": 3664,
+        "modifiedAt": "2026-05-31T20:48:05.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/vision/ACCESS_Brand_Identity_System_v1 2.md",
+        "extension": ".md",
+        "sizeBytes": 4027,
+        "modifiedAt": "2026-05-31T20:07:05.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/vision/ACCESS_Brand_World_v1 2.md",
+        "extension": ".md",
+        "sizeBytes": 4721,
+        "modifiedAt": "2026-05-31T20:32:06.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/vision/ACCESS_PLATFORM_MAP_V1_0.md",
+        "extension": ".md",
+        "sizeBytes": 2585,
+        "modifiedAt": "2026-06-01T13:19:58.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/vision/ACCESS_PRODUCT_VISION_V1_0.md",
+        "extension": ".md",
+        "sizeBytes": 2782,
+        "modifiedAt": "2026-06-01T13:17:12.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/docs/vision/ACCESS_USER_JOURNEY_V1_0.md",
+        "extension": ".md",
+        "sizeBytes": 2830,
+        "modifiedAt": "2026-06-01T13:18:56.000Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/docs/legacy-doctrine/prompts/JYSON.md",
+        "extension": ".md",
+        "sizeBytes": 3316,
+        "modifiedAt": "2026-06-01T13:10:17.000Z",
         "kind": "file"
       },
       {
@@ -3472,8 +3541,15 @@
       {
         "relativePath": "access-app/lib/api/connector-response.ts",
         "extension": ".ts",
-        "sizeBytes": 265,
-        "modifiedAt": "2026-06-02T04:35:37.153Z",
+        "sizeBytes": 328,
+        "modifiedAt": "2026-06-02T08:36:11.556Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/api/platform-response.ts",
+        "extension": ".ts",
+        "sizeBytes": 2229,
+        "modifiedAt": "2026-06-02T08:36:03.908Z",
         "kind": "file"
       },
       {
@@ -3516,6 +3592,34 @@
         "extension": ".ts",
         "sizeBytes": 1299,
         "modifiedAt": "2026-06-02T01:06:59.777Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/command-center/build-bundle.ts",
+        "extension": ".ts",
+        "sizeBytes": 5304,
+        "modifiedAt": "2026-06-02T09:09:29.065Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/command-center/recommendation-definitions.ts",
+        "extension": ".ts",
+        "sizeBytes": 12924,
+        "modifiedAt": "2026-06-02T09:08:58.483Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/command-center/recommendations.ts",
+        "extension": ".ts",
+        "sizeBytes": 5218,
+        "modifiedAt": "2026-06-02T08:53:45.836Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/command-center/runtime-audit.ts",
+        "extension": ".ts",
+        "sizeBytes": 2909,
+        "modifiedAt": "2026-06-02T08:53:19.611Z",
         "kind": "file"
       },
       {
@@ -3680,6 +3784,97 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/lib/platform-api/auth.ts",
+        "extension": ".ts",
+        "sizeBytes": 2338,
+        "modifiedAt": "2026-06-02T09:01:20.051Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/error-classifier.ts",
+        "extension": ".ts",
+        "sizeBytes": 8092,
+        "modifiedAt": "2026-06-02T08:07:09.605Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/health-event.ts",
+        "extension": ".ts",
+        "sizeBytes": 1245,
+        "modifiedAt": "2026-06-02T08:07:01.014Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/health-snapshot.ts",
+        "extension": ".ts",
+        "sizeBytes": 2026,
+        "modifiedAt": "2026-06-02T08:07:03.071Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/index.ts",
+        "extension": ".ts",
+        "sizeBytes": 892,
+        "modifiedAt": "2026-06-02T08:29:34.015Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/product-registry.ts",
+        "extension": ".ts",
+        "sizeBytes": 1571,
+        "modifiedAt": "2026-06-02T08:29:29.712Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/provider-registry.ts",
+        "extension": ".ts",
+        "sizeBytes": 1725,
+        "modifiedAt": "2026-06-02T08:06:38.120Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/status-message.ts",
+        "extension": ".ts",
+        "sizeBytes": 5951,
+        "modifiedAt": "2026-06-02T08:06:47.399Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/platform-health/status-types.ts",
+        "extension": ".ts",
+        "sizeBytes": 1727,
+        "modifiedAt": "2026-06-02T08:38:32.309Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/status-page/build-and-publish.ts",
+        "extension": ".ts",
+        "sizeBytes": 633,
+        "modifiedAt": "2026-06-02T09:01:23.175Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/status-page/constants.ts",
+        "extension": ".ts",
+        "sizeBytes": 957,
+        "modifiedAt": "2026-06-02T09:01:08.622Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/status-page/consumer-cache.ts",
+        "extension": ".ts",
+        "sizeBytes": 409,
+        "modifiedAt": "2026-06-02T09:01:08.746Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/lib/status-page/project-audience-view.ts",
+        "extension": ".ts",
+        "sizeBytes": 6453,
+        "modifiedAt": "2026-06-02T09:09:46.468Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/lib/supabase/request-context.ts",
         "extension": ".ts",
         "sizeBytes": 326,
@@ -3780,8 +3975,8 @@
       {
         "relativePath": "access-app/next-env.d.ts",
         "extension": ".ts",
-        "sizeBytes": 251,
-        "modifiedAt": "2026-06-02T04:48:21.748Z",
+        "sizeBytes": 247,
+        "modifiedAt": "2026-06-02T08:07:41.747Z",
         "kind": "file"
       },
       {
@@ -3794,8 +3989,15 @@
       {
         "relativePath": "access-app/package.json",
         "extension": ".json",
-        "sizeBytes": 1834,
-        "modifiedAt": "2026-06-02T04:39:25.050Z",
+        "sizeBytes": 3121,
+        "modifiedAt": "2026-06-02T09:01:53.590Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/packages/access-connector/.access-connector-token.json",
+        "extension": ".json",
+        "sizeBytes": 816,
+        "modifiedAt": "2026-06-02T19:10:10.423Z",
         "kind": "file"
       },
       {
@@ -3815,8 +4017,8 @@
       {
         "relativePath": "access-app/packages/access-connector/config.local.json",
         "extension": ".json",
-        "sizeBytes": 149,
-        "modifiedAt": "2026-06-02T04:01:41.527Z",
+        "sizeBytes": 156,
+        "modifiedAt": "2026-06-02T19:09:56.689Z",
         "kind": "file"
       },
       {
@@ -3829,8 +4031,15 @@
       {
         "relativePath": "access-app/packages/access-connector/package.json",
         "extension": ".json",
-        "sizeBytes": 859,
-        "modifiedAt": "2026-06-02T04:36:11.638Z",
+        "sizeBytes": 1326,
+        "modifiedAt": "2026-06-02T05:58:55.088Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/packages/access-connector/registry-sync-plan.json",
+        "extension": ".json",
+        "sizeBytes": 13516,
+        "modifiedAt": "2026-06-02T19:09:06.459Z",
         "kind": "file"
       },
       {
@@ -3918,6 +4127,20 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/packages/access-connector/vault-compile-summary.json",
+        "extension": ".json",
+        "sizeBytes": 13508,
+        "modifiedAt": "2026-06-02T19:09:05.765Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/packages/access-connector/vault-scan-report.json",
+        "extension": ".json",
+        "sizeBytes": 229042,
+        "modifiedAt": "2026-06-02T19:09:05.048Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/proxy.ts",
         "extension": ".ts",
         "sizeBytes": 468,
@@ -3932,10 +4155,24 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/scripts/bootstrap-m4.sh",
+        "extension": ".sh",
+        "sizeBytes": 5761,
+        "modifiedAt": "2026-06-02T09:41:45.157Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/scripts/canonical-registry-allowlist.json",
+        "extension": ".json",
+        "sizeBytes": 1086,
+        "modifiedAt": "2026-06-02T09:28:03.920Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/scripts/create-connector-pairing-code.ts",
         "extension": ".ts",
-        "sizeBytes": 2227,
-        "modifiedAt": "2026-06-02T04:36:25.033Z",
+        "sizeBytes": 5025,
+        "modifiedAt": "2026-06-02T08:07:53.999Z",
         "kind": "file"
       },
       {
@@ -3981,6 +4218,13 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/scripts/m4-dry-run.ts",
+        "extension": ".ts",
+        "sizeBytes": 12811,
+        "modifiedAt": "2026-06-02T08:09:39.900Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/scripts/m4-full-validation.ts",
         "extension": ".ts",
         "sizeBytes": 13228,
@@ -3990,8 +4234,8 @@
       {
         "relativePath": "access-app/scripts/sync-worker.ts",
         "extension": ".ts",
-        "sizeBytes": 1313,
-        "modifiedAt": "2026-06-02T04:36:23.120Z",
+        "sizeBytes": 1532,
+        "modifiedAt": "2026-06-02T08:37:47.517Z",
         "kind": "file"
       },
       {
@@ -4009,6 +4253,13 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/scripts/verify-canonical-registry.ts",
+        "extension": ".ts",
+        "sizeBytes": 6100,
+        "modifiedAt": "2026-06-02T09:28:03.920Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/scripts/verify-jyson-command-p10.ts",
         "extension": ".ts",
         "sizeBytes": 3510,
@@ -4023,10 +4274,24 @@
         "kind": "file"
       },
       {
+        "relativePath": "access-app/scripts/verify-platform-health.ts",
+        "extension": ".ts",
+        "sizeBytes": 4345,
+        "modifiedAt": "2026-06-02T08:07:14.126Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "access-app/scripts/verify-platform-m0.ts",
         "extension": ".ts",
-        "sizeBytes": 3044,
-        "modifiedAt": "2026-06-02T04:50:55.208Z",
+        "sizeBytes": 4042,
+        "modifiedAt": "2026-06-02T07:45:04.480Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "access-app/scripts/verify-status-page.ts",
+        "extension": ".ts",
+        "sizeBytes": 1762,
+        "modifiedAt": "2026-06-02T09:01:33.914Z",
         "kind": "file"
       },
       {
@@ -4039,8 +4304,8 @@
       {
         "relativePath": "access-app/supabase/APPLY_ORDER.md",
         "extension": ".md",
-        "sizeBytes": 347,
-        "modifiedAt": "2026-06-02T04:50:59.037Z",
+        "sizeBytes": 544,
+        "modifiedAt": "2026-06-02T05:58:56.003Z",
         "kind": "file"
       },
       {
@@ -4074,8 +4339,8 @@
       {
         "relativePath": "access-app/supabase/schema_v4_platform_hardening.sql",
         "extension": ".sql",
-        "sizeBytes": 14741,
-        "modifiedAt": "2026-06-02T04:35:48.251Z",
+        "sizeBytes": 19963,
+        "modifiedAt": "2026-06-02T06:16:18.499Z",
         "kind": "file"
       },
       {
@@ -4088,8 +4353,8 @@
       {
         "relativePath": "access-app/tsconfig.json",
         "extension": ".json",
-        "sizeBytes": 865,
-        "modifiedAt": "2026-06-02T04:30:01.587Z",
+        "sizeBytes": 876,
+        "modifiedAt": "2026-06-02T08:09:58.782Z",
         "kind": "file"
       },
       {
@@ -4118,6 +4383,230 @@
         "extension": ".md",
         "sizeBytes": 202,
         "modifiedAt": "2026-05-19T23:54:50.341Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/README.md",
+        "extension": ".md",
+        "sizeBytes": 319,
+        "modifiedAt": "2026-06-02T05:58:41.578Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/AGENTS.md",
+        "extension": ".md",
+        "sizeBytes": 327,
+        "modifiedAt": "2026-06-01T16:14:02.934Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/CLAUDE.md",
+        "extension": ".md",
+        "sizeBytes": 11,
+        "modifiedAt": "2026-06-01T16:14:02.934Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/README.md",
+        "extension": ".md",
+        "sizeBytes": 1450,
+        "modifiedAt": "2026-06-01T16:14:02.935Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/app/globals.css",
+        "extension": ".css",
+        "sizeBytes": 10153,
+        "modifiedAt": "2026-06-01T16:14:02.936Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/app/layout.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 569,
+        "modifiedAt": "2026-06-01T16:14:02.936Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/app/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 1131,
+        "modifiedAt": "2026-06-01T16:14:02.937Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/app/projects/[id]/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 17914,
+        "modifiedAt": "2026-06-01T16:14:02.937Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/app/sso-callback/page.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 589,
+        "modifiedAt": "2026-06-01T16:14:02.938Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/CommandCenter.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 75368,
+        "modifiedAt": "2026-06-01T16:14:02.939Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/CommandOutput.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 49545,
+        "modifiedAt": "2026-06-01T16:14:02.941Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/TerminalLanding.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 7904,
+        "modifiedAt": "2026-06-01T16:14:02.942Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/access/AccessIdCard.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 2110,
+        "modifiedAt": "2026-06-01T16:14:02.942Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/access/BlueprintDisplay.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 15610,
+        "modifiedAt": "2026-06-01T16:14:02.943Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/components/access/RegistryPanel.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 6412,
+        "modifiedAt": "2026-06-01T16:14:02.944Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/agents.ts",
+        "extension": ".ts",
+        "sizeBytes": 1786,
+        "modifiedAt": "2026-06-01T16:14:02.944Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/assets.ts",
+        "extension": ".ts",
+        "sizeBytes": 1793,
+        "modifiedAt": "2026-06-01T16:14:02.945Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/blueprints.ts",
+        "extension": ".ts",
+        "sizeBytes": 2159,
+        "modifiedAt": "2026-06-01T16:14:02.945Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/identity.ts",
+        "extension": ".ts",
+        "sizeBytes": 1882,
+        "modifiedAt": "2026-06-01T16:14:02.945Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/offers.ts",
+        "extension": ".ts",
+        "sizeBytes": 1803,
+        "modifiedAt": "2026-06-01T16:14:02.946Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/projects.ts",
+        "extension": ".ts",
+        "sizeBytes": 3972,
+        "modifiedAt": "2026-06-01T16:14:02.946Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/registry.ts",
+        "extension": ".ts",
+        "sizeBytes": 2545,
+        "modifiedAt": "2026-06-01T16:14:02.947Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/systems.ts",
+        "extension": ".ts",
+        "sizeBytes": 3275,
+        "modifiedAt": "2026-06-01T16:14:02.947Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/vaults.ts",
+        "extension": ".ts",
+        "sizeBytes": 1735,
+        "modifiedAt": "2026-06-01T16:14:02.947Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/actions/workflows.ts",
+        "extension": ".ts",
+        "sizeBytes": 1759,
+        "modifiedAt": "2026-06-01T16:14:02.948Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/lib/supabase.ts",
+        "extension": ".ts",
+        "sizeBytes": 680,
+        "modifiedAt": "2026-06-01T16:14:02.948Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/next.config.ts",
+        "extension": ".ts",
+        "sizeBytes": 133,
+        "modifiedAt": "2026-06-01T16:14:02.948Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/package.json",
+        "extension": ".json",
+        "sizeBytes": 597,
+        "modifiedAt": "2026-06-01T16:14:02.950Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/supabase/schema.sql",
+        "extension": ".sql",
+        "sizeBytes": 9583,
+        "modifiedAt": "2026-06-01T16:14:02.953Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/supabase/schema_v2.sql",
+        "extension": ".sql",
+        "sizeBytes": 7128,
+        "modifiedAt": "2026-06-01T16:14:02.953Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/tsconfig.json",
+        "extension": ".json",
+        "sizeBytes": 666,
+        "modifiedAt": "2026-06-01T16:14:02.954Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "archive/audit-access-app-2026-06-02/types/db.ts",
+        "extension": ".ts",
+        "sizeBytes": 3882,
+        "modifiedAt": "2026-06-01T16:14:02.954Z",
         "kind": "file"
       },
       {
@@ -4179,8 +4668,8 @@
       {
         "relativePath": "command_center/CURRENT_TASK.md",
         "extension": ".md",
-        "sizeBytes": 2508,
-        "modifiedAt": "2026-05-20T04:07:54.311Z",
+        "sizeBytes": 2126,
+        "modifiedAt": "2026-06-02T07:09:49.251Z",
         "kind": "file"
       },
       {
@@ -4221,8 +4710,8 @@
       {
         "relativePath": "command_center/SYSTEM_STATUS.md",
         "extension": ".md",
-        "sizeBytes": 6784,
-        "modifiedAt": "2026-05-22T03:51:37.301Z",
+        "sizeBytes": 6931,
+        "modifiedAt": "2026-06-02T07:09:56.254Z",
         "kind": "file"
       },
       {
@@ -4342,6 +4831,13 @@
         "extension": ".html",
         "sizeBytes": 22432,
         "modifiedAt": "2026-05-13T19:32:32.609Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "docs/JD_AI_SYSTEMS_OPERATOR_MANUAL.md",
+        "extension": ".md",
+        "sizeBytes": 20432,
+        "modifiedAt": "2026-06-02T09:28:08.529Z",
         "kind": "file"
       },
       {
@@ -4527,6 +5023,475 @@
         "kind": "file"
       },
       {
+        "relativePath": "jdai-content-engine/README-SYSTEM-ARCHITECTURE.md",
+        "extension": ".md",
+        "sizeBytes": 35976,
+        "modifiedAt": "2026-06-02T18:38:42.569Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/README.md",
+        "extension": ".md",
+        "sizeBytes": 7600,
+        "modifiedAt": "2026-06-02T18:23:40.306Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/agents/research-orchestrator/README.md",
+        "extension": ".md",
+        "sizeBytes": 4509,
+        "modifiedAt": "2026-06-02T18:22:15.153Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/agents/research-orchestrator/config.json",
+        "extension": ".json",
+        "sizeBytes": 9136,
+        "modifiedAt": "2026-06-02T18:22:25.978Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/agents/research-orchestrator/orchestrator.md",
+        "extension": ".md",
+        "sizeBytes": 27014,
+        "modifiedAt": "2026-06-02T18:22:59.668Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/architecture/intelligence-pipeline.md",
+        "extension": ".md",
+        "sizeBytes": 49658,
+        "modifiedAt": "2026-06-02T18:38:51.323Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/command-center/content-command-center.md",
+        "extension": ".md",
+        "sizeBytes": 42406,
+        "modifiedAt": "2026-06-02T18:23:55.893Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/dossiers/2026-06-02-agent-orchestration-DOSSIER.md",
+        "extension": ".md",
+        "sizeBytes": 5409,
+        "modifiedAt": "2026-06-02T19:02:54.684Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/dossiers/2026-06-02-platform-infrastructure-DOSSIER.md",
+        "extension": ".md",
+        "sizeBytes": 10332,
+        "modifiedAt": "2026-06-02T18:23:40.225Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/00-cycle-index.md",
+        "extension": ".md",
+        "sizeBytes": 2132,
+        "modifiedAt": "2026-06-02T19:03:09.986Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/01-research-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 13470,
+        "modifiedAt": "2026-06-02T19:03:12.418Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/01-research-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 1099,
+        "modifiedAt": "2026-06-02T18:23:54.289Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/01-research-test.md",
+        "extension": ".md",
+        "sizeBytes": 7865,
+        "modifiedAt": "2026-06-02T17:38:06.890Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/02-content-dossier-test.md",
+        "extension": ".md",
+        "sizeBytes": 8693,
+        "modifiedAt": "2026-06-02T17:38:15.163Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/02-evidence-table-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 3679,
+        "modifiedAt": "2026-06-02T19:03:12.423Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/02-signal-scores-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 614,
+        "modifiedAt": "2026-06-02T18:23:54.885Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/03-claude-execution-packet-test.md",
+        "extension": ".md",
+        "sizeBytes": 10972,
+        "modifiedAt": "2026-06-02T17:38:24.076Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/03-positioning-analysis-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 824,
+        "modifiedAt": "2026-06-02T18:23:55.995Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/03-signal-analysis-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 2404,
+        "modifiedAt": "2026-06-02T19:03:12.430Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/04-audience-analysis-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 2325,
+        "modifiedAt": "2026-06-02T19:03:12.435Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/04-narrative-analysis-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 781,
+        "modifiedAt": "2026-06-02T18:23:56.279Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/05-audience-analysis-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 795,
+        "modifiedAt": "2026-06-02T18:23:56.897Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/05-narrative-analysis-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 2560,
+        "modifiedAt": "2026-06-02T19:03:12.441Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/06-opportunity-analysis-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 869,
+        "modifiedAt": "2026-06-02T18:23:57.658Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/06-positioning-analysis-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 2161,
+        "modifiedAt": "2026-06-02T19:03:12.447Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/07-content-dossier-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 900,
+        "modifiedAt": "2026-06-02T18:23:58.581Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/07-opportunity-analysis-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 1531,
+        "modifiedAt": "2026-06-02T19:03:12.453Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/08-claude-execution-packet-platform-infrastructure.md",
+        "extension": ".md",
+        "sizeBytes": 916,
+        "modifiedAt": "2026-06-02T18:23:59.028Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/08-content-dossier-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 5409,
+        "modifiedAt": "2026-06-02T19:03:12.458Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/09-claude-packet-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 3244,
+        "modifiedAt": "2026-06-02T19:03:12.464Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/daily/2026-06-02/10-executive-summary-agent-orchestration.md",
+        "extension": ".md",
+        "sizeBytes": 4163,
+        "modifiedAt": "2026-06-02T19:03:12.470Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/exports/ready-for-claude/2026-06-02-agent-orchestration-PACKET.md",
+        "extension": ".md",
+        "sizeBytes": 3244,
+        "modifiedAt": "2026-06-02T19:02:59.894Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/manifest.json",
+        "extension": ".json",
+        "sizeBytes": 2505,
+        "modifiedAt": "2026-06-02T19:03:15.098Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/audience-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 2325,
+        "modifiedAt": "2026-06-02T19:02:34.828Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/evidence-table.md",
+        "extension": ".md",
+        "sizeBytes": 3679,
+        "modifiedAt": "2026-06-02T19:02:27.701Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/executive-summary.md",
+        "extension": ".md",
+        "sizeBytes": 4163,
+        "modifiedAt": "2026-06-02T19:03:05.753Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/market-research.md",
+        "extension": ".md",
+        "sizeBytes": 13470,
+        "modifiedAt": "2026-06-02T19:02:19.413Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/narrative-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 2560,
+        "modifiedAt": "2026-06-02T19:02:38.969Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/opportunity-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 1531,
+        "modifiedAt": "2026-06-02T19:02:46.685Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/positioning-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 2161,
+        "modifiedAt": "2026-06-02T19:02:44.033Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/agent-orchestration-evidence-cycle/signal-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 2404,
+        "modifiedAt": "2026-06-02T19:02:31.487Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/audience-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 6362,
+        "modifiedAt": "2026-06-02T18:23:23.803Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/market-research.md",
+        "extension": ".md",
+        "sizeBytes": 26256,
+        "modifiedAt": "2026-06-02T18:22:56.616Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/narrative-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 7633,
+        "modifiedAt": "2026-06-02T18:23:19.063Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/opportunity-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 5742,
+        "modifiedAt": "2026-06-02T18:23:28.606Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/positioning-analysis.md",
+        "extension": ".md",
+        "sizeBytes": 9319,
+        "modifiedAt": "2026-06-02T18:23:12.325Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/2026-06-02/platform-infrastructure-positioning/signal-scores.md",
+        "extension": ".md",
+        "sizeBytes": 3839,
+        "modifiedAt": "2026-06-02T18:23:02.095Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/audience-ecosystem-framework.md",
+        "extension": ".md",
+        "sizeBytes": 28278,
+        "modifiedAt": "2026-06-02T18:09:51.286Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/audience-psychology-framework.md",
+        "extension": ".md",
+        "sizeBytes": 19738,
+        "modifiedAt": "2026-06-02T18:11:32.976Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/brand-narrative-framework.md",
+        "extension": ".md",
+        "sizeBytes": 18772,
+        "modifiedAt": "2026-06-02T18:14:01.132Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/category-ownership-framework.md",
+        "extension": ".md",
+        "sizeBytes": 34911,
+        "modifiedAt": "2026-06-02T18:20:41.954Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/competitor-intelligence-framework.md",
+        "extension": ".md",
+        "sizeBytes": 16203,
+        "modifiedAt": "2026-06-02T18:06:45.252Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/content-opportunity-engine.md",
+        "extension": ".md",
+        "sizeBytes": 20956,
+        "modifiedAt": "2026-06-02T18:20:35.167Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/evidence-engine-framework.md",
+        "extension": ".md",
+        "sizeBytes": 27246,
+        "modifiedAt": "2026-06-02T18:38:33.921Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/future-state-engine.md",
+        "extension": ".md",
+        "sizeBytes": 22633,
+        "modifiedAt": "2026-06-02T18:18:10.064Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/intelligence-quality-framework.md",
+        "extension": ".md",
+        "sizeBytes": 13369,
+        "modifiedAt": "2026-06-02T18:38:41.819Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/jd-productions-positioning-engine.md",
+        "extension": ".md",
+        "sizeBytes": 13792,
+        "modifiedAt": "2026-06-02T18:04:49.362Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/market-map-engine.md",
+        "extension": ".md",
+        "sizeBytes": 33008,
+        "modifiedAt": "2026-06-02T18:19:44.125Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/messaging-framework.md",
+        "extension": ".md",
+        "sizeBytes": 19082,
+        "modifiedAt": "2026-06-02T18:14:28.367Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/narrative-engine-framework.md",
+        "extension": ".md",
+        "sizeBytes": 25232,
+        "modifiedAt": "2026-06-02T18:15:49.997Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/product-opportunity-engine.md",
+        "extension": ".md",
+        "sizeBytes": 26493,
+        "modifiedAt": "2026-06-02T18:20:31.150Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/research-watchlist.md",
+        "extension": ".md",
+        "sizeBytes": 12737,
+        "modifiedAt": "2026-06-02T17:42:48.309Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/research/signal-detection-framework.md",
+        "extension": ".md",
+        "sizeBytes": 16372,
+        "modifiedAt": "2026-06-02T18:03:33.767Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/scripts/generate-content-intelligence-workflow.md",
+        "extension": ".md",
+        "sizeBytes": 17491,
+        "modifiedAt": "2026-06-02T17:35:50.507Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/templates/claude-execution-packet-template.md",
+        "extension": ".md",
+        "sizeBytes": 6465,
+        "modifiedAt": "2026-06-02T17:33:15.022Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/templates/content-dossier-template.md",
+        "extension": ".md",
+        "sizeBytes": 5154,
+        "modifiedAt": "2026-06-02T17:33:08.914Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jdai-content-engine/templates/market-research-template.md",
+        "extension": ".md",
+        "sizeBytes": 2330,
+        "modifiedAt": "2026-06-02T17:33:04.326Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "jyson/README.md",
         "extension": ".md",
         "sizeBytes": 2425,
@@ -4536,8 +5501,8 @@
       {
         "relativePath": "jyson/api/chat.ts",
         "extension": ".ts",
-        "sizeBytes": 12212,
-        "modifiedAt": "2026-05-31T19:03:50.160Z",
+        "sizeBytes": 14650,
+        "modifiedAt": "2026-06-02T07:28:36.239Z",
         "kind": "file"
       },
       {
@@ -4564,8 +5529,8 @@
       {
         "relativePath": "jyson/index.html",
         "extension": ".html",
-        "sizeBytes": 863,
-        "modifiedAt": "2026-05-31T00:50:59.715Z",
+        "sizeBytes": 1838,
+        "modifiedAt": "2026-06-02T15:57:25.165Z",
         "kind": "file"
       },
       {
@@ -4592,8 +5557,8 @@
       {
         "relativePath": "jyson/src/SystemPlanet.tsx",
         "extension": ".tsx",
-        "sizeBytes": 9032,
-        "modifiedAt": "2026-05-31T17:15:10.910Z",
+        "sizeBytes": 10377,
+        "modifiedAt": "2026-06-02T09:40:14.306Z",
         "kind": "file"
       },
       {
@@ -4697,8 +5662,8 @@
       {
         "relativePath": "jyson/src/components/CommandInput.tsx",
         "extension": ".tsx",
-        "sizeBytes": 6717,
-        "modifiedAt": "2026-05-31T17:16:22.486Z",
+        "sizeBytes": 12916,
+        "modifiedAt": "2026-06-02T09:41:10.042Z",
         "kind": "file"
       },
       {
@@ -4725,22 +5690,22 @@
       {
         "relativePath": "jyson/src/components/DispatchTerminal.tsx",
         "extension": ".tsx",
-        "sizeBytes": 14143,
-        "modifiedAt": "2026-05-31T19:30:33.061Z",
+        "sizeBytes": 15994,
+        "modifiedAt": "2026-06-02T09:41:03.455Z",
         "kind": "file"
       },
       {
         "relativePath": "jyson/src/components/JysonGreeting.tsx",
         "extension": ".tsx",
-        "sizeBytes": 808,
-        "modifiedAt": "2026-05-31T17:15:36.717Z",
+        "sizeBytes": 828,
+        "modifiedAt": "2026-06-02T09:40:06.449Z",
         "kind": "file"
       },
       {
         "relativePath": "jyson/src/components/JysonHeader.tsx",
         "extension": ".tsx",
-        "sizeBytes": 2143,
-        "modifiedAt": "2026-05-31T17:15:29.147Z",
+        "sizeBytes": 2085,
+        "modifiedAt": "2026-06-02T15:57:25.073Z",
         "kind": "file"
       },
       {
@@ -4760,8 +5725,8 @@
       {
         "relativePath": "jyson/src/components/PublicPromptChips.tsx",
         "extension": ".tsx",
-        "sizeBytes": 1575,
-        "modifiedAt": "2026-05-31T17:15:45.909Z",
+        "sizeBytes": 1578,
+        "modifiedAt": "2026-06-02T09:40:08.917Z",
         "kind": "file"
       },
       {
@@ -4781,15 +5746,15 @@
       {
         "relativePath": "jyson/src/index.css",
         "extension": ".css",
-        "sizeBytes": 1670,
-        "modifiedAt": "2026-05-31T17:14:27.796Z",
+        "sizeBytes": 5698,
+        "modifiedAt": "2026-06-02T09:40:42.558Z",
         "kind": "file"
       },
       {
         "relativePath": "jyson/src/main.tsx",
         "extension": ".tsx",
-        "sizeBytes": 230,
-        "modifiedAt": "2026-05-30T23:21:11.725Z",
+        "sizeBytes": 327,
+        "modifiedAt": "2026-06-02T09:41:46.844Z",
         "kind": "file"
       },
       {
@@ -4807,6 +5772,48 @@
         "kind": "file"
       },
       {
+        "relativePath": "jyson/src/theme/ThemeContext.ts",
+        "extension": ".ts",
+        "sizeBytes": 551,
+        "modifiedAt": "2026-06-02T09:41:43.760Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jyson/src/theme/ThemeProvider.tsx",
+        "extension": ".tsx",
+        "sizeBytes": 2086,
+        "modifiedAt": "2026-06-02T09:41:43.813Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jyson/src/theme/config.ts",
+        "extension": ".ts",
+        "sizeBytes": 794,
+        "modifiedAt": "2026-06-02T15:57:22.194Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jyson/src/theme/resolveTheme.ts",
+        "extension": ".ts",
+        "sizeBytes": 518,
+        "modifiedAt": "2026-06-02T09:39:45.978Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jyson/src/theme/schedule.ts",
+        "extension": ".ts",
+        "sizeBytes": 1261,
+        "modifiedAt": "2026-06-02T15:57:22.193Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "jyson/src/theme/storage.ts",
+        "extension": ".ts",
+        "sizeBytes": 608,
+        "modifiedAt": "2026-06-02T15:57:22.233Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "jyson/tsconfig.api.json",
         "extension": ".json",
         "sizeBytes": 283,
@@ -4816,8 +5823,8 @@
       {
         "relativePath": "jyson/tsconfig.app.json",
         "extension": ".json",
-        "sizeBytes": 617,
-        "modifiedAt": "2026-05-30T23:21:11.726Z",
+        "sizeBytes": 654,
+        "modifiedAt": "2026-06-02T07:28:24.352Z",
         "kind": "file"
       },
       {
@@ -5444,10 +6451,38 @@
         "kind": "file"
       },
       {
+        "relativePath": "logs/backups/README-SYSTEM-ARCHITECTURE.backup-2026-06-02-1419.md",
+        "extension": ".md",
+        "sizeBytes": 35271,
+        "modifiedAt": "2026-06-02T18:19:13.523Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/README-SYSTEM-ARCHITECTURE.backup-2026-06-02-1420.md",
+        "extension": ".md",
+        "sizeBytes": 35486,
+        "modifiedAt": "2026-06-02T18:20:32.918Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/README-SYSTEM-ARCHITECTURE.backup-2026-06-02-1438.md",
+        "extension": ".md",
+        "sizeBytes": 35838,
+        "modifiedAt": "2026-06-02T18:38:05.052Z",
+        "kind": "file"
+      },
+      {
         "relativePath": "logs/backups/ally_replacement_2026-05-13/REPLACEMENT_REPORT.md",
         "extension": ".md",
         "sizeBytes": 3560,
         "modifiedAt": "2026-05-13T19:34:17.197Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/content-command-center.backup-2026-06-02-1423.md",
+        "extension": ".md",
+        "sizeBytes": 42293,
+        "modifiedAt": "2026-06-02T18:23:47.381Z",
         "kind": "file"
       },
       {
@@ -5462,6 +6497,27 @@
         "extension": ".html",
         "sizeBytes": 9863,
         "modifiedAt": "2026-06-01T23:33:24.184Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/intelligence-pipeline.backup-2026-06-02-1423.md",
+        "extension": ".md",
+        "sizeBytes": 45602,
+        "modifiedAt": "2026-06-02T18:23:47.393Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/intelligence-pipeline.backup-2026-06-02-1438.md",
+        "extension": ".md",
+        "sizeBytes": 45805,
+        "modifiedAt": "2026-06-02T18:38:05.035Z",
+        "kind": "file"
+      },
+      {
+        "relativePath": "logs/backups/intelligence-quality-framework.backup-2026-06-02-1438.md",
+        "extension": ".md",
+        "sizeBytes": 12973,
+        "modifiedAt": "2026-06-02T18:38:05.043Z",
         "kind": "file"
       },
       {
@@ -5537,8 +6593,8 @@
       {
         "relativePath": "package.json",
         "extension": ".json",
-        "sizeBytes": 1165,
-        "modifiedAt": "2026-06-02T01:06:59.411Z",
+        "sizeBytes": 1326,
+        "modifiedAt": "2026-06-02T05:59:16.932Z",
         "kind": "file"
       },
       {

@@ -27,6 +27,9 @@ export async function fetchJysonCompanionContext(): Promise<{
         repairAction: 'repair_connection',
         panelActions: ['retry_loading', 'view_diagnostics'],
         steps: ['Retry after restarting the dev server'],
+        cloudReady: false,
+        localReady: false,
+        connectorOnline: false,
       },
     }
   }

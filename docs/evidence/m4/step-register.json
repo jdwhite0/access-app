@@ -1,5 +1,5 @@
 {
-  "ok": false,
-  "stdout": "{\n  \"ok\": false,\n  \"error\": \"Invalid or expired pairing code.\"\n}\n",
-  "stderr": "npm warn Unknown env config \"devdir\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.\n"
+  "ok": true,
+  "stdout": "{\n  \"ok\": true,\n  \"error\": null\n}\n",
+  "stderr": ""
 }

@@ -1,0 +1,46 @@
+{
+  "registryRelativePath": "../JD_AI_SYSTEMS_CANONICAL_REGISTRY.md",
+  "allowedProductIds": [
+    "access_os",
+    "jyson",
+    "build",
+    "vault",
+    "jd_ai_systems_core"
+  ],
+  "forbiddenLiterals": [
+    {
+      "id": "access_app_path",
+      "pattern": "access app/",
+      "flags": "i",
+      "message": "Deprecated path — use access-app/ (see ACCESS_WORKSPACE.md)"
+    }
+  ],
+  "allowlistPathSubstrings": [
+    "JD_AI_SYSTEMS_CANONICAL_REGISTRY.md",
+    "M6_PLATFORM_DEPLOYMENT_ARCHITECTURE.md",
+    "verify-canonical-registry.ts",
+    "canonical-registry-allowlist.json",
+    "ACCESS_WORKSPACE.md",
+    "access-app/ACCESS_AGENT.md",
+    "access-app/DEVELOPER_GUIDE.md",
+    "access-app/REPOSITORY_MAP.md",
+    "legacy-doctrine/ACCESS_AGENT.md",
+    "docs/evidence/",
+    "archive/"
+  ],
+  "scanDirs": [
+    ".",
+    "../jyson/src",
+    "../jyson/api",
+    "../command_center"
+  ],
+  "scanExtensions": [".ts", ".tsx", ".js", ".mjs", ".json", ".md", ".sql"],
+  "skipDirNames": [
+    "node_modules",
+    ".next",
+    "dist",
+    ".git",
+    "archive",
+    "logs/backups"
+  ]
+}

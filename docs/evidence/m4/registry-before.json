@@ -1,13 +1,230 @@
 {
   "label": "before",
-  "at": "2026-06-02T04:48:41.909Z",
-  "summary": null,
+  "at": "2026-06-02T19:10:08.600Z",
+  "summary": {
+    "counts": {
+      "agents": 1,
+      "assets": 1,
+      "offers": 8,
+      "vaults": 0,
+      "systems": 5,
+      "projects": 7,
+      "workflows": 2,
+      "blueprints": 8,
+      "connections": 2
+    },
+    "syncStatus": "never",
+    "identityHandle": "jdevinwhite2.access",
+    "registryCounts": {
+      "agents": 1,
+      "assets": 1,
+      "offers": 8,
+      "vaults": 0,
+      "systems": 5,
+      "projects": 7,
+      "workflows": 2,
+      "blueprints": 8,
+      "connections": 2
+    },
+    "vaultConnection": {
+      "status": "connected",
+      "vaultKey": "JD_AI_System",
+      "lastSeenAt": "2026-06-02T19:09:04.236+00:00",
+      "lastSyncAt": null,
+      "displayName": "JD_AI_System Intelligence Vault",
+      "connectorType": "local_connector",
+      "lastSyncStatus": null
+    },
+    "connectionsCount": 2,
+    "identityCreatedAt": "2026-06-02T02:53:31.313836+00:00"
+  },
   "provenanceRows": {
-    "systems": [],
-    "agents": [],
-    "builder_projects": [],
+    "systems": [
+      {
+        "id": "87181898-7009-49fe-abfa-6f7229066419",
+        "name": "JDP",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "28be3a89534d8e3b8bdba21cc3b83974",
+        "content_hash": "ded76dc318ef5f37f29284751777fd83f9e601f5e1900c62199341a886a3d70a",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:05.665+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "c21136d8-b359-49e8-ac97-e535220c4583",
+        "name": "LILDEV",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "0c83fa776701606704aec60ad354bfef",
+        "content_hash": "cadf3fa6ba3dd04971f48b42618e1e43dd7af4ce64b5ad7286ab8f4c344546df",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.219+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "9ab54049-6e33-42f9-9b64-c022ea3c65d4",
+        "name": "LILDEV",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "837c09a9b1f3b736d7af967f70b2d4d8",
+        "content_hash": "f430df3c2aa4b5111305e7f0cde791ef57b335ea2a85411597cfba42c323f234",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.044+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "c50f65f3-d61f-4b4c-8316-4a9bde5e74ca",
+        "name": "LILDEV",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "9ebdea98e746bb6d0fe5509d32bf3f8a",
+        "content_hash": "5f7d410ed3d578bda9af56acf2d00f100dec4048db16051795ac81eeba3a5708",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.405+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "0e75b9cd-29ce-42f6-a492-08350993a7b8",
+        "name": "LINC",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "6791f84abf12094b4762eb6ace2957eb",
+        "content_hash": "a5b0d87f1ad5202ad45a1a2d0708fc9ffe5e7830effdb543862398552718ba8e",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.515+00:00",
+        "sync_version": 1
+      }
+    ],
+    "agents": [
+      {
+        "id": "00d2e0ec-486c-4f3d-ba95-4a3aa5b6966d",
+        "name": "AGENT_ROLES",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "8b47a3b293f3c6fa5bc06eee2c8720d4",
+        "content_hash": "11f144019c1a0065164d52f300ead03a6d0f27b1bac576b55f584d77eae5c875",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:07.682+00:00",
+        "sync_version": 1
+      }
+    ],
+    "builder_projects": [
+      {
+        "id": "0f2ba1bf-265f-4364-b36a-bf99f91db9f7",
+        "name": "Forever_Thriven",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "4c29f16cbe6db00e196c29876dea9989",
+        "content_hash": "5064e4ab8c2d8323c30cf238264c9dccb0dbe7d0af8cd2ff38974e34c1871924",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:05.515+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "05dd31c8-d612-478b-bc55-b2c39a7dd617",
+        "name": "rise-and-fall",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "5d28c87b0a1f6a746c4580b426aa3e0f",
+        "content_hash": "74421aff4f1e8d9fbbbff4b0b92bdfa8695b45b1b33e23d7bc8df5f0e686d973",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.587+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "99f0f3ac-33d3-4423-afc6-01eb2607b4bb",
+        "name": "ACCESS",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "907d277397b13a3ff90f8829d0583ff8",
+        "content_hash": "176e4e1679c1800267982e40c5e626cc9e52d75823a8a0198ffaababb63a2803",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:05.16+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "8558cef2-56ad-4003-8e31-2219cd8b5fcc",
+        "name": "White_Lane",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "9268a5401743d7981f359cf1c8abd660",
+        "content_hash": "44382d54392aa70eaf59f273d300e9b86ba08cedc8d5622d479da3571fd79947",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.776+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "a6965646-263d-4de3-9a2c-406fc61cb854",
+        "name": "Walking_Paintbrush",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "b0f7c69529279b3c5058028fd2a4fba0",
+        "content_hash": "8e2d17c89afc149e21e493053e506c1a913df2d87a62e4cc79b47102da442379",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:06.686+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "d4f5b1bb-98cb-427e-9c59-f3370b29975c",
+        "name": "Bridge_Video",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "cd70396957713b4d771f12e6db9c26d2",
+        "content_hash": "95170f8f5047c9691461f52fb7c52f18ef9788e42764859d870c6fc7fd520777",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:05.324+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "372313f3-1711-42a5-84ef-e60a70aa270f",
+        "name": "JYSON",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "db302a70fe9dcf91d8275929ed7d481d",
+        "content_hash": "c0d4869ad0b93b47839dfb36ff07c54f5442807d62df6df9c4118d55c38be252",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:05.899+00:00",
+        "sync_version": 1
+      }
+    ],
     "blueprints": [],
-    "assets": [],
-    "workflows": []
+    "assets": [
+      {
+        "id": "d171a212-73dd-4c2a-bace-7e6bdea951a3",
+        "name": "JD System Portal",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "8dc6e67285a3c15c836f144355b87ccb",
+        "content_hash": "6011a15c2acb16ed8e5d61dd0ad6fbb88d2fb8d26921b5c3c76729eb634d5546",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:08.032+00:00",
+        "sync_version": 1
+      }
+    ],
+    "workflows": [
+      {
+        "id": "370fe9b1-17c0-49f7-b0ac-7a0b2f8833c1",
+        "name": "WORKFLOW_PROTOCOL",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "ba8d211a6b4202a22331dd28c8ff61cf",
+        "content_hash": "18d20817150d15d3240cc082db39d2060f911d7f809a0008a84f1162bb9fc52c",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:07.79+00:00",
+        "sync_version": 1
+      },
+      {
+        "id": "07115b74-9027-4d9e-89bb-8edea81c3a3d",
+        "name": "SKILL_EXECUTION_PROTOCOL",
+        "identity_id": "a64a0644-ec30-4a22-a332-10cd9223a559",
+        "clerk_user_id": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+        "source_ref": "ea9279cc2dca7ec04a095878bad35298",
+        "content_hash": "9f59945e33d19d85c7f4652973974e4d9b132ecfae81d1b6f432ddcd8b6e4072",
+        "vault_connection_id": "7ec29231-405c-42dd-b871-f3b5f54eed9d",
+        "last_synced_at": "2026-06-02T19:08:07.921+00:00",
+        "sync_version": 1
+      }
+    ]
   }
 }

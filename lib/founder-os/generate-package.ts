@@ -29,6 +29,12 @@ function resolveOutputRoot(): string {
   if (process.env.FOUNDER_OS_OUTPUT_ROOT) {
     return resolve(process.env.FOUNDER_OS_OUTPUT_ROOT)
   }
+  // Serverless environments (Vercel) have no writable cwd parent.
+  // /tmp is the only writable path available per invocation.
+  // The companion reads readiness from blueprint status in Supabase, not the filesystem.
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    return '/tmp/founder-os'
+  }
   return resolve(process.cwd(), '..', 'founder-os')
 }
 

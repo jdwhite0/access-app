@@ -3,14 +3,25 @@ import { authenticateConnectorRequest } from '@/lib/connector-auth/middleware'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import { rotateConnectorDeviceToken } from '@/lib/connector/device-service'
 import { parsePermissions } from '@/lib/connector/permissions'
-import { jsonError, jsonOk } from '@/lib/api/connector-response'
+import { classifiedErrorResponse, jsonOk } from '@/lib/api/connector-response'
 
 export async function POST(req: NextRequest) {
   const auth = await authenticateConnectorRequest(req, 'heartbeat')
-  if (!auth.ok) return jsonError(auth.error, auth.status)
+  if (!auth.ok) {
+    return classifiedErrorResponse(
+      { error: new Error(`Unauthorized: ${auth.error}`), httpStatus: auth.status, product: 'access_os', service: 'auth' },
+      { httpStatus: auth.status }
+    )
+  }
 
   const supabase = createSupabaseAdmin()
-  if (!supabase) return jsonError('Database not configured.', 503)
+  if (!supabase) {
+    return classifiedErrorResponse({
+      message: 'Database not configured.',
+      product: 'access_os',
+      service: 'database',
+    })
+  }
 
   const { data: device } = await supabase
     .from('connector_devices')
@@ -30,7 +41,13 @@ export async function POST(req: NextRequest) {
     permissions,
   })
 
-  if (!rotated.ok) return jsonError(rotated.error, 500)
+  if (!rotated.ok) {
+    return classifiedErrorResponse({
+      error: rotated.error,
+      product: 'access_os',
+      service: 'connector',
+    })
+  }
 
   return jsonOk({
     ok: true,

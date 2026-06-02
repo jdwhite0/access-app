@@ -47,6 +47,12 @@ export async function loadJysonContextFromAccessHandle(
       accessHandleContext: true,
       agentContext: false,
     },
+    companionState: {
+      status: 'local_founder_os_ready',
+      cloudReady: true,
+      localConnected: !!access.userSystemPackagePath,
+      connectorOnline: false,
+    },
   }
 
   return { context: jysonContext }

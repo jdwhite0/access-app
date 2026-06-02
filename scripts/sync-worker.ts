@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createClient } from '@supabase/supabase-js'
 import { processNextSyncJob } from '../lib/sync/queue'
+import { classifyError } from '../lib/platform-health'
 
 function loadEnv() {
   const envPath = resolve(process.cwd(), '.env.local')
@@ -24,7 +25,12 @@ async function main() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) {
-    console.error('Missing Supabase env in .env.local')
+    const classified = classifyError({
+      message: 'Missing Supabase env in .env.local',
+      product: 'access_os',
+      service: 'database',
+    })
+    console.error(classified.event.messages.internal_engineering)
     process.exit(1)
   }
 

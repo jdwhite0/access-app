@@ -4,9 +4,11 @@
 > This document defines how to think, build, propose, and document inside ACCESS.  
 > Do not implement product changes until you understand the doctrine below.
 
-**Repository:** `access app` (ACCESS — Identity & Gateway Layer, JD AI Systems)  
+**Canonical boot (paths + registry):** [`../../ACCESS_AGENT.md`](../../ACCESS_AGENT.md) at the `access-app/` root — read that before this file for M6+ platform IDs and verify commands.
+
+**Repository:** `access-app/` (ACCESS OS — Identity & Gateway Layer, JD AI Systems)  
 **Version:** 1.0  
-**Status:** Source of truth for AI-assisted development in this repo
+**Status:** Source of truth for AI-assisted development doctrine (registry IDs: repo-root `JD_AI_SYSTEMS_CANONICAL_REGISTRY.md`)
 
 ---
 
@@ -14,11 +16,12 @@
 
 Before writing code or editing documentation:
 
-1. Read this file (`ACCESS_AGENT.md`) in full.
-2. Read `README.md` for product summary.
-3. Read `docs/doctrine/ACCESS_DOCTRINE_v1_0.md` — non-negotiable principles.
-4. Identify your task type (vision / architecture / implementation / docs) and open the matching doc in `docs/`.
-5. State your intent: what you will change, what you will not touch, and which doctrine principles apply.
+1. Read [`../../ACCESS_AGENT.md`](../../ACCESS_AGENT.md) and [`../../../JD_AI_SYSTEMS_CANONICAL_REGISTRY.md`](../../../JD_AI_SYSTEMS_CANONICAL_REGISTRY.md).
+2. Read this file (`ACCESS_AGENT.md`) in full.
+3. Read `README.md` for product summary (if present).
+4. Read `docs/doctrine/ACCESS_DOCTRINE_v1_0.md` — non-negotiable principles.
+5. Identify your task type (vision / architecture / implementation / docs) and open the matching doc in `docs/`.
+6. State your intent: what you will change, what you will not touch, and which doctrine principles apply.
 
 If your task conflicts with doctrine, **stop and propose** — do not silently override.
 
