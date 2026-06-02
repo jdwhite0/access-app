@@ -10,15 +10,16 @@
     "access-connector": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsx src/cli.ts help",
-    "register": "tsx src/cli.ts register",
-    "heartbeat": "tsx src/cli.ts heartbeat",
-    "scan": "tsx src/cli.ts scan",
-    "compile": "tsx src/cli.ts compile",
-    "sync:plan": "tsx src/cli.ts sync-plan",
-    "sync:apply": "tsx src/cli.ts sync-apply",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "preflight": "node scripts/preflight-connector-root.mjs",
+    "build": "node scripts/preflight-connector-root.mjs && tsc -p tsconfig.json",
+    "dev": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts help",
+    "register": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts register",
+    "heartbeat": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts heartbeat",
+    "scan": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts scan",
+    "compile": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts compile",
+    "sync:plan": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts sync-plan",
+    "sync:apply": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts sync-apply",
+    "typecheck": "node scripts/preflight-connector-root.mjs && tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2"

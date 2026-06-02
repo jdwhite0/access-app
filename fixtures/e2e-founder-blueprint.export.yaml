@@ -1,0 +1,32 @@
+"schema_version": "1.0.0-mvp"
+"blueprint_id": "e2e-testfounder-founder-os"
+"blueprint_version": 1
+"status": "exported"
+"meta":
+  "origination": "access_wizard"
+  "authority": "canonical"
+  "draft": false
+"founder":
+  "display_name": "E2E Test Founder"
+  "access_handle": "e2e-testfounder.access"
+"organizations":
+  - "id": "e2e-studio"
+    "name": "E2E Studio"
+"products":
+  - "id": "e2e-platform"
+    "name": "E2E Platform"
+    "type": "platform"
+  - "id": "e2e-portfolio"
+    "name": "E2E Portfolio"
+    "type": "portfolio"
+    "organization_id": "e2e-studio"
+"experiences":
+  - "id": "e2e-portal"
+    "name": "E2E Portal"
+    "url": "https://example.com/e2e-portal"
+    "product_id": "e2e-platform"
+"output":
+  "founder_os_id": "e2e-testfounder-founder-os"
+  "name": "E2E Test Founder Founder OS"
+"exported_at": "2026-06-01T19:23:34.654Z"
+"access_blueprint_id": "00000000-0000-4000-8000-000000000001"

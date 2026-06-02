@@ -10,8 +10,7 @@ import {
   archiveBuilderProject,
 } from '@/lib/actions/projects'
 import type { BuilderProject, Task, Milestone } from '@/types/db'
-
-const JYSON_URL = process.env.NEXT_PUBLIC_JYSON_URL ?? 'https://jyson.vercel.app'
+import AppSystemNav from '@/components/access/AppSystemNav'
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -172,53 +171,22 @@ export default function ProjectPage() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', fontFamily: 'var(--mono)' }}>
 
-      {/* ── Header ── */}
+      <AppSystemNav active="project" accessId={project.owner_handle} />
+
       <div style={{
-        height: '52px', flexShrink: 0,
+        flexShrink: 0,
         display: 'flex', alignItems: 'center',
-        padding: '0 24px', gap: '16px',
+        padding: '8px 24px 10px', gap: '16px',
         borderBottom: '1px solid var(--border)',
         background: 'var(--surface)',
       }}>
-        <button
-          onClick={() => router.push('/')}
-          style={{
-            background: 'none', border: 'none', color: 'var(--text-muted)',
-            cursor: 'pointer', fontSize: '10px', letterSpacing: '0.1em',
-            fontFamily: 'var(--mono)', transition: 'color 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-        >
-          ← workspace
-        </button>
-        <span style={{ color: 'rgba(255,255,255,0.08)', fontSize: '14px' }}>│</span>
         <span style={{
           fontSize: '10px', letterSpacing: '0.18em', color: 'var(--text-muted)',
           textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           flex: 1,
         }}>
-          {project.name}
+          Builder · {project.name}
         </span>
-        <a
-          href={JYSON_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'flex', alignItems: 'center', gap: '6px',
-            padding: '6px 14px',
-            background: 'rgba(64,192,208,0.06)', border: '1px solid rgba(64,192,208,0.2)',
-            borderRadius: '2px', textDecoration: 'none',
-            fontSize: '9px', letterSpacing: '0.14em', color: 'var(--accent)',
-            fontFamily: 'var(--mono)', textTransform: 'uppercase',
-            transition: 'all 0.15s',
-            flexShrink: 0,
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(64,192,208,0.12)'; e.currentTarget.style.borderColor = 'rgba(64,192,208,0.45)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(64,192,208,0.06)'; e.currentTarget.style.borderColor = 'rgba(64,192,208,0.2)' }}
-        >
-          Continue in JYSON ↗
-        </a>
       </div>
 
       {/* ── Scrollable content ── */}

@@ -29,7 +29,19 @@ const REQUIRED_TABLES = [
   'sync_jobs',
 ]
 
-const REQUIRED_FUNCTIONS = ['get_registry_summary', 'access_set_request_context']
+// Each function entry specifies the exact args required by its signature.
+// connector_pairing_codes PK is `code` (not `id`) — use select('*') to avoid
+// false-negative on column probe.
+const REQUIRED_FUNCTION_CALLS: Array<{ name: string; args: Record<string, unknown> }> = [
+  {
+    name: 'get_registry_summary',
+    args: { p_identity_id: '00000000-0000-0000-0000-000000000000' },
+  },
+  {
+    name: 'access_set_request_context',
+    args: { p_identity_id: '00000000-0000-0000-0000-000000000000', p_clerk_user_id: 'verify' },
+  },
+]
 
 async function main() {
   loadEnv()
@@ -40,11 +52,17 @@ async function main() {
     process.exit(1)
   }
 
+  const ref = (() => { try { return new URL(url).hostname.split('.')[0] } catch { return url } })()
+  console.log(`Supabase project: ${ref}`)
+
   const supabase = createClient(url, key, { auth: { persistSession: false } })
   const report: Record<string, string> = {}
 
+  // Table probe: select('*').limit(0) avoids any column-name dependency.
+  // connector_pairing_codes PK is `code`, not `id` — select('id') would
+  // return 42703 which incorrectly matched 'does not exist'.
   for (const table of REQUIRED_TABLES) {
-    const { error } = await supabase.from(table).select('id').limit(1)
+    const { error } = await supabase.from(table).select('*').limit(0)
     const msg = error?.message ?? ''
     report[table] =
       error &&
@@ -58,12 +76,13 @@ async function main() {
           : 'OK'
   }
 
-  for (const fn of REQUIRED_FUNCTIONS) {
-    const { error } = await supabase.rpc(fn as 'get_registry_summary', {
-      p_identity_id: '00000000-0000-0000-0000-000000000000',
-    })
+  // Function probe: each entry uses its exact required arg signature.
+  // Calling access_set_request_context with only p_identity_id returns PGRST202
+  // (no matching overload) and was previously flagged as MISSING incorrectly.
+  for (const { name, args } of REQUIRED_FUNCTION_CALLS) {
+    const { error } = await supabase.rpc(name as 'get_registry_summary', args)
     const msg = error?.message ?? ''
-    report[`fn:${fn}`] =
+    report[`fn:${name}`] =
       error &&
       (msg.includes('does not exist') ||
         msg.includes('Could not find the function') ||

@@ -1,0 +1,65 @@
+{
+  "handle": "jdevinwhite2.access",
+  "vaultRoot": "/Users/jdproductions/Documents/JD_Ai_System",
+  "at": "2026-06-02T07:45:36.447Z",
+  "ready": true,
+  "report": {
+    "2_vault_root": {
+      "pass": true,
+      "detail": "/Users/jdproductions/Documents/JD_Ai_System"
+    },
+    "1_connector_registered": {
+      "pass": true,
+      "detail": "deviceId=ebfb9637-3739-4c5f-8b85-43e9c3961d4e, permissions=heartbeat,sync:apply,sync:enqueue"
+    },
+    "6_supabase_tables": {
+      "pass": true,
+      "detail": "vault_connections=OK; sync_runs=OK; connector_devices=OK; connector_pairing_codes=OK; sync_audit_events=OK; sync_jobs=OK"
+    },
+    "6b_supabase_rpcs": {
+      "pass": true,
+      "detail": "access_set_request_context=OK; get_registry_summary=OK"
+    },
+    "1b_device_row": {
+      "pass": true,
+      "detail": "status=active"
+    },
+    "registry_provenance_rows": {
+      "pass": true,
+      "detail": "systems with source_ref (read-only count): 0"
+    },
+    "3_scan": {
+      "pass": true,
+      "detail": "exit 0"
+    },
+    "4_compile": {
+      "pass": true,
+      "detail": "exit 0"
+    },
+    "5_sync_plan": {
+      "pass": true,
+      "detail": "exit 0"
+    },
+    "5b_sync_plan_artifact": {
+      "pass": true,
+      "detail": "applyToCloud=false, planned=32 rows"
+    },
+    "8_sync_apply_available": {
+      "pass": true,
+      "detail": "permission sync:apply present; route file exists"
+    },
+    "8_sync_apply_executed": {
+      "pass": true,
+      "detail": "SKIPPED by design (dry-run)"
+    },
+    "7_connector_auth": {
+      "pass": true,
+      "detail": "heartbeat 200"
+    },
+    "8b_sync_apply_route_probe": {
+      "pass": true,
+      "detail": "POST /sync/apply returned 422 without syncRunId (validation only)"
+    }
+  },
+  "blockers": []
+}

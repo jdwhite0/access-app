@@ -1,0 +1,30 @@
+"schema_version": "1.0.0-mvp"
+"blueprint_id": "jdwhite-founder-os"
+"blueprint_version": 1
+"status": "exported"
+"exported_at": "2026-06-01T19:12:57.325Z"
+"meta":
+  "origination": "access_wizard"
+  "authority": "canonical"
+  "draft": false
+"founder":
+  "display_name": "Jerry Devin White"
+  "access_handle": "jdwhite.access"
+"organizations":
+  - "id": "jd-productions"
+    "name": "JD Productions"
+"products":
+  - "id": "access"
+    "name": "ACCESS"
+    "type": "platform"
+  - "id": "lil-dev"
+    "name": "Lil Dev"
+    "type": "portfolio"
+    "organization_id": "jd-productions"
+"experiences":
+  - "id": "jdwhite-world"
+    "name": "JD System Portal"
+    "url": "https://jdwhite.world"
+"output":
+  "founder_os_id": "jdwhite-founder-os"
+  "name": "JD White Founder OS"

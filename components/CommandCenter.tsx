@@ -16,6 +16,7 @@ import { createVault, listVaults } from '@/lib/actions/vaults'
 import { createOffer, listOffers } from '@/lib/actions/offers'
 import { getRegistrySummary } from '@/lib/actions/registry'
 import RegistryPanel from './access/RegistryPanel'
+import AppSystemNav from './access/AppSystemNav'
 import type { Blueprint, System, BuilderProject, Task, Milestone, Agent, Asset, Workflow, Vault, Offer, RegistrySummary } from '@/types/db'
 
 /* ─── Activation sequence ─────────────────────────────────── */
@@ -110,6 +111,7 @@ const AVAILABLE_COMMANDS = [
   '/save-blueprint', '/export-blueprint', '/copy-blueprint', '/email-blueprint', '/start-over',
   '/my-blueprints', '/open-blueprint', '/delete-blueprint',
   '/connect-jyson',
+  '/companion', '/jyson', '/founder', '/founder-blueprint',
   '/help', '/logout',
 ]
 
@@ -808,24 +810,30 @@ export default function CommandCenter() {
       return
     }
 
+    /* JYSON companion shell (read-only) */
+    if (cmd === '/companion' || cmd === '/jyson') {
+      window.location.href = '/companion'
+      setInput('')
+      return
+    }
+
+    if (cmd === '/founder' || cmd === '/founder-blueprint') {
+      window.location.href = '/founder'
+      setInput('')
+      return
+    }
+
     /* /connect-jyson */
     if (cmd === '/connect-jyson') {
       push({
         type: 'info',
         text: [
-          'CONNECT JYSON',
+          'JYSON COMPANION',
           '',
-          'JYSON is the Value Architecture Engine inside JD AI Systems.',
-          'It discovers, structures, and builds — ACCESS registers what it creates.',
+          'JYSON reads your ACCESS handle and digital world.',
+          'Type /companion to open the companion panel (read-only).',
           '',
-          'Future flow:',
-          '  JYSON creates a system blueprint',
-          '  → Blueprint is sent to ACCESS',
-          '  → ACCESS registers the system under your identity',
-          '  → You own it at username.access',
-          '',
-          'JYSON connection is coming in a future release.',
-          'Your ACCESS ID is already registered and ready to receive it.',
+          'ACCESS owns truth. JYSON serves your identity inside that world.',
         ].join('\n'),
       })
       setInput('')
@@ -870,23 +878,13 @@ export default function CommandCenter() {
   return (
     <div className="h-full flex flex-col" onClick={() => inputRef.current?.focus()}>
 
-      {/* Header */}
-      <div className="flex-none flex items-center justify-between px-6 py-3"
-        style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-        <div className="flex items-center gap-4">
-          <span className="text-sm tracking-[0.25em]" style={{ color: 'var(--accent)' }}>ACCESS</span>
-          {phase === 'active' && (
-            <span className="text-[10px] tracking-widest" style={{ color: 'var(--text-muted)' }}>
-              // NODE ACTIVE
-            </span>
-          )}
-        </div>
-        {phase === 'active' && (
-          <div className="flex items-center gap-6 text-[10px] tracking-wider" style={{ color: 'var(--text-muted)' }}>
-            <span>
-              <span style={{ color: 'var(--text-dim)' }}>id</span>{'  '}
-              <span style={{ color: 'var(--accent)' }}>{accessId}</span>
-            </span>
+      {phase === 'active' && (
+        <div className="flex-none">
+          <AppSystemNav active="terminal" accessId={accessId} />
+          <div
+            className="flex items-center justify-end gap-6 px-6 py-1 text-[10px] tracking-wider"
+            style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}
+          >
             {systemCount > 0 && (
               <span>
                 <span style={{ color: 'var(--text-dim)' }}>systems</span>{'  '}
@@ -894,11 +892,20 @@ export default function CommandCenter() {
               </span>
             )}
             <span>
-              <span style={{ color: 'var(--success)' }}>●</span>{'  '}connected
+              <span style={{ color: 'var(--success)' }}>●</span> node active
             </span>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      {phase !== 'active' && (
+        <div className="flex-none flex items-center justify-between px-6 py-3"
+          style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
+          <span className="text-sm tracking-[0.25em]" style={{ color: 'var(--accent)' }}>ACCESS</span>
+          <span className="text-[10px] tracking-widest" style={{ color: 'var(--text-muted)' }}>
+            establishing presence…
+          </span>
+        </div>
+      )}
 
       {/* Terminal body */}
       <div id="terminal-scroll" ref={scrollRef} className="flex-1 px-6 py-6 font-mono text-sm"
@@ -943,8 +950,9 @@ export default function CommandCenter() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxWidth: '600px', marginBottom: '20px' }}>
               {[
                 ['/start',         'Build something new'],
+                ['/founder',       'Founder blueprint'],
+                ['/companion',     'JYSON companion'],
                 ['/register-system','Register a system'],
-                ['/connect-jyson', 'Connect JYSON'],
                 ['/my-id',         'Your identity'],
                 ['/help',          'All commands'],
               ].map(([cmd, label]) => (
