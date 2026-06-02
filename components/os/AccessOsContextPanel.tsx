@@ -1,6 +1,6 @@
 'use client'
 
-import { UserButton, useUser } from '@clerk/nextjs'
+import { UserButton, useClerk, useUser } from '@clerk/nextjs'
 import type { RegistrySummary } from '@/types/db'
 import { REGISTRY_ROW_LABELS, type RegistryRowKey } from './registry-types'
 
@@ -27,6 +27,7 @@ export default function AccessOsContextPanel({
   selectedKey,
 }: Props) {
   const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
 
   const primaryEmail =
     user?.primaryEmailAddress?.emailAddress ??
@@ -47,13 +48,24 @@ export default function AccessOsContextPanel({
     <aside className="access-os-context" aria-label="Identity context">
       <div className="access-os-context-header">
         <span className="access-os-context-eyebrow">Context</span>
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: 'access-os-user-avatar',
-            },
-          }}
-        />
+        {isLoaded && user && (
+          <div className="access-os-context-user-actions">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: 'access-os-user-avatar',
+                },
+              }}
+            />
+            <button
+              type="button"
+              className="access-os-sign-out-btn"
+              onClick={() => signOut({ redirectUrl: '/' })}
+            >
+              Sign out
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="access-os-context-card">
