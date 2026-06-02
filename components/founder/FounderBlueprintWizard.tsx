@@ -586,7 +586,17 @@ function ExperiencesStep({
         fields={[
           { key: 'name', label: 'Name', placeholder: 'JD System Portal' },
           { key: 'id', label: 'ID', placeholder: 'jdwhite-world', slugFrom: 'name' },
-          { key: 'url', label: 'URL', placeholder: 'https://jdwhite.world' },
+          {
+            key: 'url',
+            label: 'URL',
+            placeholder: 'https://jerrydevin.com',
+            normalize: (v) => {
+              const trimmed = v.trim()
+              if (!trimmed) return trimmed
+              if (/^https?:\/\//i.test(trimmed)) return trimmed
+              return `https://${trimmed}`
+            },
+          },
         ]}
         extraRow={(item, index, update) => (
           <label className="founder-wizard-field founder-wizard-field--inline">
@@ -605,7 +615,7 @@ function ExperiencesStep({
           </label>
         )}
         onChange={onChange}
-        makeEmpty={() => ({ id: '', name: '', url: 'https://' })}
+        makeEmpty={() => ({ id: '', name: '', url: '' })}
       />
       <WizardNav
         onBack={onBack}
@@ -613,6 +623,15 @@ function ExperiencesStep({
         nextDisabled={
           items.length < 1 ||
           items.some(e => !e.id || !e.name || !e.url || !e.url.startsWith('http'))
+        }
+        hint={
+          items.some(e => e.url && !e.url.startsWith('http'))
+            ? 'One or more URLs are missing the protocol. Type your URL and click away — it will be fixed automatically.'
+            : items.some(e => !e.id || !e.name)
+              ? 'Fill in the Name and ID for every experience.'
+              : items.length < 1
+                ? 'Add at least one experience to continue.'
+                : undefined
         }
       />
     </section>
@@ -689,19 +708,26 @@ function WizardNav({
   onBack,
   onNext,
   nextDisabled,
+  hint,
 }: {
   onBack: () => void
   onNext: () => void
   nextDisabled?: boolean
+  hint?: string
 }) {
   return (
-    <div className="founder-wizard-actions">
-      <button type="button" className="founder-wizard-btn-secondary" onClick={onBack}>
-        Back
-      </button>
-      <button type="button" className="auth-primary-btn" disabled={nextDisabled} onClick={onNext}>
-        Continue
-      </button>
+    <div className="founder-wizard-nav-block">
+      {hint && nextDisabled && (
+        <p className="founder-wizard-nav-hint">{hint}</p>
+      )}
+      <div className="founder-wizard-actions">
+        <button type="button" className="founder-wizard-btn-secondary" onClick={onBack}>
+          Back
+        </button>
+        <button type="button" className="auth-primary-btn" disabled={nextDisabled} onClick={onNext}>
+          Continue
+        </button>
+      </div>
     </div>
   )
 }
@@ -711,6 +737,8 @@ type FieldDef<T> = {
   label: string
   placeholder?: string
   slugFrom?: keyof T & string
+  /** Called on blur to normalize the value before saving (e.g. URL prepend). */
+  normalize?: (val: string) => string
 }
 
 function EntityEditor<T extends object>({
@@ -766,8 +794,16 @@ function EntityEditor<T extends object>({
                     update(index, patch)
                   }}
                   onBlur={e => {
-                    if (f.key === 'id' && e.target.value) {
-                      update(index, { id: slugFromLabel(e.target.value) } as unknown as Partial<T>)
+                    let val = e.target.value
+                    if (f.key === 'id' && val) {
+                      val = slugFromLabel(val)
+                      update(index, { id: val } as unknown as Partial<T>)
+                    }
+                    if (f.normalize && val) {
+                      const normalized = f.normalize(val)
+                      if (normalized !== val) {
+                        update(index, { [f.key]: normalized } as unknown as Partial<T>)
+                      }
                     }
                   }}
                 />
