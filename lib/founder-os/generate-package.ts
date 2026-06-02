@@ -115,8 +115,7 @@ function experienceSeed(
 type: experience
 id: ${exp.id}
 name: "${exp.name.replace(/"/g, '\\"')}"
-url: "${exp.url.replace(/"/g, '\\"')}"
-${exp.product_id ? `product_id: ${exp.product_id}\n` : ''}blueprint_id: ${blueprint.blueprint_id}
+${exp.url ? `url: "${exp.url.replace(/"/g, '\\"')}"\n` : ''}${exp.product_id ? `product_id: ${exp.product_id}\n` : ''}blueprint_id: ${blueprint.blueprint_id}
 generated_by: founder-os-generate
 ---
 
@@ -126,7 +125,7 @@ ${exp.name} is where people encounter, consume, or interact with your product.
 
 ## Description
 
-Live surface: ${exp.url}
+${exp.url ? `Live surface: ${exp.url}` : 'URL not yet assigned.'}
 
 ## Relationships
 

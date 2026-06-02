@@ -474,8 +474,8 @@ function OrganizationsStep({
     <section className="founder-wizard-panel">
       <h2 className="founder-wizard-h2">Your companies</h2>
       <p className="founder-wizard-lead">
-        Add the organizations behind your work — studios, brands, or ventures. Start with at least
-        one.
+        Add the organizations, studios, or brands behind your work. The more you add, the richer
+        your AI framework becomes — but you can skip and come back later.
       </p>
       <EntityEditor<FounderBlueprintSpec['organizations'][number]>
         items={items}
@@ -486,7 +486,13 @@ function OrganizationsStep({
         onChange={onChange}
         makeEmpty={() => ({ id: '', name: '' })}
       />
-      <WizardNav onBack={onBack} onNext={onNext} nextDisabled={items.length < 1 || items.some(o => !o.id || !o.name)} />
+      <WizardNav
+        onBack={onBack}
+        onNext={() => {
+          onChange(items.filter(o => o.name.trim() || o.id.trim()))
+          onNext()
+        }}
+      />
     </section>
   )
 }
@@ -508,8 +514,8 @@ function ProductsStep({
     <section className="founder-wizard-panel">
       <h2 className="founder-wizard-h2">Your products</h2>
       <p className="founder-wizard-lead">
-        Name what you offer — platforms you run or portfolios you grow. Link each to a company when
-        it fits.
+        Platforms, portfolios, apps, or anything you build and run. Add what you have —
+        your AI gets sharper the more context it has. Nothing is required.
       </p>
       <EntityEditor<FounderBlueprintSpec['products'][number]>
         items={items}
@@ -554,8 +560,10 @@ function ProductsStep({
       />
       <WizardNav
         onBack={onBack}
-        onNext={onNext}
-        nextDisabled={items.length < 1 || items.some(p => !p.id || !p.name)}
+        onNext={() => {
+          onChange(items.filter(p => p.name.trim() || p.id.trim()))
+          onNext()
+        }}
       />
     </section>
   )
@@ -578,8 +586,8 @@ function ExperiencesStep({
     <section className="founder-wizard-panel">
       <h2 className="founder-wizard-h2">Your experiences</h2>
       <p className="founder-wizard-lead">
-        Where people meet your world — sites, portals, and live destinations. Use a full https link
-        for each.
+        Websites, portals, stores, and live destinations where people encounter your world.
+        URL is optional — name it now, add the link later. Nothing is required.
       </p>
       <EntityEditor<FounderBlueprintSpec['experiences'][number]>
         items={items}
@@ -588,8 +596,8 @@ function ExperiencesStep({
           { key: 'id', label: 'ID', placeholder: 'jdwhite-world', slugFrom: 'name' },
           {
             key: 'url',
-            label: 'URL',
-            placeholder: 'https://jerrydevin.com',
+            label: 'URL (optional)',
+            placeholder: 'jerrydevin.com',
             normalize: (v) => {
               const trimmed = v.trim()
               if (!trimmed) return trimmed
@@ -619,20 +627,10 @@ function ExperiencesStep({
       />
       <WizardNav
         onBack={onBack}
-        onNext={onNext}
-        nextDisabled={
-          items.length < 1 ||
-          items.some(e => !e.id || !e.name || !e.url || !e.url.startsWith('http'))
-        }
-        hint={
-          items.some(e => e.url && !e.url.startsWith('http'))
-            ? 'One or more URLs are missing the protocol. Type your URL and click away — it will be fixed automatically.'
-            : items.some(e => !e.id || !e.name)
-              ? 'Fill in the Name and ID for every experience.'
-              : items.length < 1
-                ? 'Add at least one experience to continue.'
-                : undefined
-        }
+        onNext={() => {
+          onChange(items.filter(e => e.name.trim() || e.id.trim()))
+          onNext()
+        }}
       />
     </section>
   )

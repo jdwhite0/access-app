@@ -71,7 +71,6 @@
     },
     "organizations": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -87,7 +86,6 @@
     },
     "products": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -108,18 +106,17 @@
     },
     "experiences": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "url"],
+        "required": ["id", "name"],
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
           },
           "name": { "type": "string", "minLength": 1, "maxLength": 256 },
-          "url": { "type": "string", "format": "uri" },
+          "url": { "type": "string" },
           "product_id": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"

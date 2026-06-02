@@ -7,6 +7,42 @@ import { getOrCreateIdentity } from '@/lib/actions/identity'
 import { deriveUsername, toAccessHandle } from '@/lib/founder-wizard/client-utils'
 
 type AccountType = 'founder' | 'user'
+type OnboardingStep = 'account-type' | 'confirm'
+
+const SESSION_KEY = 'access_onboarding_session'
+const SESSION_TTL_MS = 2 * 60 * 1000 // 2 minutes
+
+type StoredSession = {
+  accountType: AccountType | null
+  step: OnboardingStep
+  ts: number
+}
+
+function loadSession(): StoredSession | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY)
+    if (!raw) return null
+    const stored = JSON.parse(raw) as StoredSession
+    if (Date.now() - stored.ts > SESSION_TTL_MS) {
+      sessionStorage.removeItem(SESSION_KEY)
+      return null
+    }
+    return stored
+  } catch {
+    return null
+  }
+}
+
+function saveSession(accountType: AccountType | null, step: OnboardingStep) {
+  try {
+    const stored: StoredSession = { accountType, step, ts: Date.now() }
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(stored))
+  } catch { /* ignore storage errors */ }
+}
+
+function clearSession() {
+  try { sessionStorage.removeItem(SESSION_KEY) } catch { /* ignore */ }
+}
 
 export default function OnboardingFlow() {
   const { isLoaded, isSignedIn } = useAuth()
@@ -16,7 +52,7 @@ export default function OnboardingFlow() {
   const [accountType, setAccountType] = useState<AccountType | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState<'account-type' | 'confirm'>('account-type')
+  const [step, setStep] = useState<OnboardingStep>('account-type')
 
   const username = useMemo(() => deriveUsername(user), [user])
   const handle = useMemo(() => toAccessHandle(username), [username])
@@ -24,6 +60,19 @@ export default function OnboardingFlow() {
     () => user?.fullName || user?.firstName || username,
     [user, username]
   )
+
+  // Restore session from storage on first mount (within TTL)
+  useEffect(() => {
+    const stored = loadSession()
+    if (!stored) return
+    if (stored.accountType) setAccountType(stored.accountType)
+    if (stored.step) setStep(stored.step)
+  }, [])
+
+  // Persist session to storage whenever step or selection changes
+  useEffect(() => {
+    saveSession(accountType, step)
+  }, [accountType, step])
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -45,6 +94,7 @@ export default function OnboardingFlow() {
         return
       }
 
+      clearSession()
       if (accountType === 'founder') {
         router.replace('/founder')
       } else {

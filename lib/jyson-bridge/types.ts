@@ -28,7 +28,7 @@ export interface JysonContext {
   experiences: Array<{
     id: string
     name: string
-    url: string
+    url?: string
     product_id?: string
   }>
   registry: Record<string, unknown> | null

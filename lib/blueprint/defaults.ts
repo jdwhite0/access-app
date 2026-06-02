@@ -38,28 +38,9 @@ export function createDefaultFounderBlueprint(input: {
       display_name: input.displayName,
       access_handle: input.accessHandle,
     },
-    organizations: [
-      {
-        id: 'jd-productions',
-        name: 'JD Productions',
-      },
-    ],
-    products: [
-      { id: 'access', name: 'ACCESS', type: 'platform' },
-      {
-        id: 'lil-dev',
-        name: 'Lil Dev',
-        type: 'portfolio',
-        organization_id: 'jd-productions',
-      },
-    ],
-    experiences: [
-      {
-        id: 'jdwhite-world',
-        name: 'JD System Portal',
-        url: 'https://jdwhite.world',
-      },
-    ],
+    organizations: [],
+    products: [],
+    experiences: [],
     output: {
       founder_os_id: founderOsId,
       name: `${input.displayName} Founder OS`,

@@ -37,7 +37,7 @@ export interface FounderBlueprintSpec {
   experiences: Array<{
     id: string
     name: string
-    url: string
+    url?: string
     product_id?: string
   }>
   output: {
