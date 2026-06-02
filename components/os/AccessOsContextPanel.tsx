@@ -2,6 +2,7 @@
 
 import { UserButton, useClerk, useUser } from '@clerk/nextjs'
 import type { RegistrySummary } from '@/types/db'
+import { vaultStatusLabel } from '@/lib/vault/display'
 import { REGISTRY_ROW_LABELS, type RegistryRowKey } from './registry-types'
 
 type Props = {
@@ -20,6 +21,17 @@ function fmtDate(iso: string | null): string {
   })
 }
 
+function fmtLastSync(iso: string | null): string {
+  if (!iso) return 'Never'
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
 export default function AccessOsContextPanel({
   summary,
   loading,
@@ -35,6 +47,7 @@ export default function AccessOsContextPanel({
     null
 
   const handle = summary?.identityHandle ?? '—'
+  const vault = summary?.vaultConnection
   const selectedLabel = selectedKey ? REGISTRY_ROW_LABELS[selectedKey] : null
   const selectedCount = selectedKey && summary ? summary.counts[selectedKey] : null
   const selectedStatus =
@@ -129,6 +142,30 @@ export default function AccessOsContextPanel({
               <div className="access-os-context-field">
                 <dt>Total registered</dt>
                 <dd>{loading ? '…' : (summary?.totalRegistered ?? 0)}</dd>
+              </div>
+              <div className="access-os-context-field access-os-context-field--vault">
+                <dt>Vault</dt>
+                <dd>
+                  {loading
+                    ? '…'
+                    : vault
+                      ? vault.displayName
+                      : '—'}
+                </dd>
+              </div>
+              <div className="access-os-context-field">
+                <dt>Vault status</dt>
+                <dd>
+                  {loading
+                    ? '…'
+                    : vault
+                      ? vaultStatusLabel(vault.status)
+                      : 'Not connected'}
+                </dd>
+              </div>
+              <div className="access-os-context-field">
+                <dt>Last sync</dt>
+                <dd>{loading ? '…' : fmtLastSync(vault?.lastSyncAt ?? null)}</dd>
               </div>
             </>
           )}

@@ -170,9 +170,55 @@ export interface RegistryCounts {
   offers: number
 }
 
+export type VaultConnectionStatus =
+  | 'pending_connector'
+  | 'connected'
+  | 'syncing'
+  | 'error'
+  | 'revoked'
+
+export interface VaultConnectionSummary {
+  vaultKey: string
+  displayName: string
+  status: VaultConnectionStatus | string
+  lastSyncAt: string | null
+}
+
+export interface VaultConnection {
+  id: string
+  identity_id: string
+  clerk_user_id: string
+  vault_key: string
+  display_name: string
+  connector_type: string
+  status: VaultConnectionStatus | string
+  root_label: string | null
+  machine_id: string | null
+  last_seen_at: string | null
+  last_sync_at: string | null
+  last_sync_status: string | null
+  config: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}
+
+export interface SyncRun {
+  id: string
+  vault_connection_id: string
+  clerk_user_id: string
+  run_type: string
+  status: string
+  started_at: string
+  finished_at: string | null
+  stats: Record<string, unknown>
+  error_message: string | null
+  created_at: string
+}
+
 export interface RegistrySummary {
   identityHandle: string
   identityCreatedAt: string | null
   counts: RegistryCounts
   totalRegistered: number
+  vaultConnection: VaultConnectionSummary | null
 }

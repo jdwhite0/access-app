@@ -2,27 +2,57 @@
 
 import { auth } from '@clerk/nextjs/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import {
+  countVaultConnections,
+  ensureJdAiSystemVaultConnection,
+  fetchVaultConnectionSummary,
+} from '@/lib/actions/vault-connection'
 import type { RegistrySummary } from '@/types/db'
+
+function emptySummary(ownerHandle: string): RegistrySummary {
+  return {
+    identityHandle: ownerHandle,
+    identityCreatedAt: null,
+    counts: {
+      systems: 0,
+      agents: 0,
+      projects: 0,
+      blueprints: 0,
+      assets: 0,
+      workflows: 0,
+      vaults: 0,
+      connections: 0,
+      offers: 0,
+    },
+    totalRegistered: 0,
+    vaultConnection: null,
+  }
+}
 
 export async function getRegistrySummary(ownerHandle: string): Promise<RegistrySummary> {
   const { userId } = await auth()
-
-  const empty: RegistrySummary = {
-    identityHandle: ownerHandle,
-    identityCreatedAt: null,
-    counts: { systems: 0, agents: 0, projects: 0, blueprints: 0, assets: 0, workflows: 0, vaults: 0, connections: 0, offers: 0 },
-    totalRegistered: 0,
-  }
-
-  if (!userId) return empty
+  if (!userId) return emptySummary(ownerHandle)
 
   const supabase = createSupabaseAdmin()
-  if (!supabase) return empty
+  if (!supabase) return emptySummary(ownerHandle)
 
-  // Parallel count queries
-  const [identity, systems, agents, projects, blueprints, assets, workflows, vaults, offers] =
+  const { data: identity } = await supabase
+    .from('access_identities')
+    .select('id, clerk_user_id, handle, created_at')
+    .eq('clerk_user_id', userId)
+    .maybeSingle()
+
+  let vaultConnection = null
+  let connectionCount = 0
+
+  if (identity) {
+    await ensureJdAiSystemVaultConnection(supabase, identity)
+    vaultConnection = await fetchVaultConnectionSummary(supabase, userId)
+    connectionCount = await countVaultConnections(supabase, userId)
+  }
+
+  const [systems, agents, projects, blueprints, assets, workflows, vaults, offers] =
     await Promise.all([
-      supabase.from('access_identities').select('created_at').eq('clerk_user_id', userId).single(),
       supabase.from('systems').select('id', { count: 'exact', head: true }).eq('clerk_user_id', userId).eq('status', 'active'),
       supabase.from('agents').select('id', { count: 'exact', head: true }).eq('clerk_user_id', userId).eq('status', 'active'),
       supabase.from('builder_projects').select('id', { count: 'exact', head: true }).eq('clerk_user_id', userId).neq('status', 'archived'),
@@ -34,23 +64,24 @@ export async function getRegistrySummary(ownerHandle: string): Promise<RegistryS
     ])
 
   const counts = {
-    systems:     systems.count     ?? 0,
-    agents:      agents.count      ?? 0,
-    projects:    projects.count    ?? 0,
-    blueprints:  blueprints.count  ?? 0,
-    assets:      assets.count      ?? 0,
-    workflows:   workflows.count   ?? 0,
-    vaults:      vaults.count      ?? 0,
-    connections: 0,  // connections table coming in Phase 3
-    offers:      offers.count      ?? 0,
+    systems: systems.count ?? 0,
+    agents: agents.count ?? 0,
+    projects: projects.count ?? 0,
+    blueprints: blueprints.count ?? 0,
+    assets: assets.count ?? 0,
+    workflows: workflows.count ?? 0,
+    vaults: vaults.count ?? 0,
+    connections: connectionCount,
+    offers: offers.count ?? 0,
   }
 
   const totalRegistered = Object.values(counts).reduce((a, b) => a + b, 0)
 
   return {
-    identityHandle: ownerHandle,
-    identityCreatedAt: identity.data?.created_at ?? null,
+    identityHandle: identity?.handle ?? ownerHandle,
+    identityCreatedAt: identity?.created_at ?? null,
     counts,
     totalRegistered,
+    vaultConnection,
   }
 }
