@@ -6,14 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "blueprint:test": "tsx scripts/test-founder-blueprint.ts",
+    "e2e:founder": "tsx scripts/e2e-founder-pipeline.ts",
+    "export-handle-context": "tsx scripts/export-handle-context-once.ts",
+    "jyson:verify-p10": "tsx scripts/verify-jyson-command-p10.ts jdwhite.access"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.4.2",
     "@supabase/supabase-js": "^2.106.2",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -23,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

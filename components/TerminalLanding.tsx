@@ -3,11 +3,20 @@
 import { useState } from 'react'
 import { useClerk } from '@clerk/nextjs'
 
-export default function TerminalLanding() {
+type TerminalLandingProps = {
+  /** When set (e.g. from ?redirect=founder), sign-in returns to that destination. */
+  onSignIn?: () => void
+}
+
+export default function TerminalLanding({ onSignIn }: TerminalLandingProps) {
   const { redirectToSignIn } = useClerk()
   const [demoMode, setDemoMode] = useState(false)
 
   const handleSignIn = () => {
+    if (onSignIn) {
+      onSignIn()
+      return
+    }
     redirectToSignIn({ redirectUrl: window.location.href })
   }
 

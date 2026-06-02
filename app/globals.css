@@ -480,3 +480,1166 @@ html, body {
 
   #terminal-scroll { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+/* ═══════════════════════════════════════════════════
+   FOUNDER BLUEPRINT WIZARD
+═══════════════════════════════════════════════════ */
+
+.founder-wizard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--mono);
+}
+
+.founder-wizard--center {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.founder-wizard--onboarding {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+.founder-wizard-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 40px 36px 36px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(10, 10, 10, 0.72);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+}
+
+.founder-wizard-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.founder-wizard-hero-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: clamp(26px, 5vw, 32px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.founder-wizard-hero-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: clamp(14px, 2.2vw, 16px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-dim);
+  letter-spacing: 0.01em;
+  max-width: 34ch;
+  margin: 0 auto;
+}
+
+.founder-wizard-section {
+  margin-bottom: 28px;
+}
+
+.founder-wizard-section-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.founder-wizard-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+
+.founder-wizard-label {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.founder-wizard-helper {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.founder-wizard-field--onboarding {
+  margin-bottom: 24px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.founder-wizard-field--onboarding input {
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.founder-wizard-id-block {
+  margin-bottom: 28px;
+  padding: 18px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(64, 192, 208, 0.12);
+  background: rgba(64, 192, 208, 0.03);
+}
+
+.founder-wizard-id-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin: 4px 0 14px;
+  word-break: break-all;
+}
+
+.founder-wizard-foundation {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.founder-wizard-cta {
+  width: 100%;
+  border-radius: 6px;
+  padding: 14px 24px;
+  letter-spacing: 0.12em;
+}
+
+.founder-wizard-signin-note {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.founder-wizard-back--center {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.founder-wizard-back--corner {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  font-size: 10px;
+}
+
+.founder-wizard-errors--floating,
+.founder-wizard-status--floating {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(440px, calc(100% - 48px));
+  z-index: 2;
+  margin: 0;
+}
+
+.founder-wizard-status--floating {
+  top: auto;
+  bottom: 24px;
+  text-align: center;
+}
+
+.founder-wizard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.founder-wizard-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.founder-wizard-title {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--text);
+}
+
+.founder-wizard-title-sm {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.founder-wizard-lead {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  max-width: 52ch;
+}
+
+.founder-wizard-back {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.founder-wizard-back:hover { color: var(--accent); }
+
+.founder-wizard-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  flex-shrink: 0;
+}
+
+.founder-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+.founder-wizard-step.is-active {
+  border-color: rgba(64,192,208,0.45);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+.founder-wizard-step.is-done:not(.is-active) {
+  color: var(--text-dim);
+}
+.founder-wizard-step:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.founder-wizard-step-num {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 9px;
+}
+
+.founder-wizard-errors {
+  margin: 12px 24px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,100,100,0.25);
+  background: rgba(255,80,80,0.04);
+  font-size: 11px;
+  color: #f0a0a0;
+  flex-shrink: 0;
+}
+
+.founder-wizard-status {
+  margin: 8px 24px 0;
+  font-size: 10px;
+  color: var(--success);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.founder-wizard-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(64,192,208,0.15) transparent;
+}
+
+.founder-wizard-panel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.founder-wizard-panel--narrow {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.founder-wizard-panel--narrow .auth-primary-btn {
+  margin-top: 8px;
+}
+
+.founder-wizard-h2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.founder-wizard-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.founder-wizard-field input,
+.founder-wizard-field select {
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.founder-wizard-field input:focus,
+.founder-wizard-field select:focus {
+  outline: none;
+  border-color: rgba(64,192,208,0.45);
+}
+
+.founder-wizard-field--inline {
+  margin-bottom: 0;
+}
+
+.founder-wizard-readonly-block {
+  padding: 14px 16px;
+  border: 1px solid rgba(64,192,208,0.15);
+  background: rgba(64,192,208,0.03);
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+.founder-wizard-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+  font-size: 11px;
+}
+.founder-wizard-row-label { color: var(--text-muted); }
+.founder-wizard-row-value { color: var(--text-dim); }
+.founder-wizard-row-value.accent { color: var(--accent); }
+
+.founder-wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.founder-wizard-btn-secondary {
+  padding: 11px 18px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+}
+.founder-wizard-btn-secondary:hover:not(:disabled) {
+  border-color: rgba(64,192,208,0.4);
+  color: var(--text);
+}
+.founder-wizard-btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.founder-wizard-entities {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.founder-wizard-entity-card {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 14px;
+  background: rgba(255,255,255,0.015);
+}
+
+.founder-wizard-entity-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.founder-wizard-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+}
+.founder-wizard-link-btn:hover { color: #f0a0a0; }
+
+.founder-wizard-entity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .founder-wizard-card {
+    padding: 32px 22px 28px;
+    border-radius: 6px;
+  }
+
+  .founder-wizard--onboarding {
+    padding: 20px 16px;
+  }
+
+  .founder-wizard-back--corner {
+    top: 12px;
+    right: 16px;
+  }
+
+  .founder-wizard-entity-grid {
+    grid-template-columns: 1fr;
+  }
+  .founder-wizard-header,
+  .founder-wizard-steps,
+  .founder-wizard-main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.founder-wizard-preview {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 14px;
+  overflow-x: auto;
+  max-height: 320px;
+}
+
+.founder-wizard-muted {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+/* ═══════════════════════════════════════════════════
+   JYSON COMPANION PANEL (P9)
+═══════════════════════════════════════════════════ */
+
+.jyson-companion-dev-banner {
+  flex-shrink: 0;
+  padding: 6px 24px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(64, 192, 208, 0.85);
+  background: rgba(64, 192, 208, 0.08);
+  border-bottom: 1px solid rgba(64, 192, 208, 0.2);
+}
+
+.jyson-companion {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--mono);
+}
+
+.jyson-companion--center {
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.jyson-companion-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10, 10, 10, 0.85);
+  flex-shrink: 0;
+}
+
+.jyson-companion-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.jyson-companion-tagline {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.jyson-companion-nav {
+  display: flex;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.jyson-companion-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.jyson-companion-nav a:hover {
+  color: var(--accent);
+}
+
+.jyson-companion-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 24px 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.jyson-companion-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 32px 28px;
+  border: 1px solid rgba(64, 192, 208, 0.14);
+  border-radius: 8px;
+  background: rgba(10, 10, 10, 0.75);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.jyson-companion-greeting {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.jyson-companion-loaded {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.jyson-companion-sub {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.jyson-companion-block {
+  margin-bottom: 20px;
+}
+
+.jyson-companion-label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.jyson-companion-value {
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+.jyson-companion-value.accent {
+  color: var(--accent);
+}
+
+.jyson-companion-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.jyson-companion-stat {
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-align: center;
+  background: rgba(64, 192, 208, 0.03);
+}
+
+.jyson-companion-stat-num {
+  display: block;
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.jyson-companion-stat-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.jyson-companion-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+.jyson-companion-body.muted {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.jyson-companion-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .jyson-companion-columns {
+    grid-template-columns: 1fr;
+  }
+  .jyson-companion-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.jyson-companion-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jyson-companion-list li {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  padding: 4px 0;
+}
+
+.jyson-companion-list .mark {
+  display: inline-block;
+  width: 1.2em;
+  font-weight: 600;
+}
+
+.jyson-companion-list.allowed .mark {
+  color: var(--success);
+}
+
+.jyson-companion-list.denied .mark {
+  color: #c08080;
+}
+
+.jyson-companion-footnote {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.jyson-companion-muted,
+.jyson-companion-link {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.jyson-companion-link {
+  display: inline-block;
+  margin-top: 16px;
+  text-decoration: none;
+}
+.jyson-companion-link:hover {
+  color: var(--accent);
+}
+
+.jyson-companion-error {
+  color: #f0a0a0;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.jyson-companion-title {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.jyson-companion-lead {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════
+   JYSON COMMAND LAYER (P10)
+═══════════════════════════════════════════════════ */
+
+.jyson-command-layer {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.jyson-command-prompt {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  margin: 8px 0 14px;
+}
+
+.jyson-command-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.jyson-command-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.jyson-command-input:focus {
+  outline: none;
+  border-color: rgba(64, 192, 208, 0.5);
+}
+
+.jyson-command-submit {
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(64, 192, 208, 0.08);
+  border: 1px solid rgba(64, 192, 208, 0.35);
+  cursor: pointer;
+}
+
+.jyson-command-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.jyson-command-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.jyson-command-chip {
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.jyson-command-chip:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.4);
+}
+
+.jyson-dispatch-card {
+  margin-top: 20px;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(64, 192, 208, 0.2);
+}
+
+.jyson-dispatch-title {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.jyson-dispatch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  margin: 0;
+}
+
+.jyson-dispatch-grid dt {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.jyson-dispatch-grid dd {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.jyson-dispatch-grid code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.jyson-dispatch-hint {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.jyson-dispatch-grid .yes {
+  color: var(--success);
+}
+
+.jyson-dispatch-grid .no {
+  color: #c08080;
+}
+
+.jyson-dispatch-span {
+  grid-column: 1 / -1;
+}
+
+.jyson-command-footnote {
+  margin-top: 14px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════
+   JYSON COMPANION REPAIR
+═══════════════════════════════════════════════════ */
+
+.jyson-repair-card {
+  max-width: 520px;
+}
+
+.jyson-repair-steps {
+  margin: 16px 0;
+  padding-left: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.jyson-repair-meta {
+  margin: 16px 0;
+  font-size: 11px;
+}
+
+.jyson-repair-meta code {
+  font-family: var(--mono);
+  color: var(--accent);
+}
+
+.jyson-repair-path {
+  font-size: 9px;
+  color: var(--text-muted);
+  word-break: break-all;
+  margin-top: 8px;
+}
+
+.jyson-companion-error.subtle {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+.jyson-repair-note {
+  font-size: 11px;
+  color: var(--success);
+  margin: 12px 0;
+}
+
+.jyson-repair-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+
+.jyson-repair-secondary {
+  padding: 10px 18px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.jyson-repair-secondary:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.35);
+}
+
+.jyson-companion-warn {
+  font-size: 11px;
+  color: #d4b896;
+  border: 1px solid rgba(212, 184, 150, 0.25);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.jyson-repair-block {
+  margin: 14px 0;
+}
+
+.jyson-repair-highlight {
+  font-size: 13px;
+  color: var(--accent);
+  margin-top: 6px;
+}
+
+.jyson-repair-link-btn {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  text-align: center;
+}
+
+.jyson-diagnostics-table {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.jyson-diagnostics-table ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+.jyson-diagnostics-table li {
+  display: grid;
+  grid-template-columns: 1.2em 9em 1fr;
+  gap: 8px;
+  font-size: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.jyson-diagnostics-table li.fail .name {
+  color: #c08080;
+}
+
+.jyson-diagnostics-table li.ok .mark {
+  color: var(--success);
+}
+
+.jyson-diagnostics-table .detail {
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+/* ─── System navigation (all authenticated routes) ─── */
+.app-system-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.app-system-nav--compact {
+  padding: 8px 16px;
+  gap: 12px;
+}
+
+.app-system-nav-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-right: 8px;
+}
+
+.app-system-nav-logo {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.app-system-nav-logo:hover {
+  opacity: 0.85;
+}
+
+.app-system-nav-sub {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.app-system-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.app-system-nav-link {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.app-system-nav-link:hover {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.25);
+  background: rgba(64, 192, 208, 0.04);
+}
+
+.app-system-nav-link.is-active {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.35);
+  background: rgba(64, 192, 208, 0.08);
+}
+
+.app-system-nav-ext {
+  margin-left: 4px;
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.app-system-nav-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  margin-left: auto;
+}
+
+.app-system-nav-meta-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.app-system-nav-meta-value {
+  color: var(--accent);
+}
+
+.founder-wizard-header--below-nav,
+.jyson-companion-header--below-nav {
+  padding-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .app-system-nav {
+    padding: 10px 16px;
+  }
+  .app-system-nav-meta {
+    width: 100%;
+    margin-left: 0;
+    order: 3;
+  }
+}

@@ -4,32 +4,53 @@ import { auth } from '@clerk/nextjs/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import type { AccessIdentity } from '@/types/db'
 
-export async function getOrCreateIdentity(handle: string): Promise<AccessIdentity | null> {
+export type IdentityResult = {
+  identity: AccessIdentity | null
+  error?: string
+}
+
+export async function getOrCreateIdentity(handle: string): Promise<IdentityResult> {
   const { userId } = await auth()
-  if (!userId) return null
+  if (!userId) {
+    return { identity: null, error: 'Not signed in.' }
+  }
 
   const supabase = createSupabaseAdmin()
   if (!supabase) {
-    // DB not configured — return ephemeral identity
     return {
-      id: 'local',
-      clerk_user_id: userId,
-      handle,
-      status: 'active',
-      created_at: new Date().toISOString(),
+      identity: {
+        id: 'local',
+        clerk_user_id: userId,
+        handle,
+        status: 'active',
+        created_at: new Date().toISOString(),
+      },
     }
   }
 
-  // Try to find existing identity
   const { data: existing } = await supabase
     .from('access_identities')
     .select('*')
     .eq('clerk_user_id', userId)
-    .single()
+    .maybeSingle()
 
-  if (existing) return existing as AccessIdentity
+  if (existing) {
+    return { identity: existing as AccessIdentity }
+  }
 
-  // Create profile + identity (first login)
+  const { data: handleTaken } = await supabase
+    .from('access_identities')
+    .select('clerk_user_id, handle')
+    .eq('handle', handle)
+    .maybeSingle()
+
+  if (handleTaken && handleTaken.clerk_user_id !== userId) {
+    return {
+      identity: null,
+      error: `Handle "${handle}" is already claimed by another ACCESS account. Choose a different username in Clerk or contact support.`,
+    }
+  }
+
   await supabase
     .from('profiles')
     .upsert({ clerk_user_id: userId, access_handle: handle }, { onConflict: 'clerk_user_id' })
@@ -41,16 +62,16 @@ export async function getOrCreateIdentity(handle: string): Promise<AccessIdentit
     .single()
 
   if (error) {
-    // Handle unique constraint — identity may have been created concurrently
     const { data: fallback } = await supabase
       .from('access_identities')
       .select('*')
       .eq('clerk_user_id', userId)
-      .single()
-    return (fallback ?? null) as AccessIdentity | null
+      .maybeSingle()
+    if (fallback) return { identity: fallback as AccessIdentity }
+    return { identity: null, error: error.message }
   }
 
-  return data as AccessIdentity
+  return { identity: data as AccessIdentity }
 }
 
 export async function getIdentity(): Promise<AccessIdentity | null> {
@@ -64,7 +85,7 @@ export async function getIdentity(): Promise<AccessIdentity | null> {
     .from('access_identities')
     .select('*')
     .eq('clerk_user_id', userId)
-    .single()
+    .maybeSingle()
 
   return (data ?? null) as AccessIdentity | null
 }
