@@ -1,0 +1,31 @@
+{
+  "name": "@jd/access-connector",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Local ACCESS Connector — Intelligence Vault metadata compiler",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "access-connector": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts help",
+    "register": "tsx src/cli.ts register",
+    "heartbeat": "tsx src/cli.ts heartbeat",
+    "scan": "tsx src/cli.ts scan",
+    "compile": "tsx src/cli.ts compile",
+    "sync:plan": "tsx src/cli.ts sync-plan",
+    "sync:apply": "tsx src/cli.ts sync-apply",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.20.3",
+    "typescript": "^5"
+  }
+}

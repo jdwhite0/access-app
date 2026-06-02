@@ -1,0 +1,289 @@
+{
+  "mode": "sync-plan",
+  "generatedAt": "2026-06-02T04:51:05.615Z",
+  "identityHandle": "jerry.access",
+  "vaultKey": "JD_AI_System",
+  "applyToCloud": false,
+  "planned": [
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema",
+      "sourcePath": ".audit/access-app/supabase/schema.sql",
+      "sourceRef": "74e04158fa50ba5276057d9b604a3c79",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "8b9c02d2afa09f0a840f82423aec5a91980f8012f12c715fbe9cb500cc676f18"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v2",
+      "sourcePath": ".audit/access-app/supabase/schema_v2.sql",
+      "sourceRef": "c5acf1de28ddd76a91af24b8d2a3b8ca",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "3f1423283a40b36d384e41a9d86fe428dc2fe4bbe4f8eaba0c57a4703d4fa092"
+    },
+    {
+      "objectType": "system",
+      "action": "would_upsert",
+      "name": "JDP",
+      "sourcePath": "JD Command Vault/projects/JDP/00_ADMIN/JDP.md",
+      "sourceRef": "c8dea8fdc191ca07629313c440c520ee",
+      "sourceKind": "vault_import",
+      "contentHash": "324efb1a7e410da117f8e8c326050bbeb3c9c7abdf4d496e394eca6381487417",
+      "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "system",
+      "action": "would_upsert",
+      "name": "LILDEV",
+      "sourcePath": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-FRANCHISE-ROADMAP.md",
+      "sourceRef": "710f657f1b505d8211b7466613d1314d",
+      "sourceKind": "vault_import",
+      "contentHash": "0d555077591c994080784e82497b947830d4e405cf4728c0048e9f7094759f8a",
+      "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "system",
+      "action": "would_upsert",
+      "name": "LILDEV",
+      "sourcePath": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV-VAULT-ARCHITECTURE.md",
+      "sourceRef": "83ff230e9f66678852bc8dade23c7e2b",
+      "sourceKind": "vault_import",
+      "contentHash": "cf0c8ef9e972fec75d3c4372f75b8de349995a21ab8ba9da7274456f62338656",
+      "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "system",
+      "action": "would_upsert",
+      "name": "LILDEV",
+      "sourcePath": "JD Command Vault/projects/LILDEV/00_ADMIN/LILDEV.md",
+      "sourceRef": "4274e1f7e546962ed921a4925dd78d41",
+      "sourceKind": "vault_import",
+      "contentHash": "8cd82de6474f1098697b33f9202c86ad1b2d513d8248a6088b4cef48fbb03117",
+      "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "system",
+      "action": "would_upsert",
+      "name": "LINC",
+      "sourcePath": "JD Command Vault/projects/LINC/00_ADMIN/LINC.md",
+      "sourceRef": "018136ce0ddfebb552ae397b6cc228da",
+      "sourceKind": "vault_import",
+      "contentHash": "2c57fb631ee211eac21d19a763b56b4d13994a9b530cbdf15087186db8f72bbe",
+      "reason": "Project admin doc → system registry candidate"
+    },
+    {
+      "objectType": "project",
+      "action": "would_upsert",
+      "name": "rise-and-fall",
+      "sourcePath": "JD Command Vault/projects/The_Collection/rise-and-fall/_START_HERE.md",
+      "sourceRef": "7436e876b3c03aad345ec448e4cae972",
+      "sourceKind": "vault_import",
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "5c1e5f68b5b5503425570c7492cbacd0024d21612145863fcb32ca142a1fce89"
+    },
+    {
+      "objectType": "project",
+      "action": "would_upsert",
+      "name": "Walking_Paintbrush",
+      "sourcePath": "JD Command Vault/projects/Walking_Paintbrush/_START_HERE.md",
+      "sourceRef": "89e29311a87387ed8ab937cd375d58e0",
+      "sourceKind": "vault_import",
+      "reason": "Project start file → builder_project candidate",
+      "contentHash": "30db526e34056145c526a258b2d70aaaf67819d4bb2804212c311b950e15b23a"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema",
+      "sourcePath": "access-app/supabase/schema.sql",
+      "sourceRef": "cd021b9ac548f46eca4b8c6f3f202844",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "8e390e8b0e774048e801eb1a567b3c40ef575b5718f86d948048479d79c49cb1"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v2",
+      "sourcePath": "access-app/supabase/schema_v2.sql",
+      "sourceRef": "e1751d2f6e4fd19ee2de4d19242afd30",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "d04b182372910060ce329efd47604c75d696b73b7602eafbaf678db05deb4bd6"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v3_vault",
+      "sourcePath": "access-app/supabase/schema_v3_vault.sql",
+      "sourceRef": "c6107acc2b15c68ab03ca50333703f42",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "595fe2399e76ca5ae51aa1614141145bc461663a3f0d32aab503012b150d0e5a"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v4_m2_tenant_jwt",
+      "sourcePath": "access-app/supabase/schema_v4_m2_tenant_jwt.sql",
+      "sourceRef": "03bd86a39c59c73057fba4140a763675",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "72ce18e79e216b6873a10d506c29ef87e0f025e9742252c09a29849ef84559fc"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "schema_v4_platform_hardening",
+      "sourcePath": "access-app/supabase/schema_v4_platform_hardening.sql",
+      "sourceRef": "82edd9a97da9d1bfa11abe1783285330",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "0d78827b44a45e47b4f0a49c2aea824328e05060c3096dd99a75a4146771daaf"
+    },
+    {
+      "objectType": "blueprint",
+      "action": "would_upsert",
+      "name": "seed_dev_jd_ai_system_vault",
+      "sourcePath": "access-app/supabase/seed_dev_jd_ai_system_vault.sql",
+      "sourceRef": "107b3bf4adc8e795cad7bddd00efe6e8",
+      "sourceKind": "vault_import",
+      "reason": "Schema reference (metadata only)",
+      "contentHash": "0c947cee472258b355291f49643c4d88517125293c4a4b41c1e402cb7fdca0eb"
+    },
+    {
+      "objectType": "agent",
+      "action": "would_upsert",
+      "name": "AGENT_ROLES",
+      "sourcePath": "command_center/AGENT_ROLES.md",
+      "sourceRef": "19ac28f89f9f310035eda8c2f11d15f5",
+      "sourceKind": "vault_import",
+      "reason": "Agent doctrine doc",
+      "contentHash": "2c5446d0a9a7926c52ea6cb723166858782a3df9fc7e356d11259747a162db16"
+    },
+    {
+      "objectType": "workflow",
+      "action": "would_upsert",
+      "name": "WORKFLOW_PROTOCOL",
+      "sourcePath": "command_center/WORKFLOW_PROTOCOL.md",
+      "sourceRef": "17ba47c38a88e4d662fb990e377428b1",
+      "sourceKind": "vault_import",
+      "reason": "Protocol / automation doc",
+      "contentHash": "de006454ad8646b0a22fc1fbbb57addf44cfda99bfdf31babaf9407dbe96f8b4"
+    },
+    {
+      "objectType": "workflow",
+      "action": "would_upsert",
+      "name": "SKILL_EXECUTION_PROTOCOL",
+      "sourcePath": "command_center/skills/SKILL_EXECUTION_PROTOCOL.md",
+      "sourceRef": "26e83cb04bd4ba59b82decd18c26bab2",
+      "sourceKind": "vault_import",
+      "reason": "Protocol / automation doc",
+      "contentHash": "2ad1a4bb9b37550b3ad638ff27a551055d036932cc33c497cec23780e5cb0758"
+    },
+    {
+      "objectType": "asset",
+      "action": "would_upsert",
+      "name": "JD System Portal",
+      "sourcePath": "landing_page/index.html",
+      "sourceRef": "0e59fc936782162b7b9faf68b712e63a",
+      "sourceKind": "vault_import",
+      "reason": "Public portal artifact",
+      "contentHash": "2ea3e50c6d2d8878bb5b9674ce5c8e9f620c6a2ad6c3db0290d0a3fc7685e70e"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "client_memory_rules",
+      "sourcePath": "vault/client_system/client_memory_rules.md",
+      "sourceRef": "69b1b1e613da5fcdffc8cbe2e0488b3c",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "f5fa00dc0d8cc58989f68549e177111580d3abb62a6da6b6b86035ccca7784d0"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "client_onboarding_process",
+      "sourcePath": "vault/client_system/client_onboarding_process.md",
+      "sourceRef": "7463e44dc2b96ac136fc68de5e7aa733",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "9b565472ffbfd4baa0bf6d49c38bcd8ca3c2173dd5d3eff3d54a7fd4db60872f"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "contract_terms_summary",
+      "sourcePath": "vault/client_system/contract_terms_summary.md",
+      "sourceRef": "84f8e67d1aaebb5ce55f36bc867d950a",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "41112e3121ee84aa48bae865cb6e901fe1453ed2ad043ac667586009c8557a9a"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "intake_form_logic",
+      "sourcePath": "vault/client_system/intake_form_logic.md",
+      "sourceRef": "93ada331aff8450aa496f39c46541b18",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "638808006363a304d146392cdda2ed56069c0e845efc106e162e235035820abb"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "sales_to_client_transition",
+      "sourcePath": "vault/client_system/sales_to_client_transition.md",
+      "sourceRef": "f26e4f45c10883179c453aee592f85b6",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "b497e4ab9b306a0bea586ad487fbe5209e3179595bf9582be8fca0f383efd208"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "service_catalog_summary",
+      "sourcePath": "vault/client_system/service_catalog_summary.md",
+      "sourceRef": "6106453921df74cd943aea3487d59f2b",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "bd8d8884578027d874a249429e6da4c9ce717a95b78f46cac64e0a6c0b564383"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "usequeue_process",
+      "sourcePath": "vault/client_system/usequeue_process.md",
+      "sourceRef": "08d9b232f52acbf50ea6217a8b05e4c7",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "c09fc24262208867b547e61fdfff168842920a10ab5debb65ded7d6c0219550d"
+    },
+    {
+      "objectType": "offer",
+      "action": "would_upsert",
+      "name": "video_client_workflow",
+      "sourcePath": "vault/client_system/video_client_workflow.md",
+      "sourceRef": "196ae48c2c3f5ea37b8dfbecc93cc103",
+      "sourceKind": "vault_import",
+      "reason": "Client system doc",
+      "contentHash": "bfcbdc955b3c5b07dec73f7205aeaf7bfd6fbefacdf5673e963d46493473056e"
+    }
+  ],
+  "counts": {
+    "system": 5,
+    "project": 2,
+    "agent": 1,
+    "blueprint": 8,
+    "workflow": 2,
+    "asset": 1,
+    "offer": 8,
+    "skip": 826
+  }
+}

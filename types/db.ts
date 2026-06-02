@@ -174,6 +174,8 @@ export type VaultConnectionStatus =
   | 'pending_connector'
   | 'connected'
   | 'syncing'
+  | 'stale'
+  | 'disconnected'
   | 'error'
   | 'revoked'
 
@@ -181,7 +183,10 @@ export interface VaultConnectionSummary {
   vaultKey: string
   displayName: string
   status: VaultConnectionStatus | string
+  connectorType: string
+  lastSeenAt: string | null
   lastSyncAt: string | null
+  lastSyncStatus: string | null
 }
 
 export interface VaultConnection {
@@ -204,21 +209,43 @@ export interface VaultConnection {
 
 export interface SyncRun {
   id: string
-  vault_connection_id: string
+  identity_id: string
   clerk_user_id: string
+  vault_connection_id: string | null
   run_type: string
   status: string
   started_at: string
-  finished_at: string | null
+  completed_at: string | null
   stats: Record<string, unknown>
   error_message: string | null
   created_at: string
 }
 
+export interface ConnectorDevice {
+  id: string
+  identity_id: string
+  clerk_user_id: string
+  vault_connection_id: string | null
+  device_name: string | null
+  machine_id: string | null
+  public_key: string | null
+  token_hash: string | null
+  status: string
+  last_seen_at: string | null
+  revoked_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface RegistrySummary {
   identityHandle: string
   identityCreatedAt: string | null
+  /** Canonical registry counts (alias: counts). */
+  registryCounts: RegistryCounts
   counts: RegistryCounts
   totalRegistered: number
+  connectionsCount: number
   vaultConnection: VaultConnectionSummary | null
+  /** Derived: last_sync_status, never, or vault status. */
+  syncStatus: string | null
 }

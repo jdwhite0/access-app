@@ -8,6 +8,10 @@ export function vaultStatusLabel(status: string): string {
       return 'Pending Connector'
     case 'syncing':
       return 'Syncing'
+    case 'stale':
+      return 'Stale'
+    case 'disconnected':
+      return 'Disconnected'
     case 'error':
       return 'Error'
     case 'revoked':

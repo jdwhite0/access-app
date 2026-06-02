@@ -1,0 +1,17 @@
+M4 validation started 2026-06-02T04:48:40.906Z
+[2026-06-02T04:48:42.276Z] Step 1-2: pairing code D71B02
+Step 1-2: pairing code D71B02
+[2026-06-02T04:48:43.370Z] Step 3 register:
+{
+  "ok": false,
+  "error": "Invalid or expired pairing code."
+}
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+Step 3 register:
+{
+  "ok": false,
+  "error": "Invalid or expired pairing code."
+}
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+

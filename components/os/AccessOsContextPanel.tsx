@@ -164,6 +164,14 @@ export default function AccessOsContextPanel({
                 </dd>
               </div>
               <div className="access-os-context-field">
+                <dt>Connector</dt>
+                <dd>{loading ? '…' : (vault?.connectorType ?? '—')}</dd>
+              </div>
+              <div className="access-os-context-field">
+                <dt>Sync status</dt>
+                <dd>{loading ? '…' : (summary?.syncStatus ?? '—')}</dd>
+              </div>
+              <div className="access-os-context-field">
                 <dt>Last sync</dt>
                 <dd>{loading ? '…' : fmtLastSync(vault?.lastSyncAt ?? null)}</dd>
               </div>

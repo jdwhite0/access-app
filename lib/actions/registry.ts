@@ -4,28 +4,33 @@ import { auth } from '@clerk/nextjs/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import {
   countVaultConnections,
-  ensureJdAiSystemVaultConnection,
+  ensureVaultConnectionsForIdentity,
   fetchVaultConnectionSummary,
 } from '@/lib/actions/vault-connection'
-import type { RegistrySummary } from '@/types/db'
+import { deriveSyncStatus } from '@/lib/vault/sync-status'
+import type { RegistryCounts, RegistrySummary } from '@/types/db'
 
 function emptySummary(ownerHandle: string): RegistrySummary {
+  const counts: RegistryCounts = {
+    systems: 0,
+    agents: 0,
+    projects: 0,
+    blueprints: 0,
+    assets: 0,
+    workflows: 0,
+    vaults: 0,
+    connections: 0,
+    offers: 0,
+  }
   return {
     identityHandle: ownerHandle,
     identityCreatedAt: null,
-    counts: {
-      systems: 0,
-      agents: 0,
-      projects: 0,
-      blueprints: 0,
-      assets: 0,
-      workflows: 0,
-      vaults: 0,
-      connections: 0,
-      offers: 0,
-    },
+    registryCounts: counts,
+    counts,
     totalRegistered: 0,
+    connectionsCount: 0,
     vaultConnection: null,
+    syncStatus: null,
   }
 }
 
@@ -43,12 +48,34 @@ export async function getRegistrySummary(ownerHandle: string): Promise<RegistryS
     .maybeSingle()
 
   let vaultConnection = null
-  let connectionCount = 0
+  let connectionsCount = 0
 
   if (identity) {
-    await ensureJdAiSystemVaultConnection(supabase, identity, ownerHandle)
+    await ensureVaultConnectionsForIdentity(supabase, identity)
+
+    const { data: rpcSummary, error: rpcError } = await supabase.rpc(
+      'get_registry_summary',
+      { p_identity_id: identity.id }
+    )
+
+    if (!rpcError && rpcSummary && typeof rpcSummary === 'object') {
+      const s = rpcSummary as Record<string, unknown>
+      const counts = (s.registryCounts ?? s.counts) as RegistryCounts
+      const vault = s.vaultConnection as RegistrySummary['vaultConnection']
+      return {
+        identityHandle: String(s.identityHandle ?? identity.handle),
+        identityCreatedAt: (s.identityCreatedAt as string) ?? identity.created_at,
+        registryCounts: counts,
+        counts,
+        totalRegistered: Object.values(counts).reduce((a, b) => a + b, 0),
+        connectionsCount: Number(s.connectionsCount ?? counts.connections ?? 0),
+        vaultConnection: vault ?? null,
+        syncStatus: (s.syncStatus as string) ?? deriveSyncStatus(vault ?? null),
+      }
+    }
+
     vaultConnection = await fetchVaultConnectionSummary(supabase, userId)
-    connectionCount = await countVaultConnections(supabase, userId)
+    connectionsCount = await countVaultConnections(supabase, userId)
   }
 
   const [systems, agents, projects, blueprints, assets, workflows, vaults, offers] =
@@ -63,7 +90,7 @@ export async function getRegistrySummary(ownerHandle: string): Promise<RegistryS
       supabase.from('offers').select('id', { count: 'exact', head: true }).eq('clerk_user_id', userId).neq('status', 'archived'),
     ])
 
-  const counts = {
+  const registryCounts: RegistryCounts = {
     systems: systems.count ?? 0,
     agents: agents.count ?? 0,
     projects: projects.count ?? 0,
@@ -71,17 +98,21 @@ export async function getRegistrySummary(ownerHandle: string): Promise<RegistryS
     assets: assets.count ?? 0,
     workflows: workflows.count ?? 0,
     vaults: vaults.count ?? 0,
-    connections: connectionCount,
+    connections: connectionsCount,
     offers: offers.count ?? 0,
   }
 
-  const totalRegistered = Object.values(counts).reduce((a, b) => a + b, 0)
+  const totalRegistered = Object.values(registryCounts).reduce((a, b) => a + b, 0)
+  const syncStatus = deriveSyncStatus(vaultConnection)
 
   return {
     identityHandle: identity?.handle ?? ownerHandle,
     identityCreatedAt: identity?.created_at ?? null,
-    counts,
+    registryCounts,
+    counts: registryCounts,
     totalRegistered,
+    connectionsCount,
     vaultConnection,
+    syncStatus,
   }
 }

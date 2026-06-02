@@ -1,12 +1,11 @@
 'use server'
 
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { JD_AI_SYSTEM_VAULT_KEY, VAULT_CONNECTION_ACTIVE_STATUSES } from '@/lib/vault/constants'
 import {
-  getVaultSeedHandles,
-  JD_AI_SYSTEM_VAULT_DISPLAY_NAME,
-  JD_AI_SYSTEM_VAULT_KEY,
-  VAULT_CONNECTOR_TYPE_LOCAL,
-} from '@/lib/vault/constants'
+  PRIMARY_VAULT_KEY,
+  provisionVaultConnectionsForIdentity,
+} from '@/lib/vault/provision'
 import type { VaultConnectionSummary } from '@/types/db'
 
 type IdentityRow = {
@@ -24,39 +23,41 @@ function isMissingVaultTable(error: { code?: string; message?: string } | null):
   )
 }
 
-export async function ensureJdAiSystemVaultConnection(
+export async function ensureVaultConnectionsForIdentity(
   supabase: SupabaseClient,
-  identity: IdentityRow,
-  ownerHandle?: string
+  identity: IdentityRow
 ): Promise<void> {
-  const seedHandles = getVaultSeedHandles()
-  const eligible =
-    seedHandles.includes(identity.handle) ||
-    (ownerHandle != null && seedHandles.includes(ownerHandle))
-  if (!eligible) return
+  await provisionVaultConnectionsForIdentity(supabase, identity)
+}
 
-  const { data: existing, error: existingError } = await supabase
-    .from('vault_connections')
-    .select('id')
-    .eq('identity_id', identity.id)
-    .eq('vault_key', JD_AI_SYSTEM_VAULT_KEY)
-    .maybeSingle()
+type VaultRow = {
+  vault_key: string
+  display_name: string
+  status: string
+  connector_type: string
+  last_seen_at: string | null
+  last_sync_at: string | null
+  last_sync_status: string | null
+}
 
-  if (isMissingVaultTable(existingError)) return
-  if (existing) return
+function pickDisplayVault(rows: VaultRow[]): VaultRow | null {
+  if (!rows.length) return null
+  const jd = rows.find((r) => r.vault_key === JD_AI_SYSTEM_VAULT_KEY)
+  if (jd) return jd
+  const primary = rows.find((r) => r.vault_key === PRIMARY_VAULT_KEY)
+  return primary ?? rows[0]
+}
 
-  const { error: insertError } = await supabase.from('vault_connections').insert({
-    identity_id: identity.id,
-    clerk_user_id: identity.clerk_user_id,
-    vault_key: JD_AI_SYSTEM_VAULT_KEY,
-    display_name: JD_AI_SYSTEM_VAULT_DISPLAY_NAME,
-    connector_type: VAULT_CONNECTOR_TYPE_LOCAL,
-    status: 'connected',
-    root_label: 'Private intelligence vault (local Mac)',
-    config: { compileProfile: 'jd_operator_full' },
-  })
-
-  if (isMissingVaultTable(insertError)) return
+function toSummary(row: VaultRow): VaultConnectionSummary {
+  return {
+    vaultKey: row.vault_key,
+    displayName: row.display_name,
+    status: row.status,
+    connectorType: row.connector_type,
+    lastSeenAt: row.last_seen_at ?? null,
+    lastSyncAt: row.last_sync_at ?? null,
+    lastSyncStatus: row.last_sync_status ?? null,
+  }
 }
 
 export async function fetchVaultConnectionSummary(
@@ -65,21 +66,16 @@ export async function fetchVaultConnectionSummary(
 ): Promise<VaultConnectionSummary | null> {
   const { data, error } = await supabase
     .from('vault_connections')
-    .select('vault_key, display_name, status, last_sync_at')
+    .select(
+      'vault_key, display_name, status, connector_type, last_seen_at, last_sync_at, last_sync_status'
+    )
     .eq('clerk_user_id', clerkUserId)
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle()
 
   if (isMissingVaultTable(error)) return null
-  if (!data) return null
+  if (!data?.length) return null
 
-  return {
-    vaultKey: data.vault_key,
-    displayName: data.display_name,
-    status: data.status,
-    lastSyncAt: data.last_sync_at ?? null,
-  }
+  const row = pickDisplayVault(data as VaultRow[])
+  return row ? toSummary(row) : null
 }
 
 export async function countVaultConnections(
@@ -90,7 +86,7 @@ export async function countVaultConnections(
     .from('vault_connections')
     .select('id', { count: 'exact', head: true })
     .eq('clerk_user_id', clerkUserId)
-    .in('status', ['connected', 'pending_connector', 'syncing'])
+    .in('status', VAULT_CONNECTION_ACTIVE_STATUSES)
 
   if (isMissingVaultTable(error)) return 0
   return count ?? 0

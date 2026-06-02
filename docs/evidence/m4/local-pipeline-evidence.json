@@ -1,0 +1,26 @@
+{
+  "vaultRoot": "/Users/jdproductions/Documents/JD_Ai_System",
+  "vaultKey": "JD_AI_System",
+  "identityHandle": "jdevinwhite2.access",
+  "scan": {
+    "ok": true,
+    "fileCount": 853,
+    "artifact": "vault-scan-report.json"
+  },
+  "syncPlan": {
+    "ok": true,
+    "plannedUpserts": 27,
+    "counts": {
+      "system": 5,
+      "project": 2,
+      "agent": 1,
+      "blueprint": 8,
+      "workflow": 2,
+      "asset": 1,
+      "offer": 8,
+      "skip": 826
+    },
+    "artifact": "registry-sync-plan.json"
+  },
+  "note": "Local pipeline succeeded; cloud apply blocked pending Supabase migration."
+}

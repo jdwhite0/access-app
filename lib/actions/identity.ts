@@ -3,6 +3,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import type { AccessIdentity } from '@/types/db'
+import { provisionVaultConnectionsForIdentity } from '@/lib/vault/provision'
 
 export type IdentityResult = {
   identity: AccessIdentity | null
@@ -35,6 +36,7 @@ export async function getOrCreateIdentity(handle: string): Promise<IdentityResul
     .maybeSingle()
 
   if (existing) {
+    await provisionVaultConnectionsForIdentity(supabase, existing)
     return { identity: existing as AccessIdentity }
   }
 
@@ -67,11 +69,16 @@ export async function getOrCreateIdentity(handle: string): Promise<IdentityResul
       .select('*')
       .eq('clerk_user_id', userId)
       .maybeSingle()
-    if (fallback) return { identity: fallback as AccessIdentity }
+    if (fallback) {
+      await provisionVaultConnectionsForIdentity(supabase, fallback)
+      return { identity: fallback as AccessIdentity }
+    }
     return { identity: null, error: error.message }
   }
 
-  return { identity: data as AccessIdentity }
+  const created = data as AccessIdentity
+  await provisionVaultConnectionsForIdentity(supabase, created)
+  return { identity: created }
 }
 
 export async function getIdentity(): Promise<AccessIdentity | null> {

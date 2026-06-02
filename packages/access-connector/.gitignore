@@ -1,0 +1,10 @@
+node_modules/
+dist/
+config.local.json
+.access-connector-token.json
+vault-scan-report.json
+vault-compile-summary.json
+registry-sync-plan.json
+.env
+.env.local
+*.log

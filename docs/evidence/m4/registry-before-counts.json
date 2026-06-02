@@ -1,0 +1,17 @@
+{
+  "identityId": "a64a0644-ec30-4a22-a332-10cd9223a559",
+  "handle": "jdevinwhite2.access",
+  "clerkUserId": "user_3ETVKY7Lm5p0eMxyVafdQ6WjGjc",
+  "at": "2026-06-02T04:52:00.000Z",
+  "counts": {
+    "systems": 0,
+    "agents": 0,
+    "builder_projects": 0,
+    "blueprints": 0,
+    "assets": 0,
+    "workflows": 0,
+    "offers": 0
+  },
+  "provenanceRowsWithSourceRef": 0,
+  "note": "Captured before M4 cloud sync; Phase 3/4 tables not present in Supabase."
+}

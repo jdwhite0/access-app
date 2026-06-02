@@ -1,0 +1,19 @@
+{
+  "handle": "jdevinwhite2.access",
+  "steps": {
+    "14_connector_no_service_role": {
+      "clean": true,
+      "matches": []
+    },
+    "0_api_reachable": {
+      "status": 200,
+      "url": "http://localhost:3000"
+    },
+    "registry_before": null,
+    "1_2_3_device_register": {
+      "ok": false,
+      "stdout": "{\n  \"ok\": false,\n  \"error\": \"Invalid or expired pairing code.\"\n}\n"
+    }
+  },
+  "passed": false
+}
