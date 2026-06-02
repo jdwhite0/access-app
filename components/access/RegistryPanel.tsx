@@ -5,6 +5,9 @@ import type { RegistrySummary } from '@/types/db'
 type Props = {
   summary: RegistrySummary
   onCommand: (cmd: string) => void
+  mode?: 'terminal' | 'os'
+  selectedKey?: keyof RegistrySummary['counts'] | null
+  onSelectKey?: (key: keyof RegistrySummary['counts']) => void
 }
 
 const REGISTRY_ROWS: Array<{
@@ -30,12 +33,20 @@ function fmtDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
-export default function RegistryPanel({ summary, onCommand }: Props) {
-  const div = { borderTop: '1px solid rgba(255,255,255,0.07)', margin: '14px 0' }
+export default function RegistryPanel({
+  summary,
+  onCommand,
+  mode = 'terminal',
+  selectedKey = null,
+  onSelectKey,
+}: Props) {
+  const isOs = mode === 'os'
 
   return (
-    <div style={{
-      maxWidth: '600px',
+    <div
+      className={isOs ? 'access-os-registry-panel' : undefined}
+      style={{
+      maxWidth: isOs ? 'none' : '600px',
       border: '1px solid rgba(255,255,255,0.08)',
       borderRadius: '2px',
       padding: '0',
@@ -76,28 +87,43 @@ export default function RegistryPanel({ summary, onCommand }: Props) {
           const isPhase3 = !!note
           const actionCmd = hasItems ? listCmd : registerCmd
 
+          const isSelected = isOs && selectedKey === key
+          const rowInteractive = isOs
+            ? !isPhase3 && !!onSelectKey
+            : !isPhase3 && !!actionCmd
+
           return (
             <button
               key={key}
-              onClick={() => !isPhase3 && actionCmd && onCommand(actionCmd)}
-              disabled={isPhase3 || !actionCmd}
+              type="button"
+              onClick={() => {
+                if (isPhase3) return
+                if (isOs && onSelectKey) {
+                  onSelectKey(key)
+                  return
+                }
+                if (actionCmd) onCommand(actionCmd)
+              }}
+              disabled={isPhase3 || (!isOs && !actionCmd)}
+              aria-pressed={isOs ? isSelected : undefined}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 width: '100%',
                 padding: '9px 20px',
-                background: 'transparent',
+                background: isSelected ? 'rgba(64,192,208,0.08)' : 'transparent',
                 border: 'none',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
-                cursor: isPhase3 || !actionCmd ? 'default' : 'pointer',
+                boxShadow: isSelected ? 'inset 3px 0 0 var(--accent)' : 'none',
+                cursor: rowInteractive ? 'pointer' : 'default',
                 transition: 'background 0.1s',
                 textAlign: 'left',
               }}
               onMouseEnter={e => {
-                if (!isPhase3 && actionCmd) e.currentTarget.style.background = 'rgba(64,192,208,0.03)'
+                if (rowInteractive) e.currentTarget.style.background = isSelected ? 'rgba(64,192,208,0.1)' : 'rgba(64,192,208,0.03)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.background = isSelected ? 'rgba(64,192,208,0.08)' : 'transparent'
               }}
             >
               {/* Label */}
@@ -126,8 +152,8 @@ export default function RegistryPanel({ summary, onCommand }: Props) {
                 }
               </span>
 
-              {/* Command */}
-              {!isPhase3 && (
+              {/* Command (terminal only) */}
+              {!isPhase3 && !isOs && (
                 <span style={{
                   fontSize: '10px',
                   color: hasItems ? 'var(--accent)' : 'rgba(64,192,208,0.4)',
@@ -135,6 +161,16 @@ export default function RegistryPanel({ summary, onCommand }: Props) {
                   opacity: hasItems ? 1 : 0.7,
                 }}>
                   {actionCmd}
+                </span>
+              )}
+              {!isPhase3 && isOs && (
+                <span style={{
+                  fontSize: '10px',
+                  color: hasItems ? 'var(--success)' : 'var(--text-muted)',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                }}>
+                  {hasItems ? 'registered' : 'empty'}
                 </span>
               )}
             </button>
@@ -152,22 +188,29 @@ export default function RegistryPanel({ summary, onCommand }: Props) {
       }}>
         <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
           {summary.totalRegistered} object{summary.totalRegistered !== 1 ? 's' : ''} registered
-          {'  ·  '}
-          Phase 1: Registry
+          {!isOs && (
+            <>
+              {'  ·  '}
+              Phase 1: Registry
+            </>
+          )}
         </span>
-        <button
-          onClick={() => onCommand('/registry')}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: '9px', color: 'rgba(64,192,208,0.4)',
-            letterSpacing: '0.08em', fontFamily: 'var(--mono)',
-            transition: 'color 0.15s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(64,192,208,0.4)')}
-        >
-          /registry
-        </button>
+        {!isOs && (
+          <button
+            type="button"
+            onClick={() => onCommand('/registry')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '9px', color: 'rgba(64,192,208,0.4)',
+              letterSpacing: '0.08em', fontFamily: 'var(--mono)',
+              transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(64,192,208,0.4)')}
+          >
+            /registry
+          </button>
+        )}
       </div>
     </div>
   )

@@ -1887,7 +1887,55 @@ html, body {
 
 .access-os-placeholder-value {
   font-size: 18px;
-  color: var(--text-muted);
+  color: var(--text);
+}
+
+.access-os-stat-card {
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.access-os-stat-card:hover {
+  border-color: rgba(64, 192, 208, 0.25);
+  background: var(--os-surface-hover);
+}
+
+.access-os-stat-card.is-selected {
+  border-color: rgba(64, 192, 208, 0.35);
+  background: var(--accent-glow);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.access-os-registry-status {
+  max-width: 720px;
+}
+
+.access-os-registry-loading,
+.access-os-registry-error {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.access-os-registry-error {
+  color: var(--gold);
+}
+
+.access-os-registry-alert,
+.access-os-context-alert {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--gold);
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(201, 164, 106, 0.35);
+  background: rgba(201, 164, 106, 0.06);
+  border-radius: 3px;
+}
+
+.access-os-registry-panel {
+  width: 100%;
 }
 
 .access-os-placeholder-panel {

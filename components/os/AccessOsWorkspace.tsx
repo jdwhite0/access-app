@@ -1,12 +1,27 @@
 'use client'
 
+import RegistryModule from './RegistryModule'
+import type { RegistrySummary } from '@/types/db'
 import type { OsModuleId } from './types'
+import type { RegistryRowKey } from './registry-types'
 
 type Props = {
   activeModule: OsModuleId
+  summary: RegistrySummary | null
+  loading: boolean
+  identityError: string | null
+  selectedKey: RegistryRowKey | null
+  onSelectKey: (key: RegistryRowKey) => void
 }
 
-export default function AccessOsWorkspace({ activeModule }: Props) {
+export default function AccessOsWorkspace({
+  activeModule,
+  summary,
+  loading,
+  identityError,
+  selectedKey,
+  onSelectKey,
+}: Props) {
   if (activeModule !== 'registry') {
     return (
       <section className="access-os-workspace" aria-label="Workspace">
@@ -20,39 +35,29 @@ export default function AccessOsWorkspace({ activeModule }: Props) {
     )
   }
 
+  const registeredTotal = summary?.totalRegistered
+
   return (
     <section className="access-os-workspace" aria-label="Registry workspace">
       <header className="access-os-workspace-header">
         <p className="access-os-workspace-eyebrow">Identity layer</p>
         <h1 className="access-os-workspace-title">Registry</h1>
         <p className="access-os-workspace-sub">
-          Your ACCESS identity registry will load here in Phase 2b. This workspace
-          is reserved for systems, agents, projects, and connected records.
+          {loading
+            ? 'Loading your ACCESS registry…'
+            : summary
+              ? `${summary.identityHandle} · ${registeredTotal ?? 0} registered object${registeredTotal === 1 ? '' : 's'} across systems, agents, projects, and blueprints.`
+              : 'Registry data could not be loaded.'}
         </p>
       </header>
 
-      <div className="access-os-workspace-placeholder">
-        <div className="access-os-placeholder-grid">
-          {[
-            ['Systems', '—'],
-            ['Agents', '—'],
-            ['Projects', '—'],
-            ['Blueprints', '—'],
-          ].map(([label, value]) => (
-            <div key={label} className="access-os-placeholder-card">
-              <span className="access-os-placeholder-label">{label}</span>
-              <span className="access-os-placeholder-value">{value}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="access-os-placeholder-panel">
-          <p className="access-os-placeholder-note">
-            <span className="access-os-placeholder-accent">Phase 2a</span>
-            — Shell layout only. Registry data and actions ship in the next deploy.
-          </p>
-        </div>
-      </div>
+      <RegistryModule
+        summary={summary}
+        loading={loading}
+        identityError={identityError}
+        selectedKey={selectedKey}
+        onSelectKey={onSelectKey}
+      />
     </section>
   )
 }
