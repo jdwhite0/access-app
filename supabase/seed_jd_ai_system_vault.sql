@@ -18,12 +18,13 @@ select
   'JD_AI_System',
   'JD_AI_System Intelligence Vault',
   'local_connector',
-  'pending_connector',
+  'connected',
   'Private intelligence vault (local Mac)',
   '{"compileProfile":"jd_operator_full"}'::jsonb
 from public.access_identities ai
-where ai.handle in ('jerry.access', 'jdwhite.access')
+where ai.handle in ('jerry.access', 'jdwhite.access', 'jdwhite0.access')
 on conflict (identity_id, vault_key) do update set
   display_name = excluded.display_name,
   connector_type = excluded.connector_type,
+  status = excluded.status,
   updated_at = now();

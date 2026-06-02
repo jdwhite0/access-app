@@ -46,7 +46,7 @@ export async function getRegistrySummary(ownerHandle: string): Promise<RegistryS
   let connectionCount = 0
 
   if (identity) {
-    await ensureJdAiSystemVaultConnection(supabase, identity)
+    await ensureJdAiSystemVaultConnection(supabase, identity, ownerHandle)
     vaultConnection = await fetchVaultConnectionSummary(supabase, userId)
     connectionCount = await countVaultConnections(supabase, userId)
   }

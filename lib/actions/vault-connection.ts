@@ -26,10 +26,14 @@ function isMissingVaultTable(error: { code?: string; message?: string } | null):
 
 export async function ensureJdAiSystemVaultConnection(
   supabase: SupabaseClient,
-  identity: IdentityRow
+  identity: IdentityRow,
+  ownerHandle?: string
 ): Promise<void> {
   const seedHandles = getVaultSeedHandles()
-  if (!seedHandles.includes(identity.handle)) return
+  const eligible =
+    seedHandles.includes(identity.handle) ||
+    (ownerHandle != null && seedHandles.includes(ownerHandle))
+  if (!eligible) return
 
   const { data: existing, error: existingError } = await supabase
     .from('vault_connections')
@@ -47,7 +51,7 @@ export async function ensureJdAiSystemVaultConnection(
     vault_key: JD_AI_SYSTEM_VAULT_KEY,
     display_name: JD_AI_SYSTEM_VAULT_DISPLAY_NAME,
     connector_type: VAULT_CONNECTOR_TYPE_LOCAL,
-    status: 'pending_connector',
+    status: 'connected',
     root_label: 'Private intelligence vault (local Mac)',
     config: { compileProfile: 'jd_operator_full' },
   })

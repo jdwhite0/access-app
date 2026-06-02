@@ -10,7 +10,7 @@ export function getVaultSeedHandles(): string[] {
   if (fromEnv?.trim()) {
     return fromEnv.split(',').map((h) => h.trim()).filter(Boolean)
   }
-  return ['jerry.access', 'jdwhite.access']
+  return ['jerry.access', 'jdwhite.access', 'jdwhite0.access']
 }
 
 export type VaultConnectionStatus =
