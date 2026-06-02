@@ -2,14 +2,13 @@
 
 import { useAuth } from '@clerk/nextjs'
 import TerminalLanding from '@/components/TerminalLanding'
-import CommandCenter from '@/components/CommandCenter'
+import AccessOsShell from '@/components/os/AccessOsShell'
 
 export default function Page() {
   const { isSignedIn, isLoaded } = useAuth()
 
   return (
     <div className="relative h-full scanline">
-      {/* Ambient grid — very subtle */}
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.012]"
         style={{
@@ -19,7 +18,6 @@ export default function Page() {
         }}
       />
 
-      {/* Loading state — brief flash while Clerk initializes */}
       {!isLoaded && (
         <div className="h-full flex items-center justify-center">
           <div className="text-xs tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>
@@ -29,7 +27,7 @@ export default function Page() {
       )}
 
       {isLoaded && !isSignedIn && <TerminalLanding />}
-      {isLoaded && isSignedIn && <CommandCenter />}
+      {isLoaded && isSignedIn && <AccessOsShell />}
     </div>
   )
 }
