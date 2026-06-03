@@ -3,6 +3,8 @@ export {
   checkOpenJarvisHealth,
   type ToolCallResult,
 } from '@/lib/openjarvis-bridge/adapter'
+export type { OpenJarvisRuntimeCard } from '@/lib/openjarvis-bridge/runtime-card'
+export { mapAccessToolToOpenJarvis } from '@/lib/openjarvis-bridge/openjarvis-tool-map'
 export {
   TOOL_REGISTRY,
   getToolById,

@@ -1,13 +1,23 @@
 /**
  * OpenJarvis Adapter (ACCESS copy — keep in sync with jyson/backend/openjarvis-bridge)
+ *
+ * Native contract (OpenJarvis 0.1.1):
+ * - GET /health — liveness
+ * - GET /v1/tools — tool catalog
+ * - Tool execution — ToolRegistry via OPENJARVIS venv (no HTTP /api/files/* routes)
  */
 import { checkToolPermission, buildNotAvailableMessage } from './permission-gate'
 import type { GateContext } from './permission-gate'
 import type { ToolId } from './tool-registry'
 import { getToolById } from './tool-registry'
+import { mapAccessToolToOpenJarvis } from './openjarvis-tool-map'
+import { assertToolInCatalog, invokeOpenJarvisNativeTool } from './native-tool-invoke'
+import { buildRuntimeCard, type OpenJarvisRuntimeCard } from './runtime-card'
 
 const OPENJARVIS_URL = process.env.OPENJARVIS_LOCAL_URL ?? 'http://localhost:8000'
 const PRIVATE_ENABLED = process.env.PRIVATE_JYSON_ENABLED === 'true'
+
+const NATIVE_MAPPED_TOOLS: ReadonlySet<ToolId> = new Set(['read_file', 'list_files'])
 
 export interface ToolCallResult {
   success: boolean
@@ -15,6 +25,7 @@ export interface ToolCallResult {
   error?: string
   requiresConfirmation?: boolean
   confirmationPrompt?: string
+  runtimeCard?: OpenJarvisRuntimeCard
 }
 
 export interface AdapterContext extends GateContext {
@@ -38,36 +49,6 @@ function buildAdapterContext(opts: {
   }
 }
 
-async function callOpenJarvis(
-  endpoint: string,
-  params: Record<string, unknown>
-): Promise<unknown> {
-  const res = await fetch(`${OPENJARVIS_URL}${endpoint}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
-    signal: AbortSignal.timeout(15_000),
-  })
-  if (!res.ok) {
-    throw new Error(`OpenJarvis responded ${res.status}: ${await res.text()}`)
-  }
-  return res.json()
-}
-
-const TOOL_ENDPOINTS: Partial<Record<ToolId, string>> = {
-  read_file: '/api/files/read',
-  write_file: '/api/files/write',
-  list_files: '/api/files/list',
-  read_vault_note: '/api/vault/read',
-  write_vault_note: '/api/vault/write',
-  read_email: '/api/email/read',
-  compose_email: '/api/email/compose',
-  read_calendar: '/api/calendar/read',
-  create_event: '/api/calendar/create',
-  run_local_model: '/api/models/run',
-  browser_open: '/api/browser/open',
-}
-
 export async function executeTool(
   toolId: ToolId,
   params: Record<string, unknown>,
@@ -83,9 +64,17 @@ export async function executeTool(
   const gate = checkToolPermission(toolId, ctx)
 
   if (!gate.allowed) {
+    const card = buildRuntimeCard({
+      success: false,
+      toolId,
+      permission: gate,
+      invokePath: 'ACCESS permission gate',
+      error: buildNotAvailableMessage(toolId, ctx),
+    })
     return {
       success: false,
-      error: buildNotAvailableMessage(toolId, ctx),
+      error: card.error,
+      runtimeCard: card,
     }
   }
 
@@ -102,23 +91,71 @@ export async function executeTool(
     }
   }
 
-  const endpoint = TOOL_ENDPOINTS[toolId]
-  if (!endpoint) {
-    return { success: false, error: `No endpoint mapped for tool: ${toolId}` }
+  if (!NATIVE_MAPPED_TOOLS.has(toolId)) {
+    const card = buildRuntimeCard({
+      success: false,
+      toolId,
+      permission: gate,
+      invokePath: 'unmapped',
+      error: `Tool "${toolId}" is not yet mapped to OpenJarvis native tools. See openjarvis-tool-map.ts.`,
+    })
+    return { success: false, error: card.error, runtimeCard: card }
+  }
+
+  const mapped = mapAccessToolToOpenJarvis(toolId, params, opts.founderOsPath)
+  if ('error' in mapped) {
+    const card = buildRuntimeCard({
+      success: false,
+      toolId,
+      permission: gate,
+      invokePath: 'ACCESS tool map',
+      error: mapped.error,
+    })
+    return { success: false, error: mapped.error, runtimeCard: card }
+  }
+
+  const catalogErr = await assertToolInCatalog(mapped.openJarvisToolId)
+  if (catalogErr) {
+    const card = buildRuntimeCard({
+      success: false,
+      toolId,
+      openJarvisToolId: mapped.openJarvisToolId,
+      permission: gate,
+      invokePath: 'GET /v1/tools',
+      error: catalogErr,
+    })
+    return { success: false, error: catalogErr, runtimeCard: card }
   }
 
   try {
-    const output = await callOpenJarvis(endpoint, {
-      ...params,
-      _jyson_handle: opts.handle,
-      _jyson_founder_os_path: opts.founderOsPath,
+    const native = await invokeOpenJarvisNativeTool(mapped, opts.founderOsPath)
+    const card = buildRuntimeCard({
+      success: native.success,
+      toolId,
+      openJarvisToolId: mapped.openJarvisToolId,
+      permission: gate,
+      invokePath: 'GET /v1/tools + ToolRegistry (venv)',
+      content: native.content,
+      metadata: native.metadata,
+      error: native.error,
     })
-    return { success: true, output }
-  } catch (err) {
     return {
-      success: false,
-      error: err instanceof Error ? err.message : 'OpenJarvis call failed.',
+      success: native.success,
+      output: card.output,
+      error: native.error,
+      runtimeCard: card,
     }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'OpenJarvis native invoke failed.'
+    const card = buildRuntimeCard({
+      success: false,
+      toolId,
+      openJarvisToolId: mapped.openJarvisToolId,
+      permission: gate,
+      invokePath: 'GET /v1/tools + ToolRegistry (venv)',
+      error: message,
+    })
+    return { success: false, error: message, runtimeCard: card }
   }
 }
 
@@ -135,8 +172,8 @@ export async function checkOpenJarvisHealth(): Promise<{
       signal: AbortSignal.timeout(3000),
     })
     if (!res.ok) return { online: false, error: `Health check failed: ${res.status}` }
-    const data = (await res.json()) as { version?: string }
-    return { online: true, version: data.version }
+    const data = (await res.json()) as { status?: string; version?: string }
+    return { online: data.status === 'ok', version: data.version }
   } catch (err) {
     return {
       online: false,

@@ -16,8 +16,11 @@ export async function listOpenJarvisTools() {
       id: t.id,
       label: t.label,
       category: t.category,
+      description: t.description,
       requiredAction: t.requiredAction,
       requiresConfirmation: t.requiresConfirmation,
+      mutates: t.mutates,
+      params: t.params,
     })),
     runtime,
   }

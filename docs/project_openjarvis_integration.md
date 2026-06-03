@@ -102,7 +102,7 @@ Also run standard ACCESS checks per `ACCESS_AGENT.md`: `preflight`, `registry:ve
 
 ## Remaining (post–Phase 8)
 
-1. Install and run OpenJarvis locally; confirm `/health` and file endpoints match `TOOL_ENDPOINTS` in adapter.
+1. ~~Install OpenJarvis~~ Done. Adapter uses **GET /v1/tools** + **ToolRegistry** (not `/api/files/*`). Run `npm run openjarvis:verify-m9`.
 2. Wire companion UI to `/api/jyson/openjarvis/health` and execute flow (optional product polish).
 3. Add `list_tasks`, `create_task`, `browser_open` to `TOOL_REGISTRY` when OpenJarvis endpoints exist.
 4. `POST /api/jyson/private-dispatch` on jyson (local only) — designed in `api-design.md`, not implemented.

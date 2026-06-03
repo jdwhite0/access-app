@@ -3,7 +3,13 @@
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 
-/** Scrolls to companion section anchors when hash changes — navigation only. */
+function companionScrollRoot(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(
+    '.access-app-layout--companion .access-ds-shell__main'
+  )
+}
+
+/** Scrolls to companion section anchors inside the shell scroll container (body is overflow:hidden). */
 export default function CompanionHashScroll() {
   const pathname = usePathname()
 
@@ -13,7 +19,19 @@ export default function CompanionHashScroll() {
     const scrollToHash = () => {
       const id = window.location.hash.replace(/^#/, '')
       if (!id) return
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const target = document.getElementById(id)
+      if (!target) return
+
+      const root = companionScrollRoot()
+      if (!root) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        return
+      }
+
+      const rootRect = root.getBoundingClientRect()
+      const targetRect = target.getBoundingClientRect()
+      const top = root.scrollTop + (targetRect.top - rootRect.top) - 16
+      root.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
     }
 
     scrollToHash()

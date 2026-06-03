@@ -33,7 +33,7 @@ export default async function CompanionPage({ searchParams }: CompanionPageProps
   }
 
   return (
-    <div className="relative h-full scanline">
+    <div className="companion-route-root relative h-full min-h-0 scanline">
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.012]"
         style={{

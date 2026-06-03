@@ -15,7 +15,8 @@ import {
   labelForAction,
 } from '@/lib/jyson-bridge/action-labels'
 import JysonCommandLayer from '@/components/jyson/JysonCommandLayer'
-import JysonChatPanel from '@/components/jyson/JysonChatPanel'
+import JysonCompanionCommand from '@/components/jyson/JysonCompanionCommand'
+import CompanionExecutePanel from '@/components/jyson/CompanionExecutePanel'
 
 type JysonCompanionPanelProps = {
   /** Dev-only: `?preview=fixture` on /companion loads jdwhite.access without sign-in. */
@@ -190,112 +191,101 @@ function CompanionLoadedView({
       </header>
 
       <main className="jyson-companion-main fade-in">
-        <section id="overview" className="jyson-companion-card">
-          {agentWarning && (
-            <p className="jyson-companion-warn">{agentWarning}</p>
-          )}
-          <h1 className="jyson-companion-greeting">Hello {firstName}.</h1>
-          <p className="jyson-companion-loaded">Your ACCESS world is loaded.</p>
-
-          <div className="jyson-hybrid-state">
-            <span className={`jyson-hybrid-badge ${ctx.companionState.cloudReady ? 'ok' : 'pending'}`}>
-              {ctx.companionState.cloudReady ? '◈ Cloud package ready' : '○ Cloud package pending'}
-            </span>
-            <span className={`jyson-hybrid-badge ${ctx.companionState.localConnected ? 'ok' : 'pending'}`}>
-              {ctx.companionState.localConnected ? '◉ Local OS connected' : '○ Local OS sync pending'}
-            </span>
-          </div>
-
-          <p className="jyson-companion-sub">
-            JYSON reads your handle and blueprint. ACCESS remains the source of truth.
+        <section className="jyson-companion-hero">
+          {agentWarning && <p className="jyson-companion-warn">{agentWarning}</p>}
+          <p className="jyson-companion-greeting jyson-companion-greeting--compact">
+            Hello {firstName}.
           </p>
-
-          <div className="jyson-companion-block">
-            <span className="jyson-companion-label">Handle</span>
-            <span className="jyson-companion-value accent">{ctx.handle}</span>
-          </div>
-
-          <div className="jyson-companion-stats">
-            <div className="jyson-companion-stat">
-              <span className="jyson-companion-stat-num">{ctx.organizations.length}</span>
-              <span className="jyson-companion-stat-label">Organizations</span>
-            </div>
-            <div className="jyson-companion-stat">
-              <span className="jyson-companion-stat-num">{ctx.products.length}</span>
-              <span className="jyson-companion-stat-label">Products</span>
-            </div>
-            <div className="jyson-companion-stat">
-              <span className="jyson-companion-stat-num">{ctx.experiences.length}</span>
-              <span className="jyson-companion-stat-label">Experiences</span>
-            </div>
-          </div>
-
-          <div id="memory" className="jyson-companion-block">
-            <span className="jyson-companion-label">Identity summary</span>
-            <p className="jyson-companion-body">{identitySummary}</p>
-          </div>
-
-          <div id="projects" className="jyson-companion-block">
-            <span className="jyson-companion-label">Projects &amp; catalog</span>
-            <p className="jyson-companion-body muted">
-              {ctx.products.length} products · {ctx.experiences.length} experiences ·{' '}
-              {ctx.organizations.length} organizations
-            </p>
-          </div>
-
-          <div className="jyson-companion-block">
-            <span className="jyson-companion-label">System summary</span>
-            <p className="jyson-companion-body">{ctx.summary.headline}</p>
-            <p className="jyson-companion-body muted">
-              User system: {ctx.userSystemId}
-              {ctx.layers.agentContext ? ' · Package linked' : ' · Blueprint context'}
-            </p>
-          </div>
-
-          <div className="jyson-companion-columns">
-            <div className="jyson-companion-perms">
-              <span className="jyson-companion-label">You currently have access to</span>
-              <ul className="jyson-companion-list allowed">
-                {allowedLines.map((line) => (
-                  <li key={line}>
-                    <span className="mark">✓</span> {line}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="jyson-companion-perms">
-              <span className="jyson-companion-label">Restricted</span>
-              <ul className="jyson-companion-list denied">
-                {deniedLines.map((line) => (
-                  <li key={line}>
-                    <span className="mark">✕</span> {line}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div id="jyson" className="jyson-companion-block">
-            <JysonChatPanel
-              handle={ctx.handle}
-              cloudReady={ctx.companionState.cloudReady}
-              localConnected={ctx.companionState.localConnected}
-            />
-          </div>
-
-          <div id="agents">
-            <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
-          </div>
-
-          <div id="diagnostics" className="jyson-companion-block">
-            <span className="jyson-companion-label">Diagnostics</span>
-            <p className="jyson-companion-body muted">
-              Package {ctx.layers.agentContext ? 'linked' : 'pending'} ·{' '}
-              {ctx.companionState.cloudReady ? 'Cloud ready' : 'Cloud pending'} ·{' '}
-              {ctx.companionState.localConnected ? 'Local OS connected' : 'Local sync pending'}
-            </p>
-          </div>
+          <JysonCompanionCommand
+            handle={ctx.handle}
+            cloudReady={ctx.companionState.cloudReady}
+            localConnected={ctx.companionState.localConnected}
+          />
         </section>
+
+        <details className="jyson-companion-drawer" id="overview">
+          <summary className="jyson-companion-drawer-summary">Your ACCESS world</summary>
+          <div className="jyson-companion-card jyson-companion-card--nested">
+            <p className="jyson-companion-loaded">Your ACCESS world is loaded.</p>
+            <div className="jyson-hybrid-state">
+              <span className={`jyson-hybrid-badge ${ctx.companionState.cloudReady ? 'ok' : 'pending'}`}>
+                {ctx.companionState.cloudReady ? '◈ Cloud package ready' : '○ Cloud package pending'}
+              </span>
+              <span className={`jyson-hybrid-badge ${ctx.companionState.localConnected ? 'ok' : 'pending'}`}>
+                {ctx.companionState.localConnected ? '◉ Local OS connected' : '○ Local OS sync pending'}
+              </span>
+            </div>
+            <div className="jyson-companion-block">
+              <span className="jyson-companion-label">Handle</span>
+              <span className="jyson-companion-value accent">{ctx.handle}</span>
+            </div>
+            <div className="jyson-companion-stats">
+              <div className="jyson-companion-stat">
+                <span className="jyson-companion-stat-num">{ctx.organizations.length}</span>
+                <span className="jyson-companion-stat-label">Organizations</span>
+              </div>
+              <div className="jyson-companion-stat">
+                <span className="jyson-companion-stat-num">{ctx.products.length}</span>
+                <span className="jyson-companion-stat-label">Products</span>
+              </div>
+              <div className="jyson-companion-stat">
+                <span className="jyson-companion-stat-num">{ctx.experiences.length}</span>
+                <span className="jyson-companion-stat-label">Experiences</span>
+              </div>
+            </div>
+            <div id="memory" className="jyson-companion-block">
+              <span className="jyson-companion-label">Identity summary</span>
+              <p className="jyson-companion-body">{identitySummary}</p>
+            </div>
+            <div id="projects" className="jyson-companion-block">
+              <span className="jyson-companion-label">Projects &amp; catalog</span>
+              <p className="jyson-companion-body muted">
+                {ctx.products.length} products · {ctx.experiences.length} experiences ·{' '}
+                {ctx.organizations.length} organizations
+              </p>
+            </div>
+            <div className="jyson-companion-columns">
+              <div className="jyson-companion-perms">
+                <span className="jyson-companion-label">Allowed</span>
+                <ul className="jyson-companion-list allowed">
+                  {allowedLines.map((line) => (
+                    <li key={line}>
+                      <span className="mark">✓</span> {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="jyson-companion-perms">
+                <span className="jyson-companion-label">Restricted</span>
+                <ul className="jyson-companion-list denied">
+                  {deniedLines.map((line) => (
+                    <li key={line}>
+                      <span className="mark">✕</span> {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div id="diagnostics" className="jyson-companion-block">
+              <span className="jyson-companion-label">Diagnostics</span>
+              <p className="jyson-companion-body muted">
+                Package {ctx.layers.agentContext ? 'linked' : 'pending'} ·{' '}
+                {ctx.companionState.cloudReady ? 'Cloud ready' : 'Cloud pending'} ·{' '}
+                {ctx.companionState.localConnected ? 'Local OS connected' : 'Local sync pending'}
+              </p>
+            </div>
+          </div>
+        </details>
+
+        <details className="jyson-companion-drawer" id="agents">
+          <summary className="jyson-companion-drawer-summary">Intent routing (advanced)</summary>
+          <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
+        </details>
+
+        <details className="jyson-companion-drawer" id="tools">
+          <summary className="jyson-companion-drawer-summary">Advanced OpenJarvis Tools</summary>
+          <CompanionExecutePanel allowedActions={ctx.allowedActions} advancedOnly />
+        </details>
       </main>
     </div>
     </AccessAppLayout>

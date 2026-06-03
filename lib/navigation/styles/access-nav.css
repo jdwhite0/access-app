@@ -230,6 +230,68 @@
   overflow-y: auto;
 }
 
+/*
+ * Companion: one scroll surface (shell main).
+ * Avoid nested overflow traps (body is overflow:hidden; orb-era layout used height:100% flex).
+ */
+.access-app-layout--companion {
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.access-app-layout--companion .access-app-layout-shell.access-ds-shell {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.access-app-layout--companion .access-ds-shell__body {
+  min-height: 0;
+}
+
+.access-app-layout--companion .access-ds-shell__main {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.access-app-layout--companion .access-app-layout__main {
+  flex: none;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+}
+
+.access-app-layout--companion .jyson-companion {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.access-app-layout--companion .jyson-companion-main {
+  flex: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+.companion-route-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.companion-route-root .access-app-layout--companion {
+  flex: 1;
+  min-height: 0;
+}
+
 @media (max-width: 768px) {
   body:has(.access-app-layout) {
     overflow: auto;

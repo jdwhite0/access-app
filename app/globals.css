@@ -36,6 +36,12 @@ html, body {
     height: auto;
     min-height: 100dvh;
   }
+
+  body:has(.companion-route-root) {
+    overflow: hidden;
+    height: 100%;
+    min-height: 100dvh;
+  }
 }
 
 @keyframes blink {
@@ -1026,9 +1032,10 @@ html, body {
 
 .jyson-companion {
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: visible; /* allow scroll to propagate on mobile */
+  overflow: hidden;
   font-family: var(--mono);
 }
 
@@ -1079,10 +1086,12 @@ html, body {
 
 .jyson-companion-main {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 28px 24px 40px;
   display: flex;
   justify-content: center;
+  -webkit-overflow-scrolling: touch;
 }
 
 .jyson-companion-card {
@@ -1419,6 +1428,275 @@ html, body {
   letter-spacing: 0.1em;
   color: var(--text-muted);
   text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════
+   JYSON COMPANION EXECUTE (M10)
+═══════════════════════════════════════════════════ */
+
+.jyson-execute-layer {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.jyson-execute-result {
+  margin-top: 20px;
+  scroll-margin-top: 24px;
+}
+
+.jyson-execute-lead {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 8px 0 14px;
+  line-height: 1.5;
+}
+
+.jyson-execute-runtime {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.jyson-execute-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 220px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .jyson-execute-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.jyson-execute-subhead {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.jyson-execute-tool-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jyson-execute-tool-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.jyson-execute-tool-btn:hover:not(:disabled) {
+  border-color: rgba(64, 192, 208, 0.35);
+}
+
+.jyson-execute-tool-btn.active {
+  border-color: rgba(64, 192, 208, 0.55);
+  background: rgba(64, 192, 208, 0.06);
+}
+
+.jyson-execute-tool-btn.dim {
+  opacity: 0.65;
+}
+
+.jyson-execute-tool-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.jyson-execute-tool-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.jyson-execute-tool-meta code {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 9px;
+}
+
+.jyson-execute-refresh {
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.jyson-execute-refresh:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(64, 192, 208, 0.4);
+}
+
+.jyson-execute-form {
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+}
+
+.jyson-execute-selected-title {
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.jyson-execute-required-action {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 8px 0 14px;
+}
+
+.jyson-execute-required-action code {
+  font-family: var(--mono);
+  color: var(--accent);
+}
+
+.jyson-execute-action-ok {
+  color: var(--success);
+}
+
+.jyson-execute-action-denied {
+  color: #c08080;
+}
+
+.jyson-execute-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.jyson-execute-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jyson-execute-field-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.jyson-execute-field-type {
+  margin-left: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.8;
+}
+
+.jyson-execute-field-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.jyson-execute-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  resize: vertical;
+  min-height: 72px;
+}
+
+.jyson-execute-textarea:focus {
+  outline: none;
+  border-color: rgba(64, 192, 208, 0.5);
+}
+
+.jyson-execute-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 0 14px;
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.jyson-runtime-card {
+  margin-top: 20px;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(64, 192, 208, 0.2);
+}
+
+.jyson-runtime-card.denied {
+  border-color: rgba(192, 128, 128, 0.45);
+}
+
+.jyson-runtime-card.ok {
+  border-color: rgba(80, 160, 120, 0.35);
+}
+
+.jyson-runtime-card.fail {
+  border-color: rgba(192, 128, 128, 0.35);
+}
+
+.jyson-runtime-card-title {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.jyson-runtime-content,
+.jyson-runtime-json {
+  margin: 0;
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.jyson-runtime-raw {
+  margin-top: 14px;
+}
+
+.jyson-runtime-raw summary {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -2662,4 +2940,278 @@ html, body {
 
 @media (max-width: 768px) {
   .jyson-chat-history { max-height: 260px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   JYSON COMPANION ORB + COMMAND (M11)
+═══════════════════════════════════════════════════ */
+
+.jyson-companion-hero {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 0 24px;
+}
+
+.jyson-companion-greeting--compact {
+  font-size: 22px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.jyson-companion-command {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.jyson-companion-command-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.jyson-orb-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 8px;
+}
+
+.jyson-orb {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jyson-orb-core {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7ee8f7 0%, #40c0d0 45%, #1a6a78 100%);
+  box-shadow: 0 0 32px rgba(64, 192, 208, 0.55);
+  z-index: 2;
+}
+
+.jyson-orb-glow {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(64, 192, 208, 0.25) 0%, transparent 70%);
+  z-index: 1;
+  animation: jyson-orb-breathe 3.2s ease-in-out infinite;
+}
+
+.jyson-orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(64, 192, 208, 0.35);
+  pointer-events: none;
+}
+
+.jyson-orb-ring--outer {
+  inset: 0;
+  animation: jyson-orb-spin 12s linear infinite;
+}
+
+.jyson-orb-ring--inner {
+  inset: 14px;
+  border-color: rgba(64, 192, 208, 0.2);
+  animation: jyson-orb-spin 8s linear infinite reverse;
+}
+
+.jyson-orb--listening .jyson-orb-core,
+.jyson-orb--thinking .jyson-orb-core,
+.jyson-orb--executing .jyson-orb-core {
+  animation: jyson-orb-pulse 1.2s ease-in-out infinite;
+}
+
+.jyson-orb--success .jyson-orb-core {
+  box-shadow: 0 0 40px rgba(74, 189, 160, 0.65);
+  background: radial-gradient(circle at 35% 30%, #9ef0d8 0%, #4abda0 50%, #2a6a58 100%);
+}
+
+.jyson-orb--error .jyson-orb-core {
+  box-shadow: 0 0 36px rgba(224, 82, 82, 0.5);
+  background: radial-gradient(circle at 35% 30%, #f0a0a0 0%, #c05050 50%, #6a3030 100%);
+}
+
+.jyson-orb-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+@keyframes jyson-orb-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes jyson-orb-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes jyson-orb-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.jyson-command-box {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(64, 192, 208, 0.22);
+  border-radius: 8px;
+  background: rgba(8, 12, 14, 0.85);
+}
+
+.jyson-command-box-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: none;
+  caret-color: var(--accent);
+}
+
+.jyson-command-box-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+.jyson-command-box-submit {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid rgba(64, 192, 208, 0.4);
+  border-radius: 4px;
+  background: rgba(64, 192, 208, 0.08);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.jyson-command-box-submit:hover:not(:disabled) {
+  background: rgba(64, 192, 208, 0.16);
+}
+
+.jyson-command-box-submit:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.jyson-command-box-hint {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.jyson-command-transcript {
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jyson-command-transcript-line {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  display: flex;
+  gap: 8px;
+}
+
+.jyson-command-transcript-role {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  min-width: 42px;
+}
+
+.jyson-command-transcript-line--jyson .jyson-command-transcript-role {
+  color: var(--accent);
+}
+
+.jyson-command-result {
+  width: 100%;
+  scroll-margin-top: 24px;
+}
+
+.jyson-runtime-card.compact {
+  padding: 16px 18px;
+}
+
+.jyson-runtime-card-summary {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 6px 0 10px;
+}
+
+.jyson-runtime-content--compact {
+  max-height: 200px;
+  margin-top: 8px;
+}
+
+.jyson-companion-drawer {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  background: rgba(8, 8, 8, 0.5);
+}
+
+.jyson-companion-drawer-summary {
+  padding: 12px 16px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  list-style: none;
+}
+
+.jyson-companion-drawer-summary::-webkit-details-marker {
+  display: none;
+}
+
+.jyson-companion-drawer[open] .jyson-companion-drawer-summary {
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.jyson-companion-card--nested {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.jyson-execute-layer--advanced {
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: none;
 }
