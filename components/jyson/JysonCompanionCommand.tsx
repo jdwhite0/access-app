@@ -269,25 +269,11 @@ export default function JysonCompanionCommand({
 
   return (
     <section className="jyson-companion-command" id="jyson">
-      <div className="jyson-companion-command-meta">
-        <span className="jyson-chat-handle">{handle}</span>
-        <span className={`jyson-chat-status ${cloudReady ? 'ok' : 'pending'}`}>
-          {cloudReady ? '◈ Cloud' : '○ Cloud'}
-        </span>
-        <span className={`jyson-chat-status ${localConnected ? 'ok' : 'pending'}`}>
-          {localConnected ? '◉ Local' : '○ Local'}
-        </span>
-        {runtime && (
-          <span
-            className={`jyson-chat-status ${runtime.localToolsAvailable ? 'ok' : 'pending'}`}
-          >
-            {runtime.localToolsAvailable ? '◉ Tools live' : '○ Tools offline'}
-          </span>
-        )}
-      </div>
 
-      <JysonOrb state={busy ? orbState : orbState} statusLine={statusLine} />
+      {/* Orb — hero visual, leads the page */}
+      <JysonOrb state={orbState} statusLine={statusLine} />
 
+      {/* Command input */}
       <form className="jyson-command-box" onSubmit={onSubmit}>
         <textarea
           ref={inputRef}
@@ -295,32 +281,56 @@ export default function JysonCompanionCommand({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onFocus={() => setOrbState('listening')}
-          onBlur={() => {
-            if (!busy) setOrbState('idle')
-          }}
+          onBlur={() => { if (!busy) setOrbState('idle') }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
               void handleSend()
             }
           }}
-          placeholder="Ask JYSON or give a command…"
+          placeholder="Ask JYSON or give a command..."
           rows={2}
           disabled={busy}
           aria-label="Ask JYSON or give a command"
         />
-        <button type="submit" className="jyson-command-box-submit" disabled={busy || !input.trim()}>
-          {busy ? '…' : 'Send'}
+        <button
+          type="submit"
+          className="jyson-command-box-submit"
+          disabled={busy || !input.trim()}
+          aria-label="Send"
+        >
+          {busy ? '·' : '↑'}
         </button>
       </form>
+
       <p className="jyson-command-box-hint">
-        Try: “show me the docs folder” · “read package.json” · “list my files”
+        Try: show me the docs folder &middot; read package.json &middot; or just ask anything
       </p>
 
+      {/* Status pills — below the input, not above the orb */}
+      <div className="jyson-companion-command-meta">
+        <span className="jyson-chat-handle">{handle}</span>
+        <span className={`jyson-chat-status ${cloudReady ? 'ok' : 'pending'}`}>
+          {cloudReady ? 'Cloud' : 'Cloud offline'}
+        </span>
+        <span className={`jyson-chat-status ${localConnected ? 'ok' : 'pending'}`}>
+          {localConnected ? 'Local' : 'Local offline'}
+        </span>
+        {runtime && (
+          <span className={`jyson-chat-status ${runtime.localToolsAvailable ? 'ok' : 'pending'}`}>
+            {runtime.localToolsAvailable ? 'Tools live' : 'Tools offline'}
+          </span>
+        )}
+      </div>
+
+      {/* Transcript */}
       {transcript.length > 1 && (
         <ul className="jyson-command-transcript" aria-label="Recent messages">
           {transcript.slice(-4).map((line) => (
-            <li key={line.id} className={`jyson-command-transcript-line jyson-command-transcript-line--${line.role}`}>
+            <li
+              key={line.id}
+              className={`jyson-command-transcript-line jyson-command-transcript-line--${line.role}`}
+            >
               <span className="jyson-command-transcript-role">
                 {line.role === 'user' ? 'You' : 'JYSON'}
               </span>
@@ -330,6 +340,7 @@ export default function JysonCompanionCommand({
         </ul>
       )}
 
+      {/* Tool result card */}
       <div ref={resultRef} className="jyson-command-result">
         {lastCard && (
           <JysonRuntimeCard
@@ -339,6 +350,7 @@ export default function JysonCompanionCommand({
           />
         )}
       </div>
+
     </section>
   )
 }

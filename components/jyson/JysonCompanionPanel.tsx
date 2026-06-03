@@ -185,8 +185,7 @@ function CompanionLoadedView({
     <div className="jyson-companion">
       <header className="jyson-companion-header jyson-companion-header--below-nav">
         <div>
-          <p className="jyson-companion-eyebrow">JYSON · COMPANION</p>
-          <p className="jyson-companion-tagline">Intelligence inside your ACCESS world</p>
+          <p className="jyson-companion-eyebrow">JYSON</p>
         </div>
       </header>
 

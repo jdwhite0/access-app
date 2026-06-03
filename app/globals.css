@@ -3,6 +3,7 @@
 @import "../lib/design-system/styles/components.css";
 @import "../lib/design-system/styles/shell.css";
 @import "../lib/navigation/styles/access-nav.css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
 
 :root {
   --bg:           #030303;
@@ -16,6 +17,7 @@
   --success:      #4ABDA0;
   --gold:         #C9A46A;
   --mono:         'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  --sans:         'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1036,7 +1038,7 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: var(--mono);
+  font-family: var(--sans);
 }
 
 .jyson-companion--center {
@@ -1049,24 +1051,25 @@ html, body {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(10, 10, 10, 0.85);
+  padding: 14px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(3, 3, 3, 0.9);
   flex-shrink: 0;
 }
 
 .jyson-companion-eyebrow {
-  font-size: 9px;
+  font-family: var(--mono);
+  font-size: 8px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 4px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
 }
 
 .jyson-companion-tagline {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 12px;
-  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  color: rgba(240,240,240,0.2);
 }
 
 .jyson-companion-nav {
@@ -1088,25 +1091,26 @@ html, body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 28px 24px 40px;
+  padding: 0 24px 60px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   -webkit-overflow-scrolling: touch;
 }
 
 .jyson-companion-card {
   width: 100%;
-  max-width: 560px;
-  padding: 32px 28px;
-  border: 1px solid rgba(64, 192, 208, 0.14);
-  border-radius: 8px;
-  background: rgba(10, 10, 10, 0.75);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 600px;
+  padding: 28px 24px;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  background: rgba(10, 10, 10, 0.6);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
 
 .jyson-companion-greeting {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 28px;
+  font-family: var(--sans);
+  font-size: 32px;
   font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2835,21 +2839,29 @@ html, body {
 }
 
 .jyson-chat-handle {
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  color: var(--accent);
   font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: rgba(64,192,208,0.5);
   flex: 1;
 }
 
 .jyson-chat-status {
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
   font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.025);
 }
 
-.jyson-chat-status.ok   { color: var(--accent); }
-.jyson-chat-status.pending { color: var(--text-muted); }
+.jyson-chat-status.ok   {
+  color: var(--accent);
+  border-color: rgba(64,192,208,0.2);
+  background: rgba(64,192,208,0.06);
+}
+.jyson-chat-status.pending { color: rgba(240,240,240,0.22); }
 
 .jyson-chat-history {
   flex: 1;
@@ -2948,106 +2960,154 @@ html, body {
 
 .jyson-companion-hero {
   width: 100%;
-  max-width: 640px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 8px 0 24px;
+  padding: 48px 0 32px;
+  position: relative;
+}
+
+.jyson-companion-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 560px;
+  height: 360px;
+  background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(64,192,208,0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .jyson-companion-greeting--compact {
-  font-size: 22px;
-  margin-bottom: 20px;
+  font-family: var(--sans);
+  font-size: 42px;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 28px;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .jyson-companion-command {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 .jyson-companion-command-meta {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
+  order: 3;
 }
 
 .jyson-orb-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0 8px;
+  gap: 14px;
+  padding: 0 0 8px;
 }
 
 .jyson-orb {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .jyson-orb-core {
-  width: 52px;
-  height: 52px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #7ee8f7 0%, #40c0d0 45%, #1a6a78 100%);
-  box-shadow: 0 0 32px rgba(64, 192, 208, 0.55);
+  background: radial-gradient(circle at 32% 28%, #a8f0ff 0%, #40c0d0 40%, #0e5a6a 100%);
+  box-shadow:
+    0 0 0 1px rgba(64,192,208,0.15),
+    0 0 28px rgba(64,192,208,0.5),
+    0 0 64px rgba(64,192,208,0.22),
+    0 0 120px rgba(64,192,208,0.08);
   z-index: 2;
+  transition: box-shadow 0.4s ease;
 }
 
 .jyson-orb-glow {
   position: absolute;
-  inset: 8px;
+  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(64, 192, 208, 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(64,192,208,0.18) 0%, transparent 65%);
   z-index: 1;
-  animation: jyson-orb-breathe 3.2s ease-in-out infinite;
+  animation: jyson-orb-breathe 4s ease-in-out infinite;
 }
 
 .jyson-orb-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(64, 192, 208, 0.35);
+  border: 1px solid rgba(64, 192, 208, 0.2);
   pointer-events: none;
 }
 
 .jyson-orb-ring--outer {
-  inset: 0;
-  animation: jyson-orb-spin 12s linear infinite;
+  inset: -4px;
+  border-color: rgba(64, 192, 208, 0.12);
+  animation: jyson-orb-spin 18s linear infinite;
 }
 
 .jyson-orb-ring--inner {
-  inset: 14px;
-  border-color: rgba(64, 192, 208, 0.2);
-  animation: jyson-orb-spin 8s linear infinite reverse;
+  inset: 22px;
+  border-color: rgba(64, 192, 208, 0.16);
+  animation: jyson-orb-spin 10s linear infinite reverse;
 }
 
-.jyson-orb--listening .jyson-orb-core,
+.jyson-orb--listening .jyson-orb-core {
+  box-shadow:
+    0 0 0 1px rgba(64,192,208,0.3),
+    0 0 36px rgba(64,192,208,0.65),
+    0 0 80px rgba(64,192,208,0.3),
+    0 0 140px rgba(64,192,208,0.1);
+}
+
 .jyson-orb--thinking .jyson-orb-core,
 .jyson-orb--executing .jyson-orb-core {
-  animation: jyson-orb-pulse 1.2s ease-in-out infinite;
+  animation: jyson-orb-pulse 1s ease-in-out infinite;
+  box-shadow:
+    0 0 0 1px rgba(64,192,208,0.35),
+    0 0 40px rgba(64,192,208,0.7),
+    0 0 90px rgba(64,192,208,0.35);
 }
 
 .jyson-orb--success .jyson-orb-core {
-  box-shadow: 0 0 40px rgba(74, 189, 160, 0.65);
-  background: radial-gradient(circle at 35% 30%, #9ef0d8 0%, #4abda0 50%, #2a6a58 100%);
+  background: radial-gradient(circle at 32% 28%, #c0fff0 0%, #4abda0 45%, #1a5a46 100%);
+  box-shadow:
+    0 0 0 1px rgba(74,189,160,0.3),
+    0 0 36px rgba(74,189,160,0.6),
+    0 0 80px rgba(74,189,160,0.25);
 }
 
 .jyson-orb--error .jyson-orb-core {
-  box-shadow: 0 0 36px rgba(224, 82, 82, 0.5);
-  background: radial-gradient(circle at 35% 30%, #f0a0a0 0%, #c05050 50%, #6a3030 100%);
+  background: radial-gradient(circle at 32% 28%, #ffc0c0 0%, #c05050 48%, #5a1a1a 100%);
+  box-shadow:
+    0 0 0 1px rgba(220,80,80,0.3),
+    0 0 36px rgba(220,80,80,0.55),
+    0 0 80px rgba(220,80,80,0.2);
 }
 
 .jyson-orb-label {
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
+  opacity: 0.7;
 }
 
 @keyframes jyson-orb-breathe {
@@ -3069,11 +3129,20 @@ html, body {
   width: 100%;
   display: flex;
   align-items: flex-end;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid rgba(64, 192, 208, 0.22);
-  border-radius: 8px;
-  background: rgba(8, 12, 14, 0.85);
+  gap: 12px;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  order: 1;
+}
+
+.jyson-command-box:focus-within {
+  border-color: rgba(64,192,208,0.35);
+  box-shadow:
+    0 0 0 3px rgba(64,192,208,0.06),
+    0 20px 48px rgba(0,0,0,0.35);
 }
 
 .jyson-command-box-input {
@@ -3082,46 +3151,55 @@ html, body {
   border: none;
   outline: none;
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
   resize: none;
   caret-color: var(--accent);
 }
 
 .jyson-command-box-input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.65;
+  color: rgba(240,240,240,0.22);
 }
 
 .jyson-command-box-submit {
   flex-shrink: 0;
-  padding: 8px 16px;
-  border: 1px solid rgba(64, 192, 208, 0.4);
-  border-radius: 4px;
-  background: rgba(64, 192, 208, 0.08);
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #000;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  line-height: 1;
 }
 
 .jyson-command-box-submit:hover:not(:disabled) {
-  background: rgba(64, 192, 208, 0.16);
+  opacity: 0.88;
+  transform: scale(1.04);
 }
 
 .jyson-command-box-submit:disabled {
-  opacity: 0.35;
+  opacity: 0.2;
   cursor: default;
+  transform: none;
 }
 
 .jyson-command-box-hint {
-  font-size: 9px;
-  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 11px;
+  color: rgba(240,240,240,0.2);
   text-align: center;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
+  order: 2;
 }
 
 .jyson-command-transcript {
@@ -3131,28 +3209,37 @@ html, body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  order: 4;
 }
 
 .jyson-command-transcript-line {
-  font-size: 0.78rem;
-  line-height: 1.5;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  line-height: 1.6;
   color: var(--text-dim);
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  align-items: baseline;
 }
 
 .jyson-command-transcript-role {
   flex-shrink: 0;
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
-  min-width: 42px;
+  min-width: 36px;
+  padding-top: 3px;
 }
 
 .jyson-command-transcript-line--jyson .jyson-command-transcript-role {
   color: var(--accent);
+}
+
+.jyson-command-transcript-line--user .jyson-command-transcript-line {
+  color: var(--text);
 }
 
 .jyson-command-result {
@@ -3177,30 +3264,54 @@ html, body {
 
 .jyson-companion-drawer {
   width: 100%;
-  max-width: 640px;
-  margin: 0 auto 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  background: rgba(8, 8, 8, 0.5);
+  max-width: 680px;
+  margin: 0 auto 8px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  background: rgba(8, 8, 8, 0.4);
+  overflow: hidden;
 }
 
 .jyson-companion-drawer-summary {
-  padding: 12px 16px;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-dim);
+  padding: 14px 18px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(240,240,240,0.3);
   cursor: pointer;
   list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  transition: color 0.15s;
+}
+
+.jyson-companion-drawer-summary::after {
+  content: '›';
+  margin-left: auto;
+  font-size: 14px;
+  opacity: 0.4;
+  transform: rotate(90deg);
+  transition: transform 0.2s;
+}
+
+details[open] .jyson-companion-drawer-summary::after {
+  transform: rotate(270deg);
 }
 
 .jyson-companion-drawer-summary::-webkit-details-marker {
   display: none;
 }
 
+.jyson-companion-drawer-summary:hover {
+  color: rgba(240,240,240,0.5);
+}
+
 .jyson-companion-drawer[open] .jyson-companion-drawer-summary {
-  color: var(--accent);
-  border-bottom: 1px solid var(--border);
+  color: rgba(240,240,240,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .jyson-companion-card--nested {
