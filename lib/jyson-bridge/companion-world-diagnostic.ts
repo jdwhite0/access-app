@@ -20,6 +20,8 @@ import { packagePathForHandle } from '@/lib/access-handle/package-loader'
 import { getIdentity, getOrCreateIdentity } from '@/lib/actions/identity'
 import { getFounderBlueprint, getOrCreateFounderBlueprint } from '@/lib/actions/founder-blueprint'
 import { isSupabaseConfigured } from '@/lib/supabase'
+import { isConnectorOnlineForClerkUser } from '@/lib/connector/connector-online'
+import { createSupabaseAdmin } from '@/lib/supabase'
 import { deriveAccessHandleForSession } from '@/lib/jyson-bridge/companion-handle'
 import {
   diagnosticForStatus,
@@ -122,7 +124,7 @@ export async function diagnoseCompanionWorld(options?: {
     statusDetail = { error: msg }
   }
 
-  if (!userId) return finalize(checks, status, statusDetail)
+  if (!userId) return await finalize(checks, status, statusDetail, userId)
 
   // ── 3. Identity ───────────────────────────────────────────────────────────
   const derivedHandle = await deriveAccessHandleForSession()
@@ -142,7 +144,7 @@ export async function diagnoseCompanionWorld(options?: {
       push(checks, 'identity', 'ACCESS identity', false, created.error)
       status = 'identity_missing'
       statusDetail = { handle: derivedHandle, error: created.error }
-      return finalize(checks, status, statusDetail)
+      return await finalize(checks, status, statusDetail, userId)
     }
   }
 
@@ -158,7 +160,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!identity?.handle) {
     status = 'identity_missing'
     statusDetail = { handle: derivedHandle }
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   const handle = identity.handle
@@ -194,7 +196,7 @@ export async function diagnoseCompanionWorld(options?: {
 
   if (!blueprintRow?.spec) {
     status = 'blueprint_missing'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   const spec = blueprintRow.spec
@@ -209,7 +211,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!validation.valid) {
     status = 'unknown_error'
     statusDetail.error = validation.errors[0] ?? 'Invalid blueprint'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   const founderHandle = spec.founder?.access_handle
@@ -267,7 +269,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!blueprintExported) {
     // Blueprint is saved but not exported. Companion cannot load yet.
     status = 'blueprint_draft'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   // Blueprint is exported — companion CAN load from cloud.
@@ -302,7 +304,7 @@ export async function diagnoseCompanionWorld(options?: {
     if (status === 'cloud_package_ready') status = 'local_sync_pending'
     statusDetail.error =
       'Cloud deployment — local Founder OS not available. Companion loads from cloud.'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   // Local mode: check if the output root exists
@@ -329,7 +331,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!hasPackageDir) {
     // Cloud package ready but local folder not materialized yet
     if (status === 'cloud_package_ready') status = 'local_sync_pending'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   // Local package exists — check its completeness
@@ -338,7 +340,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!hasManifest) {
     status = 'sync_error'
     statusDetail.error = 'manifest.json missing from local Founder OS package'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   const hasRegistry = await pathExists(join(packagePath, 'registry.yaml'))
@@ -346,7 +348,7 @@ export async function diagnoseCompanionWorld(options?: {
   if (!hasRegistry) {
     status = 'sync_error'
     statusDetail.error = 'registry.yaml missing from local Founder OS package'
-    return finalize(checks, status, statusDetail)
+    return await finalize(checks, status, statusDetail, userId)
   }
 
   // Local package is complete — upgrade from cloud_package_ready
@@ -367,14 +369,15 @@ export async function diagnoseCompanionWorld(options?: {
     statusDetail.error = msg
   }
 
-  return finalize(checks, status, statusDetail)
+  return await finalize(checks, status, statusDetail, userId)
 }
 
-function finalize(
+async function finalize(
   checks: DiagnosticCheck[],
   status: CompanionDiagnosticStatus,
-  detail: Parameters<typeof diagnosticForStatus>[1]
-): CompanionWorldDiagnostics {
+  detail: Parameters<typeof diagnosticForStatus>[1],
+  clerkUserId?: string | null
+): Promise<CompanionWorldDiagnostics> {
   const failed = checks.filter((c) => !c.ok)
   const missingStep = failed[0]?.label ?? 'All checks passed'
   const recommendedFix = STATUS_FIX[status] ?? failed[0]?.detail ?? 'Retry loading.'
@@ -387,6 +390,35 @@ function finalize(
   )
   const localReady = status === 'local_founder_os_ready' || status === 'companion_ready'
 
-  const diagnostic = diagnosticForStatus(status, { ...detail, cloudReady, localReady })
+  let connectorOnline = false
+  const supabase = createSupabaseAdmin()
+  if (supabase && clerkUserId) {
+    const connector = await isConnectorOnlineForClerkUser(supabase, clerkUserId)
+    connectorOnline = connector.online
+    push(
+      checks,
+      'connector_heartbeat',
+      'ACCESS connector heartbeat',
+      connectorOnline,
+      connectorOnline
+        ? `Last seen ${connector.lastSeenAt ?? 'recently'}`
+        : 'No active device heartbeat in the last 90s'
+    )
+  } else {
+    push(
+      checks,
+      'connector_heartbeat',
+      'ACCESS connector heartbeat',
+      false,
+      clerkUserId ? 'Supabase not configured' : 'Sign in to check connector'
+    )
+  }
+
+  const diagnostic = diagnosticForStatus(status, {
+    ...detail,
+    cloudReady,
+    localReady,
+    connectorOnline,
+  })
   return { checks, missingStep, recommendedFix, diagnostic }
 }

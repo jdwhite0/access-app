@@ -26,6 +26,8 @@ import {
   diagnosticForStatus,
   type CompanionDiagnosticStatus,
 } from '@/lib/jyson-bridge/companion-diagnostic'
+import { isConnectorOnlineForClerkUser } from '@/lib/connector/connector-online'
+import { createSupabaseAdmin } from '@/lib/supabase'
 import type { JysonContext } from '@/lib/jyson-bridge/types'
 import type { AccessHandleContext } from '@/lib/access-handle/types'
 import type { FounderBlueprintSpec } from '@/types/founder-blueprint'
@@ -57,10 +59,18 @@ async function tryLoadAgentContext(
   }
 }
 
+async function connectorOnlineForClerkUser(clerkUserId: string): Promise<boolean> {
+  const supabase = createSupabaseAdmin()
+  if (!supabase) return false
+  const state = await isConnectorOnlineForClerkUser(supabase, clerkUserId)
+  return state.online
+}
+
 function accessToJysonContext(
   access: AccessHandleContext,
   agentContextLoaded: boolean,
-  worldStatus: CompanionDiagnosticStatus
+  worldStatus: CompanionDiagnosticStatus,
+  connectorOnline: boolean
 ): JysonContext {
   return {
     handle: access.ownershipAnchor,
@@ -101,7 +111,7 @@ function accessToJysonContext(
         worldStatus === 'companion_ready',
       localConnected:
         worldStatus === 'local_founder_os_ready' || worldStatus === 'companion_ready',
-      connectorOnline: false,
+      connectorOnline,
     },
   }
 }
@@ -109,7 +119,8 @@ function accessToJysonContext(
 async function loadContextFromSpec(
   handle: string,
   spec: FounderBlueprintSpec,
-  worldStatus: CompanionDiagnosticStatus
+  worldStatus: CompanionDiagnosticStatus,
+  connectorOnline: boolean
 ): Promise<{ context: JysonContext | null; agentLoaded: boolean; error?: string }> {
   const built = await buildAccessHandleContext(handle)
   let access = built.context
@@ -122,7 +133,7 @@ async function loadContextFromSpec(
   const packagePath = access.userSystemPackagePath
   if (!packagePath) {
     return {
-      context: accessToJysonContext(access, false, worldStatus),
+      context: accessToJysonContext(access, false, worldStatus, connectorOnline),
       agentLoaded: false,
     }
   }
@@ -131,7 +142,7 @@ async function loadContextFromSpec(
     ? 'companion_ready'
     : worldStatus
   return {
-    context: accessToJysonContext(access, agent.loaded, finalStatus),
+    context: accessToJysonContext(access, agent.loaded, finalStatus, connectorOnline),
     agentLoaded: agent.loaded,
     error: agent.error,
   }
@@ -191,10 +202,12 @@ export async function resolveCompanionWorld(): Promise<CompanionLoadResult> {
     }
 
     const handle = blueprintResult.spec.founder.access_handle
+    const connectorOnline = await connectorOnlineForClerkUser(userId)
     const { context, agentLoaded, error: agentError } = await loadContextFromSpec(
       handle,
       blueprintResult.spec,
-      world.diagnostic.status
+      world.diagnostic.status,
+      connectorOnline
     )
 
     if (!context) {
@@ -216,6 +229,7 @@ export async function resolveCompanionWorld(): Promise<CompanionLoadResult> {
           error: agentLoaded ? undefined : agentError,
           cloudReady: true,
           localReady: agentLoaded || world.diagnostic.localReady,
+          connectorOnline,
         }),
         missingStep: world.missingStep,
         recommendedFix: world.recommendedFix,

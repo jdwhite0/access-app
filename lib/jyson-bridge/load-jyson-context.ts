@@ -5,7 +5,8 @@
  * Full AgentContext layer requires monorepo package on disk — see jyson loadJysonContextFromAccessHandle.
  */
 import { buildAccessHandleContext } from '@/lib/access-handle/build-handle-context'
-import { PRIMARY_TEST_HANDLE } from '@/lib/access-handle/constants'
+import { isConnectorOnlineForHandle } from '@/lib/connector/connector-online'
+import { createSupabaseAdmin } from '@/lib/supabase'
 import { resolveCompanionWorld } from '@/lib/jyson-bridge/resolve-companion-world'
 import type { JysonContext } from './types'
 
@@ -16,6 +17,13 @@ export async function loadJysonContextFromAccessHandle(
 ): Promise<{ context: JysonContext | null; error?: string }> {
   const { context: access, error } = await buildAccessHandleContext(handleInput)
   if (!access) return { context: null, error }
+
+  let connectorOnline = false
+  const supabase = createSupabaseAdmin()
+  if (supabase) {
+    const connector = await isConnectorOnlineForHandle(supabase, access.accessHandle)
+    connectorOnline = connector.online
+  }
 
   const jysonContext: JysonContext = {
     handle: access.ownershipAnchor,
@@ -51,7 +59,7 @@ export async function loadJysonContextFromAccessHandle(
       status: 'local_founder_os_ready',
       cloudReady: true,
       localConnected: !!access.userSystemPackagePath,
-      connectorOnline: false,
+      connectorOnline,
     },
   }
 

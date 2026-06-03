@@ -12,6 +12,7 @@
     "e2e:founder": "tsx scripts/e2e-founder-pipeline.ts",
     "export-handle-context": "tsx scripts/export-handle-context-once.ts",
     "jyson:verify-p10": "tsx scripts/verify-jyson-command-p10.ts jdwhite.access",
+    "openjarvis:verify-phase8": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-openjarvis-phase8.ts",
     "connector:build": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run build",
     "connector:dev": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run dev",
     "connector:scan": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run scan",
