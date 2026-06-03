@@ -1,8 +1,21 @@
 'use client'
 
 import Link from 'next/link'
+import { useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
+
+/** Founder account — hardcoded until schema_v5_billing.sql is applied and plan column is live */
+const FOUNDER_HANDLES = ['jdwhite']
+
+const FOUNDER_FEATURES = [
+  'JYSON cloud intelligence (unlimited, forever)',
+  'ACCESS companion + terminal',
+  'Full Founder OS — blueprint, registry, all objects',
+  'Local connector + OpenJarvis tools',
+  'Admin access to all operator surfaces',
+  'No usage limits, no billing, no expiration',
+]
 
 const BUILDER_FEATURES = [
   'JYSON cloud intelligence (unlimited chat)',
@@ -24,36 +37,54 @@ const OPERATOR_FEATURES = [
 ]
 
 export default function BillingPageClient() {
+  const { user } = useUser()
+  const username = user?.username ?? ''
+  const isFounder = FOUNDER_HANDLES.includes(username.toLowerCase())
+
   return (
     <AccessAppLayout variant="default">
       <div className="access-platform access-platform-page access-platform-page--wide">
         <PageHeader
           eyebrow="Settings"
           title="Billing"
-          description="Your cloud package, usage, and plan management."
+          description={isFounder ? 'Founder account — lifetime access, no billing required.' : 'Your cloud package, usage, and plan management.'}
         />
 
         <div className="access-settings-profile-grid">
           {/* Current plan */}
           <SectionPanel title="Current plan">
-            <div className="access-billing-plan-card">
+            <div className="access-billing-plan-card" style={isFounder ? { borderColor: 'rgba(201,164,106,0.35)', background: 'rgba(201,164,106,0.03)' } : {}}>
               <div className="access-billing-plan-card__header">
                 <div>
-                  <p className="access-billing-plan-card__name">Builder</p>
-                  <p className="access-billing-plan-card__price">$599 <span>/month</span></p>
+                  <p className="access-billing-plan-card__name" style={isFounder ? { color: 'var(--gold, #c9a46a)' } : {}}>
+                    {isFounder ? 'Founder' : 'Builder'}
+                  </p>
+                  <p className="access-billing-plan-card__price" style={isFounder ? { color: 'var(--gold, #c9a46a)', fontSize: '20px' } : {}}>
+                    {isFounder ? 'Lifetime · No charge' : '$599 '}{!isFounder && <span>/month</span>}
+                  </p>
                 </div>
-                <span className="access-ds-badge access-ds-badge--operational">Active</span>
+                <span className={`access-ds-badge access-ds-badge--${isFounder ? 'info' : 'operational'}`}>
+                  {isFounder ? 'Founder' : 'Active'}
+                </span>
               </div>
               <ul className="access-billing-features">
-                {BUILDER_FEATURES.map(f => (
+                {(isFounder ? FOUNDER_FEATURES : BUILDER_FEATURES).map(f => (
                   <li key={f}><span className="access-billing-check">✓</span>{f}</li>
                 ))}
               </ul>
               <div className="access-billing-plan-card__footer">
-                <p className="access-platform-meta">Next billing date: —</p>
-                <p className="access-platform-meta" style={{ marginTop: 4 }}>
-                  Stripe billing integration is being configured. Your plan is active.
-                </p>
+                {isFounder ? (
+                  <p className="access-platform-meta">
+                    This is the founder account. Full access, no billing, no expiration. You may still delete this account from Settings → Account at any time.
+                  </p>
+                ) : (
+                  <>
+                    <p className="access-platform-meta">Next billing date: —</p>
+                    <p className="access-platform-meta" style={{ marginTop: 4 }}>
+                      Stripe billing integration is being configured. Your plan is active.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </SectionPanel>
