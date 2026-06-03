@@ -4127,3 +4127,71 @@ details[open] .jyson-companion-drawer-summary::after {
   .access-plans-footer { flex-direction: column; gap: 12px; text-align: center; }
 }
 
+
+/* ── Registry module pages ── */
+.access-registry-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.access-registry-tab {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(240,240,240,0.4);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.access-registry-tab:hover {
+  color: var(--text-dim);
+  border-color: rgba(255,255,255,0.07);
+}
+.access-registry-tab--active {
+  color: var(--accent);
+  border-color: rgba(64,192,208,0.25);
+  background: rgba(64,192,208,0.05);
+}
+.access-registry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.access-registry-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.access-registry-row:last-child { border-bottom: none; }
+.access-registry-row__main { flex: 1; min-width: 0; }
+.access-registry-row__name {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.access-registry-row__sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.access-registry-row__type {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}

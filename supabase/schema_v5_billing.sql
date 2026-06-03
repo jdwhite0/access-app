@@ -32,10 +32,12 @@ CREATE INDEX IF NOT EXISTS idx_usage_events_identity ON usage_events (identity_i
 CREATE INDEX IF NOT EXISTS idx_usage_events_clerk    ON usage_events (clerk_user_id, created_at DESC);
 
 -- RLS on usage_events
+-- Access is enforced at the application layer via service role key + clerk_user_id filter.
+-- RLS is enabled but only the service role (used by Next.js server actions) can write rows.
 ALTER TABLE usage_events ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users see own usage" ON usage_events
-  FOR SELECT USING (clerk_user_id = requesting_user_id());
+-- Service role bypasses RLS — app reads usage per user via clerk_user_id in server actions.
+-- No end-user direct read policy needed since the client never calls Supabase directly.
 
 -- Plan limits reference table (not enforced in DB — enforced in application layer)
 CREATE TABLE IF NOT EXISTS plan_limits (

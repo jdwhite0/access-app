@@ -16,6 +16,7 @@
 import { NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { loadJysonContextForSession } from '@/lib/jyson-bridge/load-jyson-context'
+import { checkUsageLimit, recordUsageEvent } from '@/lib/usage/enforce'
 
 const JYSON_API_URL = process.env.JYSON_INTERNAL_API_URL
   ?? process.env.NEXT_PUBLIC_JYSON_URL
@@ -81,6 +82,18 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response('Invalid messages', { status: 400 })
   }
+
+  // Usage limit check — blocks free-tier users who've hit their monthly cap
+  const limitCheck = await checkUsageLimit('jyson_message')
+  if (!limitCheck.allowed) {
+    return new Response(
+      `data: ${JSON.stringify({ text: `${limitCheck.reason} [Upgrade at ${limitCheck.upgradeHref}]` })}\n\ndata: [DONE]\n\n`,
+      { status: 200, headers: { 'Content-Type': 'text/event-stream' } }
+    )
+  }
+
+  // Record usage (fire-and-forget)
+  void recordUsageEvent('jyson_message', { message_count: messages.length })
 
   // Load ACCESS context to enrich the conversation
   const { context } = await loadJysonContextForSession()

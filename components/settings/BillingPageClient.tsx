@@ -1,9 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
+import type { StripePlan } from '@/lib/stripe/client'
 
 /** Founder account — hardcoded until schema_v5_billing.sql is applied and plan column is live */
 const FOUNDER_HANDLES = ['jdwhite']
@@ -38,8 +41,52 @@ const OPERATOR_FEATURES = [
 
 export default function BillingPageClient() {
   const { user } = useUser()
+  const router = useRouter()
   const username = user?.username ?? ''
   const isFounder = FOUNDER_HANDLES.includes(username.toLowerCase())
+  const [checkoutLoading, setCheckoutLoading] = useState<StripePlan | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [stripeError, setStripeError] = useState<string | null>(null)
+
+  async function handleUpgrade(plan: StripePlan) {
+    setCheckoutLoading(plan)
+    setStripeError(null)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      })
+      const data = await res.json() as { url?: string; error?: string }
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setStripeError(data.error ?? 'Checkout failed.')
+      }
+    } catch {
+      setStripeError('Could not connect to Stripe. Check your internet connection.')
+    } finally {
+      setCheckoutLoading(null)
+    }
+  }
+
+  async function handlePortal() {
+    setPortalLoading(true)
+    setStripeError(null)
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const data = await res.json() as { url?: string; error?: string }
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setStripeError(data.error ?? 'Could not open billing portal.')
+      }
+    } catch {
+      setStripeError('Could not connect to Stripe.')
+    } finally {
+      setPortalLoading(false)
+    }
+  }
 
   return (
     <AccessAppLayout variant="default">
@@ -89,15 +136,41 @@ export default function BillingPageClient() {
             </div>
           </SectionPanel>
 
-          {/* Upgrade */}
-          <SectionPanel title="Plans">
-            <p className="access-platform-body" style={{ marginBottom: '20px' }}>
-              View the full feature comparison and upgrade options on the plans page.
-            </p>
-            <Link href="/plans" className="access-settings-btn access-settings-btn--primary">
-              View plans & pricing →
-            </Link>
-          </SectionPanel>
+          {/* Upgrade / manage */}
+          {!isFounder && (
+            <SectionPanel title="Upgrade or manage">
+              {stripeError && (
+                <p className="access-settings-form__error" style={{ marginBottom: 12 }}>{stripeError}</p>
+              )}
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+                <button
+                  className="access-settings-btn access-settings-btn--secondary"
+                  onClick={() => handleUpgrade('operator')}
+                  disabled={!!checkoutLoading}
+                >
+                  {checkoutLoading === 'operator' ? 'Redirecting…' : 'Upgrade to Operator — $299/mo'}
+                </button>
+                <button
+                  className="access-settings-btn access-settings-btn--primary"
+                  onClick={() => handleUpgrade('builder')}
+                  disabled={!!checkoutLoading}
+                >
+                  {checkoutLoading === 'builder' ? 'Redirecting…' : 'Upgrade to Builder — $599/mo'}
+                </button>
+              </div>
+              <button
+                className="access-settings-btn access-settings-btn--ghost"
+                onClick={handlePortal}
+                disabled={portalLoading}
+                style={{ marginRight: 8 }}
+              >
+                {portalLoading ? 'Opening…' : 'Manage subscription →'}
+              </button>
+              <Link href="/plans" className="access-settings-btn access-settings-btn--ghost">
+                Compare all plans
+              </Link>
+            </SectionPanel>
+          )}
 
           {/* Usage */}
           <SectionPanel title="Usage this cycle">

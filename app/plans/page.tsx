@@ -1,9 +1,8 @@
-import Link from 'next/link'
+'use client'
 
-export const metadata = {
-  title: 'Plans — ACCESS',
-  description: 'Choose the ACCESS plan that matches where you are and where you\'re going.',
-}
+import Link from 'next/link'
+import { useState } from 'react'
+import type { StripePlan } from '@/lib/stripe/client'
 
 const PLANS = [
   {
@@ -87,6 +86,28 @@ const FAQ = [
 ] as const
 
 export default function PlansPage() {
+  const [loading, setLoading] = useState<StripePlan | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleUpgrade(plan: StripePlan) {
+    setLoading(plan)
+    setError(null)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      })
+      const data = await res.json() as { url?: string; error?: string }
+      if (data.url) window.location.href = data.url
+      else setError(data.error ?? 'Checkout failed. Make sure you are signed in.')
+    } catch {
+      setError('Could not connect to Stripe.')
+    } finally {
+      setLoading(null)
+    }
+  }
+
   return (
     <div className="access-plans-page">
       {/* Header */}
@@ -100,8 +121,15 @@ export default function PlansPage() {
       </header>
 
       {/* Plan grid */}
+      {error && (
+        <p style={{ textAlign: 'center', color: '#e07b52', marginBottom: 16, fontSize: 13 }}>{error}</p>
+      )}
       <div className="access-plans-grid">
-        {PLANS.map(plan => (
+        {PLANS.map(plan => {
+          const stripePlan = plan.name.toLowerCase() as StripePlan
+          const isEnterprise = plan.name === 'Enterprise'
+          const isLoading = loading === stripePlan
+          return (
           <div
             key={plan.name}
             className={`access-plan-card${plan.highlight ? ' access-plan-card--featured' : ''}`}
@@ -126,15 +154,27 @@ export default function PlansPage() {
               ))}
             </ul>
             <div className="access-plan-card__footer">
-              <a
-                href={plan.ctaHref}
-                className={`access-plan-cta${plan.highlight ? ' access-plan-cta--primary' : ' access-plan-cta--secondary'}`}
-              >
-                {plan.cta}
-              </a>
+              {isEnterprise ? (
+                <a
+                  href="mailto:jerry@jdwhite.world?subject=ACCESS Enterprise"
+                  className="access-plan-cta access-plan-cta--secondary"
+                >
+                  {plan.cta}
+                </a>
+              ) : (
+                <button
+                  className={`access-plan-cta${plan.highlight ? ' access-plan-cta--primary' : ' access-plan-cta--secondary'}`}
+                  onClick={() => handleUpgrade(stripePlan)}
+                  disabled={!!loading}
+                  style={{ width: '100%', cursor: loading ? 'wait' : 'pointer' }}
+                >
+                  {isLoading ? 'Redirecting to Stripe…' : plan.cta}
+                </button>
+              )}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* FAQ */}
