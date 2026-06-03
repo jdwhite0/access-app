@@ -15,6 +15,7 @@ import {
   labelForAction,
 } from '@/lib/jyson-bridge/action-labels'
 import JysonCommandLayer from '@/components/jyson/JysonCommandLayer'
+import JysonChatPanel from '@/components/jyson/JysonChatPanel'
 
 type JysonCompanionPanelProps = {
   /** Dev-only: `?preview=fixture` on /companion loads jdwhite.access without sign-in. */
@@ -274,6 +275,14 @@ function CompanionLoadedView({
             </div>
           </div>
 
+          <div id="jyson" className="jyson-companion-block">
+            <JysonChatPanel
+              handle={ctx.handle}
+              cloudReady={ctx.companionState.cloudReady}
+              localConnected={ctx.companionState.localConnected}
+            />
+          </div>
+
           <div id="agents">
             <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
           </div>
@@ -281,13 +290,11 @@ function CompanionLoadedView({
           <div id="diagnostics" className="jyson-companion-block">
             <span className="jyson-companion-label">Diagnostics</span>
             <p className="jyson-companion-body muted">
-              Package {ctx.layers.agentContext ? 'linked' : 'pending'} · Read-only companion mode
+              Package {ctx.layers.agentContext ? 'linked' : 'pending'} ·{' '}
+              {ctx.companionState.cloudReady ? 'Cloud ready' : 'Cloud pending'} ·{' '}
+              {ctx.companionState.localConnected ? 'Local OS connected' : 'Local sync pending'}
             </p>
           </div>
-
-          <p className="jyson-companion-footnote">
-            Read-only companion · Intent routing only · No chat · No LLM · P10
-          </p>
         </section>
       </main>
     </div>
