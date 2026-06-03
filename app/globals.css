@@ -4195,3 +4195,24 @@ details[open] .jyson-companion-drawer-summary::after {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+
+/* ── Billing banners ── */
+.access-billing-banner {
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  max-width: 680px;
+}
+.access-billing-banner--success {
+  background: rgba(74,189,160,0.1);
+  border: 1px solid rgba(74,189,160,0.3);
+  color: var(--success);
+}
+.access-billing-banner--neutral {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-dim);
+}

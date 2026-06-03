@@ -48,6 +48,11 @@ export default function BillingPageClient() {
   const [portalLoading, setPortalLoading] = useState(false)
   const [stripeError, setStripeError] = useState<string | null>(null)
 
+  // Handle Stripe redirect back with ?success=1 or ?canceled=1
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+  const justPaid = searchParams?.get('success') === '1'
+  const justCanceled = searchParams?.get('canceled') === '1'
+
   async function handleUpgrade(plan: StripePlan) {
     setCheckoutLoading(plan)
     setStripeError(null)
@@ -96,6 +101,17 @@ export default function BillingPageClient() {
           title="Billing"
           description={isFounder ? 'Founder account — lifetime access, no billing required.' : 'Your cloud package, usage, and plan management.'}
         />
+
+        {justPaid && (
+          <div className="access-billing-banner access-billing-banner--success">
+            ✓ Payment successful — your plan is being activated. This page will reflect your new plan within a minute once the webhook processes.
+          </div>
+        )}
+        {justCanceled && (
+          <div className="access-billing-banner access-billing-banner--neutral">
+            Checkout canceled — no charge was made.
+          </div>
+        )}
 
         <div className="access-settings-profile-grid">
           {/* Current plan */}
