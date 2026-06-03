@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
+/** Scoped tracing root — monorepo has a parent package-lock.json. */
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: process.cwd(),
+  outputFileTracingRoot: process.cwd(),
+  experimental: {
+    cpus: 1,
   },
 };
 

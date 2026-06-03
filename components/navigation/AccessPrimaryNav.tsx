@@ -12,7 +12,7 @@ export default function AccessPrimaryNav() {
 
   return (
     <>
-      <p className="access-nav-section-label">Places</p>
+      <p className="access-nav-section-label">Menu</p>
       <ul className="access-nav-primary">
         {PRIMARY_NAV.map((item) => {
           const isActive = item.id === active

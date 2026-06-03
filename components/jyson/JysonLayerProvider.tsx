@@ -18,6 +18,7 @@ import {
   buildContextLine,
   buildGreeting,
 } from '@/lib/jyson-layer/context-lines'
+import { resolveAccessPageContext } from '@/lib/access/page-context'
 import { buildLayerOpener, recordLastPlace } from '@/lib/jyson-layer/contextual-awareness'
 import { answerFromWorld, resolveNavIntent } from '@/lib/jyson-layer/route-intents'
 import { readLayerOpen, writeLayerOpen } from '@/lib/jyson-layer/storage'
@@ -57,7 +58,7 @@ export function JysonLayerProvider({ children }: Props) {
     {
       id: nextMsgId(),
       role: 'jyson',
-      text: 'Ask anything — I read where you are, your registry, and your machine when connected.',
+      text: 'Ask anything — I know which page you are on, what is in your workspace, and your local tools when connected.',
     },
   ])
   const [busy, setBusy] = useState(false)
@@ -128,6 +129,11 @@ export function JysonLayerProvider({ children }: Props) {
   const layerInsight = useMemo(
     () => buildLayerOpener(route, summary),
     [route, summary]
+  )
+
+  const pageContext = useMemo(
+    () => resolveAccessPageContext(pathname),
+    [pathname]
   )
 
   const runChat = useCallback(async (text: string, prior: JysonLayerMessage[]) => {
@@ -263,6 +269,7 @@ export function JysonLayerProvider({ children }: Props) {
       route,
       displayName,
       layerInsight,
+      pageContext,
     }),
     [
       open,
@@ -278,6 +285,7 @@ export function JysonLayerProvider({ children }: Props) {
       route,
       displayName,
       layerInsight,
+      pageContext,
     ]
   )
 

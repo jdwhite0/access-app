@@ -1,16 +1,18 @@
 export type PrimaryNavId =
   | 'home'
-  | 'founder'
   | 'projects'
   | 'companion'
-  | 'agents'
   | 'memory'
+  | 'agents'
   | 'offers'
   | 'registry'
   | 'settings'
 
+/** Routes linked from Settings — not primary rail */
+export type WorkspaceRouteId = 'founder'
+
 /** Advanced / auth landing — not shown in primary rail */
-export type InternalNavId = 'terminal'
+export type InternalNavId = 'terminal' | 'billing'
 
 export type FounderContextId =
   | 'identity'

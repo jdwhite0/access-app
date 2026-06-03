@@ -32,10 +32,17 @@
     "m4:dry-run": "node scripts/preflight-access-app-root.mjs && tsx scripts/m4-dry-run.ts",
     "platform-health:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-platform-health.ts",
     "registry:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-canonical-registry.ts",
-    "status-page:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-status-page.ts"
+    "status-page:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-status-page.ts",
+    "remotion:install": "cd remotion && npm install",
+    "remotion:studio": "cd remotion && npm run studio",
+    "remotion:render": "cd remotion && npm run render:all",
+    "higgsfield:install": "npm install -D @higgsfield/client",
+    "higgsfield:render-hero": "tsx scripts/generate-access-marketing-higgsfield-videos.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.4.2",
+    "@stripe/react-stripe-js": "^6.6.0",
+    "@stripe/stripe-js": "^9.7.0",
     "@supabase/supabase-js": "^2.106.2",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",

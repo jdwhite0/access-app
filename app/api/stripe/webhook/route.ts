@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe/client'
+import {
+  stripe,
+  getMissingStripeSecretMessage,
+  getMissingStripeWebhookMessage,
+} from '@/lib/stripe/client'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import type Stripe from 'stripe'
 
@@ -13,8 +17,17 @@ const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET
  *   customer.subscription.deleted → downgrade to free
  */
 export async function POST(req: NextRequest) {
-  if (!stripe || !WEBHOOK_SECRET) {
-    return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
+  if (!stripe) {
+    return NextResponse.json(
+      { error: 'Stripe not configured', detail: getMissingStripeSecretMessage() },
+      { status: 503 },
+    )
+  }
+  if (!WEBHOOK_SECRET) {
+    return NextResponse.json(
+      { error: 'Stripe webhook not configured', detail: getMissingStripeWebhookMessage() },
+      { status: 503 },
+    )
   }
 
   const body = await req.text()

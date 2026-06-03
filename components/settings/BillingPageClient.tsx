@@ -2,47 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
 import type { StripePlan } from '@/lib/stripe/client'
 import { getIdentityPlan } from '@/lib/stripe/get-identity-plan'
 
-/** Founder account — hardcoded until schema_v5_billing.sql is applied and plan column is live */
 const FOUNDER_HANDLES = ['jdwhite']
-
-const FOUNDER_FEATURES = [
-  'JYSON cloud intelligence (unlimited, forever)',
-  'ACCESS companion + terminal',
-  'Full Founder OS — blueprint, registry, all objects',
-  'Local connector + OpenJarvis tools',
-  'Admin access to all operator surfaces',
-  'No usage limits, no billing, no expiration',
-]
-
-const BUILDER_FEATURES = [
-  'JYSON cloud intelligence (unlimited chat)',
-  'ACCESS companion + terminal',
-  'Founder OS blueprint & registry',
-  'Systems, projects, agents, offers',
-  'Local connector + OpenJarvis tools',
-  'Vault scan & sync',
-  'Command center access',
-  'Priority support',
-]
-
-const OPERATOR_FEATURES = [
-  'JYSON cloud intelligence',
-  'ACCESS companion',
-  'Founder OS blueprint',
-  'Registry (systems + projects)',
-  'Community support',
-]
 
 export default function BillingPageClient() {
   const { user } = useUser()
-  const router = useRouter()
   const username = user?.username ?? ''
   const isFounder = FOUNDER_HANDLES.includes(username.toLowerCase())
   const [checkoutLoading, setCheckoutLoading] = useState<StripePlan | null>(null)
@@ -51,10 +20,6 @@ export default function BillingPageClient() {
   const [dbPlan, setDbPlan] = useState<string | null>(null)
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null)
   const [planLoading, setPlanLoading] = useState(true)
-
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
-  const justPaid = searchParams?.get('success') === '1'
-  const justCanceled = searchParams?.get('canceled') === '1'
 
   useEffect(() => {
     let cancelled = false
@@ -70,7 +35,7 @@ export default function BillingPageClient() {
     return () => {
       cancelled = true
     }
-  }, [justPaid])
+  }, [])
 
   const effectivePlan = isFounder ? 'founder' : (dbPlan ?? 'free')
   const planLabel =
@@ -84,6 +49,15 @@ export default function BillingPageClient() {
             ? 'Free'
             : effectivePlan
 
+  const monthlyPrice =
+    effectivePlan === 'operator'
+      ? '$299/month'
+      : effectivePlan === 'builder'
+        ? '$599/month'
+        : isFounder
+          ? 'Lifetime · No charge'
+          : '—'
+
   async function handleUpgrade(plan: StripePlan) {
     setCheckoutLoading(plan)
     setStripeError(null)
@@ -93,7 +67,7 @@ export default function BillingPageClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       })
-      const data = await res.json() as { url?: string; error?: string }
+      const data = (await res.json()) as { url?: string; error?: string }
       if (data.url) {
         window.location.href = data.url
       } else {
@@ -111,7 +85,7 @@ export default function BillingPageClient() {
     setStripeError(null)
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' })
-      const data = await res.json() as { url?: string; error?: string }
+      const data = (await res.json()) as { url?: string; error?: string }
       if (data.url) {
         window.location.href = data.url
       } else {
@@ -126,160 +100,142 @@ export default function BillingPageClient() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page access-platform-page--wide">
+      <div className="access-platform access-platform-page access-shell-page access-shell-page--wide">
         <PageHeader
-          eyebrow="Settings"
           title="Billing"
-          description={isFounder ? 'Founder account — lifetime access, no billing required.' : 'Your cloud package, usage, and plan management.'}
+          description={
+            isFounder
+              ? 'Founder account — lifetime access, no payment required.'
+              : 'Your subscription, payment method, and invoices.'
+          }
         />
 
-        {justPaid && (
-          <div className="access-billing-banner access-billing-banner--success">
-            ✓ Payment successful — your plan is being activated. Refresh in a few seconds after the CLI webhook shows{' '}
-            <code>checkout.session.completed</code> → 200.
-          </div>
-        )}
-        {justCanceled && (
-          <div className="access-billing-banner access-billing-banner--neutral">
-            Checkout canceled — no charge was made.
-          </div>
-        )}
+        {stripeError ? (
+          <p className="access-settings-form__error" style={{ marginBottom: 12 }}>
+            {stripeError}
+          </p>
+        ) : null}
 
         <div className="access-settings-profile-grid">
-          {/* Current plan */}
           <SectionPanel title="Current plan">
-            <div className="access-billing-plan-card" style={isFounder ? { borderColor: 'rgba(201,164,106,0.35)', background: 'rgba(201,164,106,0.03)' } : {}}>
-              <div className="access-billing-plan-card__header">
-                <div>
-                  <p className="access-billing-plan-card__name" style={isFounder ? { color: 'var(--gold, #c9a46a)' } : {}}>
-                    {planLoading ? '…' : planLabel}
-                  </p>
-                  <p className="access-billing-plan-card__price" style={isFounder ? { color: 'var(--gold, #c9a46a)', fontSize: '20px' } : {}}>
-                    {isFounder
-                      ? 'Lifetime · No charge'
-                      : effectivePlan === 'operator'
-                        ? '$299 '
-                        : effectivePlan === 'builder'
-                          ? '$599 '
-                          : '— '}
-                    {!isFounder && effectivePlan !== 'free' && effectivePlan !== 'founder' && (
-                      <span>/month</span>
-                    )}
+            <div className="access-shell-panel">
+              <div className="access-shell-list-row">
+                <div className="access-shell-list-row__main">
+                  <p className="access-shell-list-row__title">Current plan</p>
+                  <p className="access-shell-list-row__sub">
+                    {planLoading ? 'Loading…' : planLabel}
+                    {!isFounder && effectivePlan !== 'free' ? ' · Active' : ''}
                   </p>
                 </div>
-                <span
-                  className={`access-ds-badge access-ds-badge--${
-                    isFounder || effectivePlan === 'founder'
-                      ? 'info'
-                      : effectivePlan === 'free'
-                        ? 'neutral'
-                        : 'operational'
-                  }`}
-                >
-                  {planLoading ? '…' : isFounder ? 'Founder' : effectivePlan === 'free' ? 'Free' : 'Active'}
-                </span>
-              </div>
-              <ul className="access-billing-features">
-                {(isFounder
-                  ? FOUNDER_FEATURES
-                  : effectivePlan === 'operator'
-                    ? OPERATOR_FEATURES
-                    : effectivePlan === 'builder'
-                      ? BUILDER_FEATURES
-                      : OPERATOR_FEATURES
-                ).map(f => (
-                  <li key={f}><span className="access-billing-check">✓</span>{f}</li>
-                ))}
-              </ul>
-              <div className="access-billing-plan-card__footer">
-                {isFounder ? (
-                  <p className="access-platform-meta">
-                    This is the founder account. Full access, no billing, no expiration. You may still delete this account from Settings → Account at any time.
-                  </p>
-                ) : (
-                  <>
-                    <p className="access-platform-meta">
-                      Stripe customer: {stripeCustomerId ?? '—'}
-                    </p>
-                    <p className="access-platform-meta" style={{ marginTop: 4 }}>
-                      Database plan: <strong>{planLoading ? '…' : effectivePlan}</strong>
-                    </p>
-                  </>
-                )}
+                <span className="access-settings-info-value">{monthlyPrice}</span>
               </div>
             </div>
           </SectionPanel>
 
-          {/* Upgrade / manage */}
           {!isFounder && (
-            <SectionPanel title="Upgrade or manage">
-              {stripeError && (
-                <p className="access-settings-form__error" style={{ marginBottom: 12 }}>{stripeError}</p>
-              )}
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+            <>
+              <SectionPanel title="Payment method">
+                <div className="access-shell-panel">
+                  <div className="access-shell-list-row">
+                    <div className="access-shell-list-row__main">
+                      <p className="access-shell-list-row__title">Payment method</p>
+                      <p className="access-shell-list-row__sub">
+                        {stripeCustomerId
+                          ? 'Managed in Stripe — update card or billing details in the portal.'
+                          : 'No payment method on file. Subscribe to add one at checkout.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </SectionPanel>
+
+              <SectionPanel title="Next payment">
+                <div className="access-shell-panel">
+                  <div className="access-shell-list-row">
+                    <div className="access-shell-list-row__main">
+                      <p className="access-shell-list-row__title">Next payment</p>
+                      <p className="access-shell-list-row__sub">
+                        {effectivePlan === 'free'
+                          ? 'No active subscription.'
+                          : 'Shown in Stripe Customer Portal after your first invoice.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </SectionPanel>
+
+              <SectionPanel title="Manage subscription">
+                <p className="access-platform-body" style={{ marginBottom: 16 }}>
+                  Update payment method, cancel, or change billing details in Stripe.
+                </p>
                 <button
                   className="access-settings-btn access-settings-btn--secondary"
-                  onClick={() => handleUpgrade('operator')}
-                  disabled={!!checkoutLoading}
+                  onClick={handlePortal}
+                  disabled={portalLoading || !stripeCustomerId}
+                  style={{ marginRight: 8 }}
                 >
-                  {checkoutLoading === 'operator' ? 'Redirecting…' : 'Upgrade to Operator — $299/mo'}
+                  {portalLoading ? 'Opening…' : 'Manage subscription'}
                 </button>
                 <button
-                  className="access-settings-btn access-settings-btn--primary"
-                  onClick={() => handleUpgrade('builder')}
-                  disabled={!!checkoutLoading}
+                  className="access-settings-btn access-settings-btn--ghost"
+                  onClick={handlePortal}
+                  disabled={portalLoading || !stripeCustomerId}
                 >
-                  {checkoutLoading === 'builder' ? 'Redirecting…' : 'Upgrade to Builder — $599/mo'}
+                  {portalLoading ? 'Opening…' : 'View invoices'}
                 </button>
-              </div>
-              <button
-                className="access-settings-btn access-settings-btn--ghost"
-                onClick={handlePortal}
-                disabled={portalLoading}
-                style={{ marginRight: 8 }}
-              >
-                {portalLoading ? 'Opening…' : 'Manage subscription →'}
-              </button>
-              <Link href="/plans" className="access-settings-btn access-settings-btn--ghost">
-                Compare all plans
-              </Link>
-            </SectionPanel>
+              </SectionPanel>
+
+              <SectionPanel title="Upgrade plan">
+                <p className="access-platform-body" style={{ marginBottom: 12 }}>
+                  Upgrade to Builder to unlock agents, offers, advanced project intelligence, and
+                  deeper JYSON recommendations.
+                </p>
+                <p className="access-platform-meta" style={{ marginBottom: 16 }}>
+                  Builder is for users who are actively turning ideas into systems, products,
+                  workflows, or businesses. Enterprise is for teams that need ACCESS across
+                  multiple people, agents, and workflows.
+                </p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {effectivePlan !== 'operator' && effectivePlan !== 'builder' ? (
+                    <button
+                      className="access-settings-btn access-settings-btn--secondary"
+                      onClick={() => handleUpgrade('operator')}
+                      disabled={!!checkoutLoading}
+                    >
+                      {checkoutLoading === 'operator' ? 'Redirecting…' : 'Start Operator — $299/mo'}
+                    </button>
+                  ) : null}
+                  {effectivePlan !== 'builder' ? (
+                    <button
+                      className="access-settings-btn access-settings-btn--primary"
+                      onClick={() => handleUpgrade('builder')}
+                      disabled={!!checkoutLoading}
+                    >
+                      {checkoutLoading === 'builder' ? 'Redirecting…' : 'Start Builder — $599/mo'}
+                    </button>
+                  ) : null}
+                  <Link href="/plans" className="access-settings-btn access-settings-btn--ghost">
+                    Compare all plans
+                  </Link>
+                  <a
+                    href="mailto:jerry@jdwhite.world?subject=ACCESS%20Enterprise"
+                    className="access-settings-btn access-settings-btn--ghost"
+                  >
+                    Contact sales — Enterprise
+                  </a>
+                </div>
+              </SectionPanel>
+            </>
           )}
 
-          {/* Usage */}
-          <SectionPanel title="Usage this cycle">
-            <div className="access-settings-info-grid">
-              <div className="access-settings-info-row">
-                <span className="access-platform-meta">JYSON conversations</span>
-                <span className="access-settings-info-value">Unlimited</span>
-              </div>
-              <div className="access-settings-info-row">
-                <span className="access-platform-meta">Registry objects</span>
-                <span className="access-settings-info-value">Unlimited</span>
-              </div>
-              <div className="access-settings-info-row">
-                <span className="access-platform-meta">Local connector</span>
-                <span className="access-settings-info-value">Enabled</span>
-              </div>
-              <div className="access-settings-info-row">
-                <span className="access-platform-meta">OpenJarvis tools</span>
-                <span className="access-settings-info-value">Enabled</span>
-              </div>
-            </div>
-          </SectionPanel>
-
-          {/* Enterprise */}
-          <SectionPanel title="Enterprise">
-            <p className="access-platform-body" style={{ marginBottom: '16px' }}>
-              Need white-labeling, multi-user access, custom AI persona, or dedicated infrastructure? Enterprise starts at $2,000/month.
-            </p>
-            <a
-              href="mailto:jerry@jdwhite.world?subject=ACCESS Enterprise"
-              className="access-settings-btn access-settings-btn--secondary"
-            >
-              Contact for Enterprise →
-            </a>
-          </SectionPanel>
+          {isFounder && (
+            <SectionPanel title="Founder account">
+              <p className="access-platform-meta">
+                Full access, no billing, no expiration. You may delete this account from Settings →
+                Account at any time.
+              </p>
+            </SectionPanel>
+          )}
         </div>
       </div>
     </AccessAppLayout>

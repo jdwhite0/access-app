@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
-import { PageHeader, SectionPanel, PlatformEmptyState } from '@/lib/design-system/components/platform'
+import {
+  PageHeader,
+  SectionPanel,
+  PlatformEmptyState,
+  StatusPill,
+  PrimaryButton,
+} from '@/lib/design-system/components/platform'
+import { localToolsLabel, connectorLabel, cloudStatusLabel } from '@/lib/access/status-labels'
 import { listAgents } from '@/lib/actions/agents'
 import type { Agent } from '@/types/db'
 
@@ -35,11 +42,11 @@ export default function AgentsPageClient() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page">
+      <div className="access-platform access-platform-page access-shell-page">
         <PageHeader
-          eyebrow="ACCESS"
           title="Agents"
-          description="Your AI team — JYSON as primary intelligence, OpenJarvis for local execution, and any custom agents you've registered."
+          description="Create specialized AI teammates for different parts of your work."
+          actions={<PrimaryButton href="/terminal">Register agent</PrimaryButton>}
         />
 
         {loading ? (
@@ -47,32 +54,34 @@ export default function AgentsPageClient() {
         ) : (
           <>
             {/* JYSON — always shown first */}
-            <SectionPanel title="Primary intelligence">
+            <SectionPanel title="JYSON" description="Your AI companion — cloud intelligence with optional local connector.">
               <div className="access-agent-card access-agent-card--jyson">
                 <div className="access-agent-card__header">
                   <div className="access-agent-card__avatar">◎</div>
                   <div>
                     <p className="access-agent-card__name">JYSON</p>
-                    <p className="access-agent-card__role">Primary companion intelligence</p>
+                    <p className="access-agent-card__role">Your AI companion</p>
                   </div>
-                  <span className="access-ds-badge access-ds-badge--operational">Active</span>
+                  <StatusPill label="Active" tone="operational" />
                 </div>
                 <div className="access-agent-capabilities">
                   <div className="access-agent-cap">
                     <span className="access-agent-cap__label">Cloud</span>
-                    <span className={`access-ds-badge access-ds-badge--${true ? 'operational' : 'offline'}`}>Online</span>
+                    <StatusPill label={cloudStatusLabel(true)} tone="operational" />
                   </div>
                   <div className="access-agent-cap">
-                    <span className="access-agent-cap__label">Local connector</span>
-                    <span className={`access-ds-badge access-ds-badge--${ojHealth?.connectorOnline ? 'operational' : 'neutral'}`}>
-                      {ojHealth?.connectorOnline ? 'Connected' : 'Offline'}
-                    </span>
+                    <span className="access-agent-cap__label">Connector</span>
+                    <StatusPill
+                      label={connectorLabel(!!ojHealth?.connectorOnline)}
+                      tone={ojHealth?.connectorOnline ? 'operational' : 'offline'}
+                    />
                   </div>
                   <div className="access-agent-cap">
                     <span className="access-agent-cap__label">Local tools</span>
-                    <span className={`access-ds-badge access-ds-badge--${ojHealth?.localToolsAvailable ? 'operational' : 'neutral'}`}>
-                      {ojHealth?.localToolsAvailable ? 'Live' : 'Offline'}
-                    </span>
+                    <StatusPill
+                      label={localToolsLabel(!!ojHealth?.localToolsAvailable)}
+                      tone={ojHealth?.localToolsAvailable ? 'operational' : 'offline'}
+                    />
                   </div>
                 </div>
                 {!ojHealth?.localToolsAvailable && (
@@ -92,9 +101,10 @@ export default function AgentsPageClient() {
                     <p className="access-agent-card__name">OpenJarvis</p>
                     <p className="access-agent-card__role">Local tool executor — files, vault, models, browser</p>
                   </div>
-                  <span className={`access-ds-badge access-ds-badge--${ojHealth?.localToolsAvailable ? 'operational' : 'offline'}`}>
-                    {ojHealth?.localToolsAvailable ? 'Online' : 'Offline'}
-                  </span>
+                  <StatusPill
+                    label={localToolsLabel(!!ojHealth?.localToolsAvailable)}
+                    tone={ojHealth?.localToolsAvailable ? 'operational' : 'offline'}
+                  />
                 </div>
                 <div className="access-agent-capabilities">
                   {['read_file', 'list_files', 'read_vault_note', 'run_local_model', 'read_calendar'].map(tool => (
@@ -113,7 +123,7 @@ export default function AgentsPageClient() {
             {agents.length > 0 ? (
               <SectionPanel
                 title={`Registered agents (${agents.length})`}
-                description="Custom agents you've registered in your ACCESS universe."
+                description="Custom agents you've registered in your workspace."
               >
                 <div className="access-offers-grid">
                   {active.map(agent => (
@@ -154,7 +164,7 @@ export default function AgentsPageClient() {
                   title="No custom agents yet"
                   description="Register agents from the terminal with /register-agent. Agents represent AI tools, automations, and team members connected to your systems."
                   actionHref="/terminal"
-                  actionLabel="Register an agent"
+                  actionLabel="Register agent"
                 />
               </SectionPanel>
             )}

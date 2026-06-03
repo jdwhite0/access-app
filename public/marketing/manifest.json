@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "hero-intelligence-infrastructure",
+    "png": "hero-intelligence-infrastructure.png",
+    "webp": "hero-intelligence-infrastructure.webp",
+    "model": "fal-ai/flux-pro",
+    "image_size": "portrait_16_9",
+    "wired": "HeroIntelligenceArtwork.tsx → PublicHomePage (/)"
+  },
+  {
+    "slug": "hero-void-background",
+    "png": "hero-void-background.png",
+    "webp": "hero-void-background.webp",
+    "model": "fal-ai/flux-pro",
+    "image_size": "landscape_16_9",
+    "wired": "marketing-home-v2.css → .access-mkt-hero__canvas"
+  }
+]

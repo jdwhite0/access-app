@@ -1,3 +1,4 @@
+import type { AccessPageContext } from '@/lib/access/page-context'
 import type { RegistrySummary } from '@/types/db'
 import type { PrimaryNavId } from '@/lib/navigation/types'
 
@@ -29,4 +30,5 @@ export type JysonLayerContextValue = {
   route: JysonRouteContext
   displayName: string | null
   layerInsight: string
+  pageContext: AccessPageContext
 }

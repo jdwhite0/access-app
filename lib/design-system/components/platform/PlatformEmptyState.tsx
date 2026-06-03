@@ -25,8 +25,8 @@ export function PlatformEmptyState({
       {description ? <p className="access-platform-body">{description}</p> : null}
       {children}
       {actionHref && actionLabel ? (
-        <Link href={actionHref} className="access-platform-link" style={{ marginTop: 12, display: 'inline-block' }}>
-          {actionLabel} →
+        <Link href={actionHref} className="access-platform-btn-secondary" style={{ marginTop: 14, display: 'inline-flex' }}>
+          {actionLabel}
         </Link>
       ) : null}
     </div>

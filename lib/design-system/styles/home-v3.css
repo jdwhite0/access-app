@@ -13,14 +13,9 @@
   overflow: hidden;
 }
 
-.access-home-v3__atmosphere {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 90% 55% at 50% 8%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%),
-    radial-gradient(ellipse 60% 40% at 80% 60%, color-mix(in srgb, var(--gold, #c9a46a) 6%, transparent), transparent 55%),
-    radial-gradient(ellipse 50% 35% at 10% 70%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 50%);
+/* Atmosphere via WorldAtmosphere component — keep section position context */
+.access-home-v3 {
+  position: relative;
 }
 
 .access-home-v3__inner {

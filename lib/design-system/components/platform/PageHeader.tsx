@@ -6,6 +6,7 @@ type PageHeaderProps = {
   title: string
   description?: string
   actions?: ReactNode
+  secondary?: ReactNode
   className?: string
 }
 
@@ -14,6 +15,7 @@ export function PageHeader({
   title,
   description,
   actions,
+  secondary,
   className,
 }: PageHeaderProps) {
   return (
@@ -21,7 +23,8 @@ export function PageHeader({
       <div className="access-platform-page-header__main">
         {eyebrow ? <p className="access-platform-eyebrow">{eyebrow}</p> : null}
         <h1 className="access-platform-page-title">{title}</h1>
-        {description ? <p className="access-platform-body">{description}</p> : null}
+        {description ? <p className="access-platform-page-subtitle">{description}</p> : null}
+        {secondary ? <div className="access-platform-page-header__secondary">{secondary}</div> : null}
       </div>
       {actions ? <div className="access-platform-page-header__actions">{actions}</div> : null}
     </header>

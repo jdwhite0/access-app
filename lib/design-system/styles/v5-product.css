@@ -1,0 +1,119 @@
+/**
+ * ACCESS V5 — capability-first product surfaces
+ */
+
+.access-workspace-snapshot {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+.access-workspace-snapshot__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.access-workspace-snapshot__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.access-workspace-snapshot__value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.access-home-recommendations {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.access-home-recommendations__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  font-size: 0.875rem;
+  color: var(--text-dim);
+}
+
+.access-home-focus {
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  max-width: 42rem;
+}
+
+.access-capability-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.access-capability-row:last-child {
+  border-bottom: none;
+}
+
+.access-plans-leverage {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.access-plans-leverage__tier {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+}
+
+.access-plans-leverage__tier--featured {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.access-plans-leverage__transform {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.access-plans-leverage__leverage {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+}
+
+.access-project-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}

@@ -1,6 +1,9 @@
+import { resolveAccessPageContext } from '@/lib/access/page-context'
 import type { PrimaryNavId } from '@/lib/navigation/types'
 import type { RegistrySummary } from '@/types/db'
 import { readRecentIntents } from '@/lib/design-system/components/platform/HomeCommandHero'
+import type { SnapshotRow } from '@/lib/design-system/components/platform/WorkspaceSnapshot'
+import { buildHomeStatsLine } from './context-lines'
 import type { JysonRouteContext } from './types'
 
 const LAST_PLACE_KEY = 'access_last_place'
@@ -10,25 +13,60 @@ export type AttentionItem = {
   id: string
   text: string
   action?: string
+  href?: string
+}
+
+export type HomeQuickCard = {
+  id: string
+  title: string
+  description: string
+  href?: string
+  actionLabel: string
+  jysonPrompt?: string
 }
 
 export type ContextualHome = {
   headline: string
+  focusLine: string
   insight: string
+  statsLine: string
   attention: AttentionItem[]
+  jysonRecommendations: AttentionItem[]
   commandPlaceholder: string
+  continueCard: HomeQuickCard | null
+  capabilityCards: HomeQuickCard[]
+  workspaceSnapshot: SnapshotRow[]
+}
+
+export type JysonSuggestion = {
+  id: string
+  label: string
+  prompt: string
 }
 
 const PLACE_FOCUS: Record<PrimaryNavId, string> = {
-  home: 'your workspace',
-  founder: 'your identity and blueprint',
-  projects: 'your active projects',
-  companion: 'deep intelligence',
-  agents: 'your agent team',
-  memory: 'your knowledge',
-  offers: 'your offers',
-  registry: 'your universe map',
-  settings: 'preferences and billing',
+  home: 'Home',
+  projects: 'Projects',
+  companion: 'JYSON',
+  agents: 'Agents',
+  memory: 'Memory',
+  offers: 'Offers',
+  registry: 'Registry',
+  settings: 'Settings',
+}
+
+const LAST_PLACE_LABEL: Record<string, string> = {
+  '/dashboard': 'Home',
+  '/projects': 'Projects',
+  '/companion': 'JYSON',
+  '/agents': 'Agents',
+  '/memory': 'Memory',
+  '/offers': 'Offers',
+  '/registry': 'Registry',
+  '/settings': 'Settings',
+  '/settings/billing': 'Billing',
+  '/plans': 'Plans',
+  '/founder': 'Founder blueprint',
 }
 
 export function recordLastPlace(pathname: string, primary: PrimaryNavId | null) {
@@ -37,25 +75,19 @@ export function recordLastPlace(pathname: string, primary: PrimaryNavId | null) 
     localStorage.setItem(LAST_PLACE_KEY, JSON.stringify(payload))
     if (primary && primary !== 'home') {
       localStorage.setItem(WORK_FOCUS_KEY, PLACE_FOCUS[primary])
+    } else if (pathname.startsWith('/founder')) {
+      localStorage.setItem(WORK_FOCUS_KEY, 'Founder blueprint')
     }
   } catch {
     /* ignore */
   }
 }
 
-function readLastPlace(): { pathname: string; primary: PrimaryNavId | null; at: number } | null {
+export function readLastPlace(): { pathname: string; primary: PrimaryNavId | null; at: number } | null {
   try {
     const raw = localStorage.getItem(LAST_PLACE_KEY)
     if (!raw) return null
     return JSON.parse(raw) as { pathname: string; primary: PrimaryNavId | null; at: number }
-  } catch {
-    return null
-  }
-}
-
-function readWorkFocus(): string | null {
-  try {
-    return localStorage.getItem(WORK_FOCUS_KEY)
   } catch {
     return null
   }
@@ -70,8 +102,81 @@ function timeGreeting(): string {
 
 function daysSince(iso: string | undefined | null): number | null {
   if (!iso) return null
-  const d = Date.now() - new Date(iso).getTime()
-  return Math.floor(d / (1000 * 60 * 60 * 24))
+  return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24))
+}
+
+function readWorkFocus(): string | null {
+  try {
+    return localStorage.getItem(WORK_FOCUS_KEY)
+  } catch {
+    return null
+  }
+}
+
+function buildFocusLine(projects: number): string {
+  const workFocus = readWorkFocus()
+  if (workFocus) {
+    return `Your workspace is centered on ${workFocus}. Pick up where you left off or ask JYSON for the next step.`
+  }
+  if (projects > 0) {
+    return `You are building across ${projects} project${projects === 1 ? '' : 's'}. Review priorities or ask JYSON what needs attention.`
+  }
+  return 'ACCESS is your intelligent workspace — projects, memory, and JYSON as your reasoning layer. Start by defining what you are building.'
+}
+
+export function buildWorkspaceSnapshot(
+  summary: RegistrySummary | null,
+  loading: boolean,
+  plan: string | null | undefined,
+  localToolsConnected?: boolean
+): SnapshotRow[] {
+  if (loading) {
+    return [{ id: 'load', label: 'Workspace', value: 'Loading…' }]
+  }
+  const counts = summary?.registryCounts ?? summary?.counts
+  const projects = counts?.projects ?? 0
+  const agents = counts?.agents ?? 0
+  const systems = counts?.systems ?? 0
+  const vaultDays = daysSince(summary?.vaultConnection?.lastSyncAt ?? null)
+
+  const rows: SnapshotRow[] = [
+    { id: 'projects', label: 'Building', value: `${projects} project${projects === 1 ? '' : 's'}` },
+    { id: 'agents', label: 'Delegation', value: `${agents} custom agent${agents === 1 ? '' : 's'}` },
+    {
+      id: 'registry',
+      label: 'System records',
+      value: `${systems} system${systems === 1 ? '' : 's'}`,
+    },
+  ]
+
+  if (vaultDays !== null) {
+    rows.push({
+      id: 'vault',
+      label: 'Memory sync',
+      value: vaultDays === 0 ? 'Synced today' : `Synced ${vaultDays}d ago`,
+      tone: vaultDays <= 7 ? 'operational' : 'neutral',
+    })
+  } else {
+    rows.push({ id: 'vault', label: 'Memory sync', value: 'No vault sync yet', tone: 'neutral' })
+  }
+
+  rows.push({
+    id: 'plan',
+    label: 'Leverage',
+    value: plan && plan !== 'free' ? `${plan} plan` : 'Free — upgrade for more leverage',
+    tone: plan && plan !== 'free' ? 'operational' : 'neutral',
+  })
+
+  if (localToolsConnected !== undefined) {
+    rows.push({
+      id: 'local',
+      label: 'Local tools',
+      value: localToolsConnected ? 'Connected' : 'Not connected',
+      tone: localToolsConnected ? 'operational' : 'offline',
+    })
+  }
+
+  return rows
 }
 
 export function buildContextualHome(input: {
@@ -80,6 +185,7 @@ export function buildContextualHome(input: {
   loading: boolean
   route: JysonRouteContext
   plan?: string | null
+  localToolsConnected?: boolean
 }): ContextualHome {
   const first = input.displayName?.split(/\s+/)[0] ?? null
   const greet = first ? `${timeGreeting()}, ${first}.` : `${timeGreeting()}.`
@@ -87,128 +193,188 @@ export function buildContextualHome(input: {
   const projects = counts?.projects ?? 0
   const agents = counts?.agents ?? 0
   const systems = counts?.systems ?? 0
-  const total = input.summary?.totalRegistered ?? 0
-  const recent = readRecentIntents()
   const lastPlace = readLastPlace()
-  const workFocus = readWorkFocus()
-  const vaultDays = daysSince(input.summary?.vaultConnection?.lastSyncAt ?? null)
+  const statsLine = buildHomeStatsLine(input.summary, input.loading)
+  const focusLine = input.loading ? 'Loading your workspace…' : buildFocusLine(projects)
 
+  const jysonRecommendations: AttentionItem[] = []
   const attention: AttentionItem[] = []
 
   if (input.loading) {
     return {
       headline: greet,
-      insight: 'Pulling in your latest context…',
+      focusLine,
+      insight: statsLine,
+      statsLine,
       attention: [],
-      commandPlaceholder: 'Continue or ask anything…',
+      jysonRecommendations: [],
+      commandPlaceholder: 'Ask JYSON anything…',
+      continueCard: null,
+      capabilityCards: [],
+      workspaceSnapshot: buildWorkspaceSnapshot(input.summary, true, input.plan),
     }
   }
 
-  // Primary insight — aware, not interrogative
-  let insight = ''
+  let insight = statsLine
 
-  if (recent[0]) {
-    const snippet = recent[0].length > 56 ? `${recent[0].slice(0, 56)}…` : recent[0]
-    insight = `You were just working on: “${snippet}”.`
-  } else if (workFocus) {
-    insight = `You've been focused on ${workFocus}.`
-  } else if (lastPlace?.primary && lastPlace.primary !== 'home') {
-    insight = `Last session you were in ${PLACE_FOCUS[lastPlace.primary]}.`
-  }
-
-  if (projects > 0) {
-    const projLine =
-      projects === 1
-        ? 'One project is registered and in motion.'
-        : `${projects} projects are in motion.`
-    insight = insight ? `${insight} ${projLine}` : projLine
-  }
-
-  if (vaultDays !== null && vaultDays === 0) {
-    attention.push({
-      id: 'vault-today',
-      text: 'Your vault synced today — memory and files are current.',
-    })
-  } else if (vaultDays !== null && vaultDays <= 7) {
-    attention.push({
-      id: 'vault-week',
-      text: `Vault synced ${vaultDays} day${vaultDays === 1 ? '' : 's'} ago.`,
+  const recent = readRecentIntents()
+  const stripeMention = recent.some((r) => /stripe|billing|checkout|subscription/i.test(r))
+  if (stripeMention || input.plan === 'free' || !input.plan) {
+    jysonRecommendations.push({
+      id: 'billing',
+      text: 'Finish subscription activation so ACCESS can accept paying users.',
+      action: 'Manage billing',
+      href: '/settings/billing',
     })
   }
 
-  if (input.plan === 'free' || !input.plan) {
-    attention.push({
-      id: 'plan',
-      text: 'Local tools and expanded registry unlock on Operator or Builder.',
-      action: 'Compare plans',
-    })
-  }
-
-  if (projects === 0 && total === 0) {
-    attention.push({
-      id: 'start',
-      text: 'No projects mapped yet — tell me what you are building and I will structure it.',
-      action: 'What am I building?',
+  if (projects === 0) {
+    jysonRecommendations.push({
+      id: 'build',
+      text: 'Define your first project so JYSON knows what you are building.',
+      action: 'Create project',
+      href: '/projects',
     })
   } else {
-    if (agents > 0) {
-      attention.push({
-        id: 'agents',
-        text: `${agents} agent${agents === 1 ? '' : 's'} on your team.`,
-        action: 'Open agents',
-      })
-    }
-    if (systems > 0) {
-      attention.push({
-        id: 'systems',
-        text: `${systems} system${systems === 1 ? '' : 's'} connected in your stack.`,
-      })
-    }
+    jysonRecommendations.push({
+      id: 'projects-priority',
+      text: `Review ${projects} project${projects === 1 ? '' : 's'} and pick the next concrete task.`,
+      action: 'View projects',
+      href: '/projects',
+    })
+  }
+
+  if (input.localToolsConnected === false) {
+    jysonRecommendations.push({
+      id: 'local',
+      text: 'Connect local tools so JYSON can read files and your vault on this machine.',
+      action: 'Connect local tools',
+      href: '/companion#diagnostics',
+    })
+  }
+
+  const vaultDays = daysSince(input.summary?.vaultConnection?.lastSyncAt ?? null)
+  if (vaultDays !== null && vaultDays === 0) {
+    attention.push({ id: 'vault', text: 'Vault synced today — memory is current.' })
+  }
+
+  if (agents === 0) {
     attention.push({
-      id: 'next',
-      text: 'Here is what deserves attention next: pick up your latest thread or open Projects.',
-      action: recent[0] ?? 'Show my projects',
+      id: 'agents',
+      text: 'Register specialists in Agents when you need delegation beyond JYSON.',
+      action: 'View agents',
+      href: '/agents',
     })
   }
 
-  // Stripe integration / billing awareness from recent intent keywords
-  const stripeMention = recent.some((r) => /stripe|billing|checkout|plan/i.test(r))
+  if (systems === 0) {
+    attention.push({
+      id: 'registry',
+      text: 'Map systems in Registry so JYSON understands your stack.',
+      action: 'View registry',
+      href: '/registry',
+    })
+  }
+
+  let continueCard: HomeQuickCard | null = null
+  if (lastPlace?.pathname && lastPlace.pathname !== '/dashboard') {
+    const label = LAST_PLACE_LABEL[lastPlace.pathname] ?? 'last page'
+    continueCard = {
+      id: 'continue',
+      title: 'Continue where you left off',
+      description: `Return to ${label}.`,
+      href: lastPlace.pathname,
+      actionLabel: 'Continue',
+    }
+  }
+
+  const capabilityCards: HomeQuickCard[] = [
+    {
+      id: 'projects',
+      title: 'Review projects',
+      description:
+        projects > 0
+          ? `${projects} project${projects === 1 ? '' : 's'} tracked in Building.`
+          : 'No projects yet — create one or ask JYSON to help define one.',
+      href: '/projects',
+      actionLabel: projects > 0 ? 'View projects' : 'Create project',
+      jysonPrompt: projects > 0 ? 'Summarize my active projects' : 'Help me define my first project',
+    },
+    {
+      id: 'memory',
+      title: 'Open memory',
+      description: 'Review what JYSON knows from your blueprint and sessions.',
+      href: '/memory',
+      actionLabel: 'Open memory',
+    },
+    {
+      id: 'local',
+      title: 'Connect local tools',
+      description:
+        input.localToolsConnected
+          ? 'OpenJarvis is connected — JYSON can use local files and vault.'
+          : 'Start OpenJarvis and the connector to unlock local execution.',
+      href: '/companion#diagnostics',
+      actionLabel: input.localToolsConnected ? 'View connection' : 'Connect local tools',
+    },
+    {
+      id: 'billing',
+      title: 'Manage billing',
+      description:
+        input.plan && input.plan !== 'free'
+          ? `You are on the ${input.plan} plan.`
+          : 'Upgrade to unlock more agents, registry depth, and local tools.',
+      href: '/settings/billing',
+      actionLabel: 'Manage billing',
+    },
+  ]
+
   if (stripeMention) {
-    insight = "You've been working on Stripe integration."
-    attention.unshift({
-      id: 'stripe',
-      text: 'Billing and webhooks — open Settings → Billing to confirm plan state.',
-      action: 'Open billing',
-    })
-  }
-
-  if (!insight) {
-    insight =
-      projects > 0
-        ? 'Your workspace is active — ask me to continue anywhere.'
-        : 'I am ready when you are — describe what you want to build.'
+    insight = `You have been working on billing and subscriptions. ${statsLine}`
   }
 
   return {
     headline: greet,
+    focusLine,
     insight,
-    attention: attention.slice(0, 4),
-    commandPlaceholder: 'Continue or ask anything…',
+    statsLine,
+    attention: attention.slice(0, 3),
+    jysonRecommendations: jysonRecommendations.slice(0, 3),
+    commandPlaceholder: 'Ask JYSON anything…',
+    continueCard,
+    capabilityCards,
+    workspaceSnapshot: buildWorkspaceSnapshot(
+      input.summary,
+      false,
+      input.plan,
+      input.localToolsConnected
+    ),
   }
 }
 
-export function buildLayerOpener(
-  route: JysonRouteContext,
-  summary: RegistrySummary | null
-): string {
+export function buildLayerOpener(route: JysonRouteContext, summary: RegistrySummary | null): string {
+  const page = resolveAccessPageContext(route.pathname)
   const home = buildContextualHome({
     displayName: null,
     summary,
     loading: false,
     route,
   })
-  if (route.primary && route.primary !== 'home') {
-    return `${PLACE_FOCUS[route.primary]} — ${home.insight}`
+  if (route.pathname === '/dashboard' || route.primary === 'home') {
+    return home.focusLine
   }
-  return home.insight
+  return `${page.title} — ${page.purpose}`
+}
+
+export function buildJysonSuggestions(
+  route: JysonRouteContext,
+  _summary: RegistrySummary | null
+): JysonSuggestion[] {
+  const page = resolveAccessPageContext(route.pathname)
+  const prompts = page.suggestedPrompts.slice(0, 4)
+  return prompts.map((prompt, i) => ({
+    id: `ctx-${i}`,
+    label: prompt.length > 32 ? `${prompt.slice(0, 32)}…` : prompt,
+    prompt,
+  }))
 }

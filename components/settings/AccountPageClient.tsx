@@ -46,7 +46,7 @@ export default function AccountPageClient() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page access-platform-page--wide">
+      <div className="access-platform access-platform-page access-shell-page access-shell-page--wide">
         <PageHeader
           eyebrow="Settings"
           title="Account"

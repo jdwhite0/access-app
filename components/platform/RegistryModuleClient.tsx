@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
-import { PageHeader, SectionPanel, PlatformEmptyState } from '@/lib/design-system/components/platform'
+import { PageHeader, SectionPanel, PlatformEmptyState, SecondaryButton } from '@/lib/design-system/components/platform'
 import type { System, Blueprint, Asset, Workflow, Vault } from '@/types/db'
 import { listSystems } from '@/lib/actions/systems'
 import { listBlueprints } from '@/lib/actions/blueprints'
@@ -187,15 +187,13 @@ export default function RegistryModuleClient({ module }: { module: ModuleId }) {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page">
+      <div className="access-platform access-platform-page access-shell-page">
         <PageHeader
           eyebrow="Registry"
           title={meta.label}
           description={meta.description}
           actions={
-            <Link href="/registry" className="access-platform-action-btn">
-              ← Registry
-            </Link>
+            <SecondaryButton href="/registry">← Registry</SecondaryButton>
           }
         />
 
@@ -213,7 +211,9 @@ export default function RegistryModuleClient({ module }: { module: ModuleId }) {
         </div>
 
         <SectionPanel title={`All ${meta.label.toLowerCase()}`}>
-          <ModuleContent id={module} />
+          <div className="access-registry-list access-shell-panel">
+            <ModuleContent id={module} />
+          </div>
         </SectionPanel>
       </div>
     </AccessAppLayout>

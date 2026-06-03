@@ -1,0 +1,26 @@
+{
+  "name": "access-marketing-remotion",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio",
+    "render:all": "tsx scripts/render-marketing.ts",
+    "render:hero": "remotion render src/index.ts AccessHeroAmbient ../public/marketing/video/hero-ambient.mp4 --codec=h264",
+    "render:home": "remotion render src/index.ts AccessProductScene ../public/marketing/video/how-home.mp4 --props='{\"scene\":\"home\"}' --codec=h264",
+    "render:guide": "remotion render src/index.ts AccessProductScene ../public/marketing/video/how-guide.mp4 --props='{\"scene\":\"guide\"}' --codec=h264",
+    "render:plans": "remotion render src/index.ts AccessProductScene ../public/marketing/video/how-plans.mp4 --props='{\"scene\":\"plans\"}' --codec=h264",
+    "render:how-it-works": "remotion render src/index.ts AccessHowItWorks ../public/marketing/video/access-how-it-works.mp4 --codec=h264 --crf=23"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.286",
+    "@remotion/renderer": "4.0.286",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "remotion": "4.0.286"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.14",
+    "tsx": "4.20.3",
+    "typescript": "5.8.3"
+  }
+}

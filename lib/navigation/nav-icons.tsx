@@ -1,12 +1,11 @@
 import {
   LayoutDashboard,
-  User,
   FolderKanban,
   Sparkles,
   Users,
   Brain,
-  Network,
   Package,
+  Network,
   Settings,
   type LucideIcon,
 } from 'lucide-react'
@@ -14,7 +13,6 @@ import type { PrimaryNavItem } from './types'
 
 const ICONS: Record<PrimaryNavItem['id'], LucideIcon> = {
   home: LayoutDashboard,
-  founder: User,
   projects: FolderKanban,
   companion: Sparkles,
   agents: Users,

@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useJysonLayerOptional } from '@/components/jyson/JysonLayerProvider'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
-import { PageHeader, SectionPanel, PlatformEmptyState } from '@/lib/design-system/components/platform'
+import {
+  PageHeader,
+  SectionPanel,
+  PlatformEmptyState,
+  PrimaryButton,
+  SecondaryButton,
+} from '@/lib/design-system/components/platform'
 import { listBuilderProjects } from '@/lib/actions/projects'
 import type { BuilderProject } from '@/types/db'
 
@@ -23,7 +30,8 @@ function ProjectCard({ project }: { project: BuilderProject }) {
   const doneMilestones = milestones.filter(m => m.completed).length
 
   return (
-    <div className="access-project-card">
+    <div className="access-shell-card access-shell-card--interactive access-project-card">
+      <div className="access-project-card__body">
       <div className="access-project-card__header">
         <div>
           <p className="access-project-card__name">{project.name}</p>
@@ -55,7 +63,7 @@ function ProjectCard({ project }: { project: BuilderProject }) {
         {project.stack && project.stack.length > 0 && (
           <span className="access-platform-meta">{project.stack.slice(0, 3).join(' · ')}</span>
         )}
-        <span className="access-platform-meta">{fmtDate(project.created_at)}</span>
+        <span className="access-platform-meta">Updated {fmtDate(project.updated_at)}</span>
       </div>
 
       {/* Recent tasks */}
@@ -74,11 +82,23 @@ function ProjectCard({ project }: { project: BuilderProject }) {
           )}
         </ul>
       )}
+      <div className="access-project-card__footer">
+        <span className="access-platform-meta">
+          {doneTasks < tasks.length && tasks.find((t) => !t.completed)
+            ? `Next: ${tasks.find((t) => !t.completed)?.text?.slice(0, 48) ?? 'Complete tasks'}`
+            : 'No open tasks'}
+        </span>
+        <SecondaryButton href={`/projects/${project.id}`}>
+          Open project
+        </SecondaryButton>
+      </div>
+      </div>
     </div>
   )
 }
 
 export default function ProjectsPageClient() {
+  const layer = useJysonLayerOptional()
   const [projects, setProjects] = useState<BuilderProject[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -95,15 +115,27 @@ export default function ProjectsPageClient() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page">
+      <div className="access-platform access-platform-page access-shell-page">
         <PageHeader
-          eyebrow="ACCESS"
           title="Projects"
-          description="Active ventures, builds, and initiatives — linked to your systems and Founder blueprint."
+          description="Track what you're building and let JYSON help move it forward."
           actions={
-            <Link href="/terminal" className="access-platform-action-btn">
-              + New project via Terminal
-            </Link>
+            <PrimaryButton href="/terminal">Create project</PrimaryButton>
+          }
+          secondary={
+            layer ? (
+              <button
+                type="button"
+                className="access-platform-btn-secondary"
+                onClick={() => void layer.submit('Ask JYSON about my projects')}
+              >
+                Ask JYSON about my projects
+              </button>
+            ) : (
+              <Link href="/companion" className="access-platform-btn-secondary">
+                Ask JYSON about my projects
+              </Link>
+            )
           }
         />
 
@@ -112,12 +144,12 @@ export default function ProjectsPageClient() {
         ) : projects.length === 0 ? (
           <PlatformEmptyState
             title="No projects yet"
-            description="Start a project from the terminal with /start, or use JYSON in the companion to generate one from your blueprint."
+            description="No projects yet. Create your first project in Terminal, or ask JYSON to help you define one."
             actionHref="/terminal"
-            actionLabel="Open Terminal"
+            actionLabel="Create project"
           />
         ) : (
-          <div className="access-projects-sections">
+          <div className="access-shell-sections">
             {active.length > 0 && (
               <SectionPanel title={`Active (${active.length})`}>
                 <div className="access-projects-grid">

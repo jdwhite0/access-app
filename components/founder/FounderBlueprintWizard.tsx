@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth, useClerk, useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { AccessAuthSplit } from '@/components/visual-world'
 import { PageHeader } from '@/lib/design-system/components/platform'
 import { getOrCreateIdentity } from '@/lib/actions/identity'
 import {
@@ -257,8 +258,12 @@ export default function FounderBlueprintWizard() {
 
   if (step === 'sign-in') {
     return (
-      <div className="founder-wizard founder-wizard--onboarding">
-        <div className="founder-wizard-card fade-in">
+      <AccessAuthSplit
+        planetKind="founder"
+        tagline="Your identity is the foundation."
+        promise="Founder OS maps who you are, what you build, and how JYSON serves you."
+      >
+        <div className="founder-wizard-card fade-in access-glass-panel" style={{ maxWidth: 400, width: '100%' }}>
           <OnboardingHero />
           <p className="founder-wizard-signin-note">
             Sign in to begin. Your work is saved securely to your account.
@@ -268,10 +273,10 @@ export default function FounderBlueprintWizard() {
             Continue
           </button>
           <Link href="/" className="founder-wizard-back founder-wizard-back--center">
-            Back to terminal
+            Back to entry
           </Link>
         </div>
-      </div>
+      </AccessAuthSplit>
     )
   }
 

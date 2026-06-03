@@ -28,11 +28,13 @@ export function readRecentIntents(): string[] {
 }
 
 type HomeCommandHeroProps = {
-  /** Optional — prefer parent `access-home-v4__headline` for contextual copy */
+  /** Optional — prefer parent headline for contextual copy */
   headline?: string
   placeholder?: string
   className?: string
   hideHeadline?: boolean
+  /** Stripe dashboard: single-line input + inline primary button */
+  variant?: 'default' | 'stripe'
 }
 
 export function HomeCommandHero({
@@ -40,6 +42,7 @@ export function HomeCommandHero({
   placeholder = 'Continue or ask anything…',
   className,
   hideHeadline = false,
+  variant = 'default',
 }: HomeCommandHeroProps) {
   const router = useRouter()
   const layer = useJysonLayerOptional()
@@ -62,6 +65,35 @@ export function HomeCommandHero({
       /* ignore */
     }
     router.push('/companion')
+  }
+
+  if (variant === 'stripe') {
+    return (
+      <div className={cn('access-home-stripe__command', className)}>
+        <form
+          className={cn('access-home-stripe__command-form', focused && 'is-focused')}
+          onSubmit={submit}
+        >
+          <input
+            type="text"
+            className="access-home-stripe__command-input"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder={placeholder}
+            aria-label={placeholder}
+          />
+          <button
+            type="submit"
+            className="access-home-stripe__command-submit"
+            disabled={!value.trim()}
+          >
+            Ask JYSON
+          </button>
+        </form>
+      </div>
+    )
   }
 
   return (

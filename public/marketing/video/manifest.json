@@ -1,0 +1,47 @@
+{
+  "generator": "access-app/remotion",
+  "renderedAt": "2026-06-03",
+  "compositions": [
+    "AccessHeroAmbient",
+    "AccessProductScene",
+    "AccessHowItWorks"
+  ],
+  "clips": [
+    {
+      "slug": "hero-ambient",
+      "mp4": "hero-ambient.mp4",
+      "webm": "hero-ambient.webm",
+      "poster": "hero-ambient-poster.webp",
+      "durationSec": 20
+    },
+    {
+      "slug": "how-home",
+      "mp4": "how-home.mp4",
+      "webm": "how-home.webm",
+      "poster": "how-home-poster.webp",
+      "composition": "AccessProductScene",
+      "props": { "scene": "home" },
+      "durationSec": 14
+    },
+    {
+      "slug": "how-guide",
+      "mp4": "how-guide.mp4",
+      "webm": "how-guide.webm",
+      "poster": "how-guide-poster.webp",
+      "composition": "AccessProductScene",
+      "props": { "scene": "guide" },
+      "durationSec": 14
+    },
+    {
+      "slug": "how-plans",
+      "mp4": "how-plans.mp4",
+      "webm": "how-plans.webm",
+      "poster": "how-plans-poster.webp",
+      "composition": "AccessProductScene",
+      "props": { "scene": "plans" },
+      "durationSec": 14
+    }
+  ],
+  "fps": 30,
+  "size": "1280x720"
+}

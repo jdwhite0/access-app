@@ -15,6 +15,11 @@ import {
   resolveSettingsContext,
 } from '@/lib/navigation/resolve-nav'
 
+const BILLING_CONTEXT = [
+  { id: 'billing', label: 'Plan & usage', href: '/settings/billing' },
+  { id: 'plans', label: 'All plans', href: '/plans' },
+] as const
+
 export default function AccessContextNav() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -28,16 +33,24 @@ export default function AccessContextNav() {
     return () => window.removeEventListener('hashchange', sync)
   }, [])
 
-  let items = null as typeof FOUNDER_CONTEXT | null
+  let items: readonly { id: string; label: string; href: string }[] | null = null
   let activeId: string | null = null
 
-  if (primary === 'founder') {
+  if (pathname.startsWith('/founder')) {
     items = FOUNDER_CONTEXT
     activeId = resolveFounderContext(searchParams)
-  } else if (primary === 'companion') {
+  } else if (primary === 'companion' || pathname.startsWith('/companion')) {
     items = COMPANION_CONTEXT
     activeId = resolveCompanionContext(hash) ?? 'overview'
-  } else if (primary === 'settings' || pathname.startsWith('/terminal')) {
+  } else if (pathname.startsWith('/settings/billing') || pathname.startsWith('/plans')) {
+    items = BILLING_CONTEXT
+    activeId = pathname.startsWith('/plans') ? 'plans' : 'billing'
+  } else if (
+    primary === 'settings' ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/terminal') ||
+    pathname.startsWith('/internal')
+  ) {
     items = SETTINGS_CONTEXT
     activeId = resolveSettingsContext(pathname)
   }

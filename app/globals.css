@@ -2,19 +2,25 @@
 @import "../lib/design-system/styles/themes.css";
 @import "../lib/design-system/styles/platform.css";
 @import "../lib/design-system/styles/home-v3.css";
+@import "../lib/design-system/styles/home-stripe.css";
+@import "../lib/design-system/styles/access-app-shell.css";
 @import "../lib/design-system/styles/jyson-layer.css";
 @import "../lib/design-system/styles/v4-experience.css";
+@import "../lib/design-system/styles/visual-world.css";
+@import "../lib/design-system/styles/interface-clarity.css";
+@import "../lib/design-system/styles/v5-product.css";
 @import "../lib/design-system/styles/components.css";
 @import "../lib/design-system/styles/shell.css";
 @import "../lib/navigation/styles/access-nav.css";
+@import "../lib/design-system/styles/marketing-home.css";
 
 :root {
   --bg:           #030303;
   --surface:      #0a0a0a;
   --border:       rgba(255,255,255,0.08);
   --text:         #f0f0f0;
-  --text-dim:     rgba(240,240,240,0.55);
-  --text-muted:   rgba(240,240,240,0.28);
+  --text-dim:     rgba(240,240,240,0.68);
+  --text-muted:   rgba(240,240,240,0.42);
   --accent:       #40C0D0;
   --accent-glow:  rgba(64,192,208,0.08);
   --success:      #4ABDA0;
@@ -29,24 +35,34 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans, var(--sans, system-ui, sans-serif));
-  height: 100%;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* App shell: lock document scroll — scroll lives on .access-ds-shell__main */
+html:has(.access-os-shell),
+html:has(.access-ds-shell),
+html:has(.access-app-layout),
+html:has(.access-plans-shell),
+html:has(.companion-route-root),
+body:has(.access-os-shell),
+body:has(.access-ds-shell),
+body:has(.access-app-layout),
+body:has(.access-plans-shell),
+body:has(.companion-route-root) {
+  height: 100%;
+  min-height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
 }
 
-@media (max-width: 768px) {
-  body:has(.access-os-shell),
-  body:has(.access-ds-shell) {
-    overflow: auto;
-    height: auto;
-    min-height: 100dvh;
-  }
-
-  body:has(.companion-route-root) {
-    overflow: hidden;
-    height: 100%;
-    min-height: 100dvh;
-  }
+/* Public marketing: document scroll (not shell-contained) */
+html:has(.access-marketing-root),
+body:has(.access-marketing-root) {
+  height: auto;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 @keyframes blink {
@@ -468,7 +484,18 @@ html, body {
 ═══════════════════════════════════════════════════ */
 
 @media (max-width: 640px) {
-  html, body { overflow: hidden; }
+  html:has(.access-os-shell),
+  html:has(.access-ds-shell),
+  html:has(.access-app-layout),
+  html:has(.access-plans-shell),
+  html:has(.companion-route-root),
+  body:has(.access-os-shell),
+  body:has(.access-ds-shell),
+  body:has(.access-app-layout),
+  body:has(.access-plans-shell),
+  body:has(.companion-route-root) {
+    overflow: hidden;
+  }
 
   .access-landing {
     padding: 32px 20px;
@@ -1973,8 +2000,10 @@ html, body {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
   background: var(--bg);
   font-family: var(--mono);
 }
@@ -2210,11 +2239,16 @@ html, body {
 
 .access-os-workspace {
   min-width: 0;
+  min-height: 0;
+  max-height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 28px 32px 40px;
   background: var(--bg);
   scrollbar-width: thin;
   scrollbar-color: rgba(64, 192, 208, 0.12) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 .access-os-workspace-header {

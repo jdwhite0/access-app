@@ -26,7 +26,7 @@ export default function AccessOsWorkspace({
 }: Props) {
   if (activeModule === 'dashboard') {
     return (
-      <section className="access-os-workspace access-os-workspace--home" aria-label="Your World">
+      <section className="access-os-workspace access-os-workspace--home" aria-label="Home">
         <AccessHome
           summary={summary}
           loading={loading}
@@ -51,18 +51,22 @@ export default function AccessOsWorkspace({
 
   const registeredTotal = summary?.totalRegistered
 
-  const registryDescription = loading
-    ? 'Loading your ACCESS registry…'
-    : summary
-      ? `${summary.identityHandle} · ${registeredTotal ?? 0} registered object${registeredTotal === 1 ? '' : 's'} across organizations, products, experiences, systems, and agents.`
-      : 'Registry data could not be loaded.'
-
   return (
     <section className="access-platform access-platform-page access-platform-page--wide" aria-label="Registry workspace">
       <PageHeader
-        eyebrow="ACCESS"
-        title="Your Universe"
-        description={registryDescription}
+        title="Registry"
+        description={
+          loading
+            ? 'Loading organizations, products, systems, and agents in your workspace…'
+            : summary
+              ? `${summary.identityHandle} · ${registeredTotal ?? 0} registered object${registeredTotal === 1 ? '' : 's'} across your stack.`
+              : 'Registry data could not be loaded.'
+        }
+        actions={
+          <a href="/settings" className="access-platform-action-btn">
+            Open settings
+          </a>
+        }
       />
 
       <RegistryModule

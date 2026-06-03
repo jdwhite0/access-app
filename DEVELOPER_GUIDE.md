@@ -76,6 +76,11 @@ See **[REPOSITORY_MAP.md](./REPOSITORY_MAP.md)** for the full tree and reorganiz
 | `ACCESS_INTERNAL_KEY` | Protects `/api/internal/handle-context` in production |
 | `FOUNDER_OS_OUTPUT_ROOT` | Override path to Founder OS packages (default: `../founder-os`) |
 | `NEXT_PUBLIC_JYSON_URL` | “Start with JYSON” link (default: `https://jyson.vercel.app`) |
+| `STRIPE_SECRET_KEY` | Stripe server API (billing) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
+| `STRIPE_PRICE_OPERATOR` / `STRIPE_PRICE_BUILDER` | Test/live price IDs |
+| `STRIPE_WEBHOOK_SECRET` | Webhook signing (CLI `whsec_` locally) |
+| `NEXT_PUBLIC_APP_URL` | Deployed app origin (`https://…`) — Stripe return URLs and **Checkout logo** at `/brand/jd-ai-systems-logo.png`. On Vercel, `VERCEL_URL` is a fallback if unset. See [docs/STRIPE_LOCAL_SETUP.md](./docs/STRIPE_LOCAL_SETUP.md). |
 
 ### Vercel
 

@@ -51,8 +51,8 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
         setCtx(null)
         setDiagnostic({
           status: 'unknown_error',
-          title: 'Your ACCESS world is not ready yet.',
-          body: 'JYSON needs your Blueprint and ACCESS system package before it can load your world.',
+          title: 'Your workspace is not ready yet.',
+          body: 'JYSON needs your Founder blueprint and ACCESS package before context can load.',
           message: err instanceof Error ? err.message : 'Load failed.',
           canRepair: true,
           repairAction: 'repair_connection',
@@ -122,8 +122,8 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       <JysonCompanionRepairPanel
         diagnostic={{
           status: 'unknown_error',
-          title: 'Your ACCESS world is not ready yet.',
-          body: 'JYSON needs your Blueprint and ACCESS system package before it can load your world.',
+          title: 'Your workspace is not ready yet.',
+          body: 'JYSON needs your Founder blueprint and ACCESS package before context can load.',
           message: 'World not loaded.',
           canRepair: true,
           repairAction: 'repair_connection',
@@ -183,11 +183,10 @@ function CompanionLoadedView({
 
   return (
     <AccessAppLayout variant="companion" userLabel={ctx.handle}>
-    <div className="jyson-companion access-platform access-platform-page access-platform-page--wide access-companion-page">
+    <div className="jyson-companion access-platform access-platform-page access-shell-page access-companion-page">
       <PageHeader
-        eyebrow="JYSON"
-        title={`Hello, ${firstName}`}
-        description="Talk to your world — cloud context, local tools when connected, and structured intelligence below."
+        title="JYSON"
+        description="Your AI companion for navigating, remembering, and building inside ACCESS."
       />
 
       <main className="jyson-companion-main fade-in">
@@ -201,15 +200,15 @@ function CompanionLoadedView({
         </section>
 
         <details className="jyson-companion-drawer" id="overview">
-          <summary className="jyson-companion-drawer-summary">Your ACCESS world</summary>
+          <summary className="jyson-companion-drawer-summary">Workspace context</summary>
           <div className="jyson-companion-card jyson-companion-card--nested">
-            <p className="jyson-companion-loaded">Your ACCESS world is loaded.</p>
+            <p className="jyson-companion-loaded">Profile and blueprint context are loaded.</p>
             <div className="jyson-hybrid-state">
               <span className={`jyson-hybrid-badge ${ctx.companionState.cloudReady ? 'ok' : 'pending'}`}>
-                {ctx.companionState.cloudReady ? '◈ Cloud package ready' : '○ Cloud package pending'}
+                {ctx.companionState.cloudReady ? 'Cloud data connected' : 'Cloud data pending'}
               </span>
               <span className={`jyson-hybrid-badge ${ctx.companionState.localConnected ? 'ok' : 'pending'}`}>
-                {ctx.companionState.localConnected ? '◉ Local OS connected' : '○ Local OS sync pending'}
+                {ctx.companionState.localConnected ? 'Local tools connected' : 'Local tools not connected'}
               </span>
             </div>
             <div className="jyson-companion-block">
@@ -266,9 +265,9 @@ function CompanionLoadedView({
             <div id="diagnostics" className="jyson-companion-block">
               <span className="jyson-companion-label">Diagnostics</span>
               <p className="jyson-companion-body muted">
-                Package {ctx.layers.agentContext ? 'linked' : 'pending'} ·{' '}
-                {ctx.companionState.cloudReady ? 'Cloud ready' : 'Cloud pending'} ·{' '}
-                {ctx.companionState.localConnected ? 'Local OS connected' : 'Local sync pending'}
+                Agent package {ctx.layers.agentContext ? 'linked' : 'pending'} ·{' '}
+                {ctx.companionState.cloudReady ? 'Cloud data connected' : 'Cloud data pending'} ·{' '}
+                {ctx.companionState.localConnected ? 'Local tools connected' : 'Local tools not connected'}
               </p>
             </div>
           </div>

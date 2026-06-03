@@ -38,10 +38,14 @@ export default function AccessBreadcrumbs({ extra }: AccessBreadcrumbsProps) {
 
   const segments = buildBreadcrumbs({
     primary,
-    founderContext,
+    pathname,
+    founderContext: pathname.startsWith('/founder') ? founderContext : null,
     companionContext,
     settingsContextLabel:
-      primary === 'settings' && settingsId !== 'general' ? settingsLabel : null,
+      (primary === 'settings' || pathname.startsWith('/settings/billing') || pathname.startsWith('/settings')) &&
+      settingsId !== 'general'
+        ? settingsLabel
+        : null,
     extraTail: extra,
   })
 

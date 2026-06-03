@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { LivingPlanet } from '@/lib/design-system/components/platform'
+import { AccessPlanetScene } from '@/components/visual-world'
+import { localToolsLabel, cloudStatusLabel } from '@/lib/access/status-labels'
+import { buildJysonSuggestions } from '@/lib/jyson-layer/contextual-awareness'
 import { useJysonLayer } from './JysonLayerProvider'
 
 export default function JysonPersistentLayer() {
@@ -17,9 +19,25 @@ export default function JysonPersistentLayer() {
     contextLine,
     greeting,
     layerInsight,
+    route,
+    summary,
+    pageContext,
   } = useJysonLayer()
   const [input, setInput] = useState('')
+  const [localTools, setLocalTools] = useState<boolean | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const suggestions = useMemo(
+    () => buildJysonSuggestions(route, summary),
+    [route, summary]
+  )
+
+  useEffect(() => {
+    fetch('/api/jyson/openjarvis/health', { cache: 'no-store' })
+      .then((r) => r.json() as Promise<{ runtime?: { localToolsAvailable?: boolean } }>)
+      .then((d) => setLocalTools(!!d.runtime?.localToolsAvailable))
+      .catch(() => setLocalTools(false))
+  }, [open])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -32,6 +50,17 @@ export default function JysonPersistentLayer() {
     setInput('')
     await submit(text)
   }
+
+  function onSuggestion(prompt: string) {
+    if (!prompt) return
+    void submit(prompt)
+  }
+
+  const toolsLine = localTools === null
+    ? 'Checking local tools…'
+    : localToolsLabel(localTools)
+
+  const cloudLine = cloudStatusLabel(true)
 
   return (
     <div className="access-jyson-layer" data-open={open ? 'true' : 'false'}>
@@ -49,18 +78,44 @@ export default function JysonPersistentLayer() {
             <header className="access-jyson-layer__head">
               <div>
                 <p className="access-jyson-layer__greeting">{greeting}</p>
-                <p className="access-jyson-layer__insight">{layerInsight}</p>
+                <p className="access-jyson-layer__insight">{pageContext.title} — {pageContext.purpose}</p>
                 <p className="access-jyson-layer__context">{contextLine}</p>
               </div>
               <button
                 type="button"
                 className="access-jyson-layer__close"
                 onClick={() => setOpen(false)}
-                aria-label="Collapse JYSON"
+                aria-label="Close JYSON"
               >
                 ×
               </button>
             </header>
+
+            <p className="access-jyson-layer__tools">
+              {cloudLine} · {toolsLine}
+            </p>
+
+            <nav className="access-jyson-layer__links" aria-label="Related pages">
+              {pageContext.relatedRoutes.map((r) => (
+                <Link key={r.href} href={r.href} className="access-jyson-layer__chip access-jyson-layer__chip--link">
+                  {r.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="access-jyson-layer__suggestions" role="group" aria-label="Suggested prompts">
+              {suggestions.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className="access-jyson-layer__chip"
+                  disabled={busy}
+                  onClick={() => onSuggestion(s.prompt)}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
 
             <div className="access-jyson-layer__messages">
               {messages.map((m) => (
@@ -90,7 +145,7 @@ export default function JysonPersistentLayer() {
 
             <footer className="access-jyson-layer__foot">
               <Link href="/companion" className="access-jyson-layer__foot-link">
-                Full intelligence view
+                Open full JYSON view
               </Link>
             </footer>
           </motion.div>
@@ -101,10 +156,17 @@ export default function JysonPersistentLayer() {
         type="button"
         className="access-jyson-layer__orb-btn"
         onClick={toggle}
-        aria-label={open ? 'Collapse JYSON' : 'Open JYSON'}
+        aria-label={open ? 'Close JYSON' : 'Ask JYSON'}
         aria-expanded={open}
       >
-        <LivingPlanet variant="standard" className="access-jyson-layer__orb" />
+        <AccessPlanetScene
+          kind="jyson"
+          scale="sm"
+          particles={false}
+          trails={false}
+          orbits
+          className="access-jyson-layer__orb"
+        />
         <span className="access-jyson-layer__orb-label">JYSON</span>
       </button>
     </div>

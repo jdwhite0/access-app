@@ -1,0 +1,470 @@
+/* ACCESS public marketing homepage — white-first, no app shell */
+
+.access-marketing-root {
+  --mkt-bg: #ffffff;
+  --mkt-surface: #f8fafc;
+  --mkt-border: rgba(26, 31, 54, 0.08);
+  --mkt-text: #1a1f36;
+  --mkt-text-muted: #64748b;
+  --mkt-accent: #0ea5b9;
+  --mkt-accent-soft: rgba(14, 165, 185, 0.1);
+  --mkt-navy: #1a1f36;
+  --mkt-pearl: #f1f5f9;
+  --mkt-gold: #b8956a;
+  --mkt-max: 1240px;
+  --mkt-shadow-soft: 0 1px 2px rgba(26, 31, 54, 0.04), 0 20px 48px rgba(26, 31, 54, 0.06);
+  --mkt-shadow-lift: 0 2px 4px rgba(26, 31, 54, 0.04), 0 28px 64px rgba(26, 31, 54, 0.08);
+  min-height: 100dvh;
+  background: var(--mkt-bg);
+  color: var(--mkt-text);
+  font-family: var(--sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Document scroll — globals.css sets html/body overflow:hidden for app shell */
+html:has(.access-marketing-root),
+body:has(.access-marketing-root) {
+  background: var(--mkt-bg);
+  color: var(--mkt-text);
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+  min-height: 100dvh;
+  max-height: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.access-marketing-main {
+  max-width: var(--mkt-max);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px) clamp(72px, 10vw, 120px);
+}
+
+.access-marketing-section {
+  padding: clamp(72px, 10vw, 112px) 0 0;
+}
+
+.access-marketing-section--flush {
+  padding-top: clamp(48px, 7vw, 72px);
+}
+
+.access-marketing-section__head {
+  max-width: 36rem;
+  margin-bottom: clamp(40px, 6vw, 56px);
+}
+
+.access-marketing-section__title {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--mkt-navy);
+}
+
+.access-marketing-section__subtitle {
+  margin: 18px 0 0;
+  font-size: clamp(17px, 1.5vw, 19px);
+  color: var(--mkt-text-muted);
+  line-height: 1.6;
+  max-width: 42ch;
+}
+
+/* Editorial feature list — no card grid */
+.access-marketing-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.access-marketing-feature {
+  padding: clamp(28px, 4vw, 40px) 0;
+  border-bottom: 1px solid var(--mkt-border);
+}
+
+.access-marketing-feature:first-child {
+  padding-top: 0;
+}
+
+.access-marketing-feature:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+@media (min-width: 900px) {
+  .access-marketing-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: start;
+  }
+}
+
+.access-marketing-feature__title {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--mkt-navy);
+}
+
+.access-marketing-feature__body {
+  margin: 10px 0 0;
+  font-size: clamp(16px, 1.4vw, 18px);
+  color: var(--mkt-text-muted);
+  line-height: 1.6;
+  max-width: 52ch;
+}
+
+@media (min-width: 900px) {
+  .access-marketing-feature__body {
+    margin: 4px 0 0;
+  }
+}
+
+/* Asymmetric product preview */
+.access-marketing-preview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vw, 28px);
+}
+
+@media (min-width: 900px) {
+  .access-marketing-preview {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+}
+
+.access-marketing-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 639px) {
+  .access-marketing-preview__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.access-marketing-mock {
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--mkt-shadow-soft);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.access-marketing-mock--lead {
+  box-shadow: var(--mkt-shadow-lift);
+}
+
+.access-marketing-mock--lead .access-marketing-mock__body {
+  min-height: 168px;
+}
+
+.access-marketing-mock__chrome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
+}
+
+.access-marketing-mock__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(26, 31, 54, 0.1);
+}
+
+.access-marketing-mock__dot--accent {
+  background: var(--mkt-accent);
+  opacity: 0.55;
+}
+
+.access-marketing-mock__label {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mkt-text-muted);
+}
+
+.access-marketing-mock__body {
+  padding: 16px 14px 18px;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.access-marketing-mock__line {
+  height: 7px;
+  border-radius: 4px;
+  background: var(--mkt-pearl);
+}
+
+.access-marketing-mock__line--short {
+  width: 55%;
+}
+
+.access-marketing-mock__line--accent {
+  background: var(--mkt-accent-soft);
+  width: 72%;
+}
+
+.access-marketing-mock__pill {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(184, 149, 106, 0.12);
+  color: var(--mkt-gold);
+}
+
+/* Plans — pearl surfaces, soft lift */
+.access-marketing-plans {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 2.5vw, 24px);
+}
+
+@media (min-width: 768px) {
+  .access-marketing-plans {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+  }
+}
+
+.access-marketing-plan {
+  border-radius: 18px;
+  padding: clamp(24px, 3vw, 32px);
+  background: linear-gradient(165deg, #ffffff 0%, var(--mkt-surface) 100%);
+  box-shadow: var(--mkt-shadow-soft);
+  border: none;
+}
+
+.access-marketing-plan--featured {
+  background: linear-gradient(165deg, #ffffff 0%, rgba(224, 242, 254, 0.45) 100%);
+  box-shadow: var(--mkt-shadow-lift);
+  transform: translateY(-4px);
+}
+
+@media (max-width: 767px) {
+  .access-marketing-plan--featured {
+    transform: none;
+  }
+}
+
+.access-marketing-plan__badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--mkt-accent-soft);
+  color: var(--mkt-accent);
+}
+
+.access-marketing-plan__name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mkt-navy);
+}
+
+.access-marketing-plan__price {
+  margin: 10px 0 0;
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.access-marketing-plan__period {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--mkt-text-muted);
+}
+
+.access-marketing-plan__desc {
+  margin: 14px 0 0;
+  font-size: 15px;
+  color: var(--mkt-text-muted);
+  line-height: 1.55;
+}
+
+.access-marketing-plans-link {
+  margin-top: 32px;
+}
+
+/* Help strip — minimal chrome */
+.access-marketing-strip {
+  padding: clamp(56px, 8vw, 80px) 0 0;
+}
+
+.access-marketing-strip__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: clamp(28px, 4vw, 36px) 0;
+  border-top: 1px solid var(--mkt-border);
+}
+
+@media (min-width: 768px) {
+  .access-marketing-strip__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+}
+
+.access-marketing-strip__title {
+  margin: 0;
+  font-size: clamp(18px, 2vw, 20px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mkt-navy);
+}
+
+.access-marketing-strip__links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .access-marketing-strip__links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+  }
+}
+
+.access-marketing-strip__links a {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--mkt-accent);
+  text-decoration: none;
+  padding: 6px 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.access-marketing-strip__links a:hover {
+  color: #0891b2;
+}
+
+/* Final CTA — glass pearl band */
+.access-marketing-cta-band {
+  margin-top: clamp(80px, 12vw, 120px);
+  padding: clamp(48px, 7vw, 72px) clamp(28px, 5vw, 48px);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14, 165, 185, 0.08), transparent 70%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  box-shadow: var(--mkt-shadow-soft);
+  border: none;
+  text-align: center;
+}
+
+.access-marketing-cta-band__title {
+  margin: 0;
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--mkt-navy);
+}
+
+.access-marketing-cta-band__body {
+  margin: 16px auto 0;
+  max-width: 48ch;
+  font-size: clamp(17px, 1.5vw, 19px);
+  color: var(--mkt-text-muted);
+  line-height: 1.6;
+}
+
+.access-marketing-cta-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.access-marketing-cta-band__actions .access-mkt-cta {
+  min-height: 44px;
+  min-width: 140px;
+}
+
+.access-marketing-footer {
+  margin-top: clamp(64px, 8vw, 88px);
+  padding-top: 28px;
+  border-top: 1px solid var(--mkt-border);
+  font-size: 13px;
+  color: var(--mkt-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  justify-content: space-between;
+}
+
+.access-marketing-footer a {
+  color: var(--mkt-text-muted);
+  text-decoration: none;
+}
+
+.access-marketing-footer a:hover {
+  color: var(--mkt-navy);
+}
+
+.access-marketing-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Retina hero raster — avoid scaling blur */
+.access-mkt-hero-art__img {
+  backface-visibility: hidden;
+}
+
+@supports (image-rendering: high-quality) {
+  .access-mkt-hero-art__img {
+    image-rendering: high-quality;
+  }
+}
+
+/* Legacy class hooks (other routes) */
+.access-marketing-header,
+.access-marketing-btn,
+.access-marketing-hero,
+.access-marketing-card,
+.access-marketing-cards,
+.access-marketing-contact {
+  /* retained for non-migrated pages */
+}

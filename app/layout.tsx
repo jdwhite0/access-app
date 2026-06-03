@@ -14,11 +14,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
   return (
     <ClerkProvider publishableKey={publishableKey}>
-      <html lang="en" className="h-full" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
         <head>
           <script dangerouslySetInnerHTML={{ __html: getThemeBootScript() }} />
         </head>
-        <body className="h-full">
+        <body>
           <ThemeProvider>
             <JysonGlobalLayer>{children}</JysonGlobalLayer>
           </ThemeProvider>

@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 14px 12px;
+  padding: 14px 14px 12px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -34,10 +34,10 @@
 }
 
 .access-nav-section-label {
-  padding: 14px 14px 6px;
+  padding: 12px 14px 4px;
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
   font-family: var(--font-sans, inherit);
@@ -63,10 +63,10 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  min-height: var(--ds-touch-min, 44px);
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 8px 10px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   color: var(--text-dim);
   font-family: var(--font-sans, inherit);
   font-size: 0.875rem;
@@ -77,22 +77,29 @@
 }
 
 .access-nav-link:hover {
-  background: var(--os-surface-hover);
+  background: color-mix(in srgb, var(--text) 4%, transparent);
   color: var(--text);
 }
 
 .access-nav-link.is-active {
-  color: var(--accent);
-  background: var(--accent-glow);
-  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
-  box-shadow: inset 3px 0 0 var(--accent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 16%, var(--border));
 }
 
 .access-nav-link__glyph {
   width: 18px;
-  text-align: center;
-  font-size: 12px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
   flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.access-nav-link.is-active .access-nav-link__glyph {
+  color: var(--accent);
 }
 
 .access-nav-link__text {
@@ -104,21 +111,29 @@
 }
 
 .access-nav-link__label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.3;
+  color: inherit;
 }
 
 .access-nav-link__subtitle {
-  font-size: 9px;
-  letter-spacing: 0.04em;
-  line-height: 1.3;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.35;
   color: var(--text-muted);
   text-transform: none;
 }
 
+.access-nav-link.is-active .access-nav-link__label {
+  font-weight: 600;
+  color: var(--text);
+}
+
 .access-nav-link.is-active .access-nav-link__subtitle {
-  color: color-mix(in srgb, var(--accent) 65%, var(--text-muted));
+  color: var(--text-dim);
 }
 
 .access-nav-module-slot {
@@ -262,16 +277,31 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
   background: var(--gradient-page, var(--bg));
   font-family: var(--font-sans, inherit);
 }
 
-.access-app-layout__main {
+/* Nested shell fills layout; scroll only on .access-ds-shell__main (Stripe pattern) */
+.access-app-layout > .access-ds-shell {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  height: auto;
+  max-height: 100%;
+}
+
+.access-app-layout__main {
+  min-height: 0;
+  overflow: visible;
+}
+
+.access-app-layout--default .access-app-layout__main,
+.access-app-layout--founder .access-app-layout__main {
+  flex: none;
+  height: auto;
 }
 
 .access-app-layout--founder .access-app-layout__main,
@@ -282,6 +312,8 @@
 .access-app-layout-shell .access-ds-shell__main {
   padding: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /*
@@ -354,9 +386,10 @@
 }
 
 @media (max-width: 768px) {
-  body:has(.access-app-layout) {
-    overflow: auto;
-    height: auto;
+  body:has(.access-app-layout),
+  body:has(.access-ds-shell) {
+    overflow: hidden;
+    height: 100%;
     min-height: 100dvh;
   }
 }

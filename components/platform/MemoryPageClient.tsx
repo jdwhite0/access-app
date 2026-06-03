@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from 'react'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
-import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
+import {
+  PageHeader,
+  SectionPanel,
+  StatusPill,
+  SecondaryButton,
+} from '@/lib/design-system/components/platform'
+import { cloudStatusLabel, localSyncLabel } from '@/lib/access/status-labels'
+import { useJysonLayerOptional } from '@/components/jyson/JysonLayerProvider'
 import { fetchJysonCompanionContext } from '@/lib/actions/jyson-companion'
 import type { JysonContext } from '@/lib/jyson-bridge/types'
 
 function EntityList({ items, label }: { items: Array<{ id: string; name: string; type?: string }>, label: string }) {
   if (items.length === 0) return <p className="access-platform-meta">No {label.toLowerCase()} registered.</p>
   return (
-    <ul className="access-memory-list">
+    <ul className="access-memory-list access-shell-panel">
       {items.map(item => (
         <li key={item.id} className="access-memory-list__item">
           <span className="access-memory-list__name">{item.name}</span>
@@ -21,6 +28,7 @@ function EntityList({ items, label }: { items: Array<{ id: string; name: string;
 }
 
 export default function MemoryPageClient() {
+  const layer = useJysonLayerOptional()
   const [ctx, setCtx] = useState<JysonContext | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,32 +42,50 @@ export default function MemoryPageClient() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page">
+      <div className="access-platform access-platform-page access-shell-page">
         <PageHeader
-          eyebrow="ACCESS"
           title="Memory"
-          description="What JYSON knows about you — your identity, world, and everything it remembers about your context."
+          description="What JYSON knows, remembers, and uses to help you."
+          secondary={
+            layer ? (
+              <SecondaryButton type="button" onClick={() => void layer.submit('What do you remember about me?')}>
+                Ask JYSON what you remember
+              </SecondaryButton>
+            ) : undefined
+          }
         />
 
         {loading ? (
-          <div className="access-platform-loading">Loading your world…</div>
+          <div className="access-platform-loading">Loading memory…</div>
         ) : error ? (
           <div className="access-memory-error">
             <p className="access-platform-body">Could not load your context: {error}</p>
             <p className="access-platform-meta" style={{ marginTop: 8 }}>
-              Your Founder OS blueprint needs to be materialized. Go to <a href="/founder" style={{ color: 'var(--accent)' }}>Founder</a> to set it up.
+              Complete your <a href="/founder" style={{ color: 'var(--accent)' }}>Founder blueprint</a> so Memory has context to load.
             </p>
           </div>
         ) : !ctx ? (
           <div className="access-memory-error">
-            <p className="access-platform-body">Your ACCESS world hasn&apos;t been initialized yet.</p>
+            <p className="access-platform-body">Your workspace context isn&apos;t set up yet.</p>
             <p className="access-platform-meta" style={{ marginTop: 8 }}>
-              Complete your <a href="/founder" style={{ color: 'var(--accent)' }}>Founder blueprint</a> to give JYSON context about you.
+              Complete your <a href="/founder" style={{ color: 'var(--accent)' }}>Founder blueprint</a> so JYSON knows who you are and what you build.
             </p>
           </div>
         ) : (
           <>
             {/* Identity summary */}
+            <SectionPanel title="Recent context" description="From your loaded Founder blueprint package.">
+              {ctx.summary.consumer ? (
+                <div className="access-memory-summary">
+                  {ctx.summary.consumer.split('\n').filter(Boolean).slice(0, 4).map((line, i) => (
+                    <p key={i} className="access-platform-body" style={{ marginBottom: 8 }}>{line}</p>
+                  ))}
+                </div>
+              ) : (
+                <p className="access-platform-meta">No summary text in blueprint yet.</p>
+              )}
+            </SectionPanel>
+
             <SectionPanel title="Identity">
               <div className="access-settings-info-grid">
                 <div className="access-settings-info-row">
@@ -72,35 +98,22 @@ export default function MemoryPageClient() {
                 </div>
                 <div className="access-settings-info-row">
                   <span className="access-platform-meta">Cloud status</span>
-                  <span className={`access-ds-badge access-ds-badge--${ctx.companionState.cloudReady ? 'operational' : 'neutral'}`}>
-                    {ctx.companionState.cloudReady ? 'Ready' : 'Pending'}
-                  </span>
+                  <StatusPill
+                    label={cloudStatusLabel(ctx.companionState.cloudReady)}
+                    tone={ctx.companionState.cloudReady ? 'operational' : 'neutral'}
+                  />
                 </div>
                 <div className="access-settings-info-row">
-                  <span className="access-platform-meta">Local OS</span>
-                  <span className={`access-ds-badge access-ds-badge--${ctx.companionState.localConnected ? 'operational' : 'neutral'}`}>
-                    {ctx.companionState.localConnected ? 'Connected' : 'Pending'}
-                  </span>
+                  <span className="access-platform-meta">Local tools</span>
+                  <StatusPill
+                    label={localSyncLabel(ctx.companionState.localConnected)}
+                    tone={ctx.companionState.localConnected ? 'operational' : 'neutral'}
+                  />
                 </div>
               </div>
             </SectionPanel>
 
-            {/* JYSON's understanding */}
-            {ctx.summary.consumer && (
-              <SectionPanel
-                title="JYSON's understanding of you"
-                description="How JYSON describes your world and context from your Founder blueprint."
-              >
-                <div className="access-memory-summary">
-                  {ctx.summary.consumer.split('\n').filter(Boolean).slice(0, 6).map((line, i) => (
-                    <p key={i} className="access-platform-body" style={{ marginBottom: 8 }}>{line}</p>
-                  ))}
-                </div>
-              </SectionPanel>
-            )}
-
-            {/* World entities */}
-            <SectionPanel title={`Organizations (${ctx.organizations.length})`}>
+            <SectionPanel title={`Organizations (${ctx.organizations.length})`} description="Saved knowledge from your blueprint.">
               <EntityList items={ctx.organizations} label="Organizations" />
             </SectionPanel>
 
@@ -112,7 +125,20 @@ export default function MemoryPageClient() {
               <EntityList items={ctx.experiences.map(e => ({ id: e.id, name: e.name }))} label="Experiences" />
             </SectionPanel>
 
-            {/* Permissions */}
+            <SectionPanel title="Local file context" description="Available when OpenJarvis and the connector are connected.">
+              <p className="access-platform-meta">
+                {ctx.companionState.localConnected
+                  ? 'Local tools are connected — JYSON can read files and vault notes on this machine.'
+                  : 'Local tools not connected. Open diagnostics in JYSON to connect.'}
+              </p>
+            </SectionPanel>
+
+            <SectionPanel title="Conversation insights" description="Recent intents appear on Home when you ask JYSON.">
+              <p className="access-platform-meta">
+                Use the JYSON orb on any page to continue threads — nothing is stored here as a separate feed yet.
+              </p>
+            </SectionPanel>
+
             <SectionPanel title="What JYSON is allowed to do">
               <div className="access-memory-perms">
                 <div className="access-memory-perms__col">

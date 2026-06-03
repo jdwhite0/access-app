@@ -1,76 +1,147 @@
 'use client'
 
-import Link from 'next/link'
-import { PageHeader } from '@/lib/design-system/components/platform'
+import { PageHeader, SecondaryButton } from '@/lib/design-system/components/platform'
+import { WORKSPACE_LINKS } from '@/lib/navigation/config'
+
+type SettingsRowProps = {
+  title: string
+  description: string
+  href: string
+  actionLabel: string
+}
+
+function SettingsRow({ title, description, href, actionLabel }: SettingsRowProps) {
+  return (
+    <div className="access-settings-row">
+      <div className="access-settings-row__body">
+        <p className="access-settings-row__title">{title}</p>
+        <p className="access-settings-row__desc">{description}</p>
+      </div>
+      <div className="access-settings-row__action">
+        <SecondaryButton href={href}>{actionLabel}</SecondaryButton>
+      </div>
+    </div>
+  )
+}
 
 const SECTIONS = [
   {
-    title: 'Account & identity',
-    items: [
-      { label: 'Profile', href: '/settings/profile', note: 'Edit your name, avatar, and display identity' },
-      { label: 'Account & security', href: '/settings/account', note: 'Sessions, connected accounts, delete account' },
-      { label: 'ACCESS handle', href: '/registry', note: 'Registry identity layer' },
+    title: 'Account',
+    lead: 'Profile, sign-in, and security for your ACCESS identity.',
+    rows: [
+      {
+        title: 'Profile',
+        description: 'Edit your name, avatar, and how you appear in the workspace.',
+        href: '/settings/profile',
+        actionLabel: 'Edit profile',
+      },
+      {
+        title: 'Account & security',
+        description: 'Sessions, connected accounts, and account deletion.',
+        href: '/settings/account',
+        actionLabel: 'Manage account',
+      },
     ],
   },
   {
     title: 'Billing',
-    items: [
-      { label: 'Billing & plan', href: '/settings/billing', note: 'Current plan, usage, and upgrade' },
-      { label: 'View all plans', href: '/plans', note: 'Operator · Builder · Enterprise' },
-    ],
-  },
-  {
-    title: 'Integrations',
-    items: [
-      { label: 'Founder OS', href: '/founder' },
-      { label: 'JYSON companion', href: '/companion' },
-      { label: 'Local connector', href: '/companion#jyson', note: 'OpenJarvis + connector heartbeat' },
+    lead: 'Plan, payment method, invoices, and usage.',
+    rows: [
+      {
+        title: 'Billing',
+        description: 'Manage your plan, payment method, invoices, and usage.',
+        href: '/settings/billing',
+        actionLabel: 'Manage billing',
+      },
+      {
+        title: 'Plans',
+        description: 'Compare Operator, Builder, and Enterprise tiers.',
+        href: '/plans',
+        actionLabel: 'View plans',
+      },
     ],
   },
   {
     title: 'Workspace',
-    items: [
-      { label: 'Projects', href: '/projects' },
-      { label: 'Agents', href: '/agents' },
-      { label: 'Offers', href: '/offers' },
-      { label: 'Memory', href: '/memory' },
+    lead: 'Identity and blueprint — use the main menu for Projects, Offers, and Registry.',
+    rows: WORKSPACE_LINKS.map((link) => ({
+      title: link.label,
+      description: link.note,
+      href: link.href,
+      actionLabel: 'Open',
+    })),
+  },
+  {
+    title: 'Integrations',
+    lead: 'Companion, local tools, and connected systems.',
+    rows: [
+      {
+        title: 'JYSON',
+        description: 'Full intelligence view, diagnostics, and companion settings.',
+        href: '/companion',
+        actionLabel: 'Open JYSON',
+      },
+      {
+        title: 'Local tools',
+        description: 'Connect OpenJarvis and the connector for files, vault, and models on your machine.',
+        href: '/companion#diagnostics',
+        actionLabel: 'Connect local tools',
+      },
     ],
   },
   {
-    title: 'Operator & developer',
-    items: [
-      { label: 'Terminal (advanced)', href: '/terminal' },
-      { label: 'Command Center', href: '/internal/command-center' },
-      { label: 'Internal status', href: '/internal/status' },
-      { label: 'Public status', href: '/status' },
+    title: 'Security',
+    lead: 'Access control and platform visibility.',
+    rows: [
+      {
+        title: 'Public status',
+        description: 'Uptime and incident history for ACCESS services.',
+        href: '/status',
+        actionLabel: 'View status',
+      },
+      {
+        title: 'Internal status',
+        description: 'Operator view of platform health (signed in).',
+        href: '/internal/status',
+        actionLabel: 'Open internal status',
+      },
+    ],
+  },
+  {
+    title: 'Developer tools',
+    lead: 'Advanced operator surfaces — use when you need full control.',
+    rows: [
+      {
+        title: 'Terminal',
+        description: 'Command-line style interface for registry, agents, and scripts.',
+        href: '/terminal',
+        actionLabel: 'Open terminal',
+      },
+      {
+        title: 'Command Center',
+        description: 'Internal orchestration and system registry for operators.',
+        href: '/internal/command-center',
+        actionLabel: 'Open command center',
+      },
     ],
   },
 ] as const
 
 export default function PlatformSettings() {
   return (
-    <div className="access-platform access-platform-page access-platform-page--wide">
+    <div className="access-platform access-platform-page access-shell-page access-shell-page--wide">
       <PageHeader
-        eyebrow="ACCESS"
         title="Settings"
-        description="Account, billing, integrations, and operator tools."
+        description="Account, billing, workspace, integrations, and developer tools."
       />
-      <div className="access-settings-grid">
+      <div className="access-settings-stripe">
         {SECTIONS.map((section) => (
-          <section key={section.title} className="access-settings-section">
+          <section key={section.title} className="access-settings-stripe__section">
             <h2>{section.title}</h2>
-            <ul>
-              {section.items.map((item) => (
-                <li key={item.label}>
-                  <Link href={item.href}>{item.label}</Link>
-                  {'note' in item && item.note ? (
-                    <span className="access-platform-meta" style={{ display: 'block', marginTop: 4 }}>
-                      {item.note}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
+            <p className="access-settings-stripe__lead">{section.lead}</p>
+            {section.rows.map((row) => (
+              <SettingsRow key={row.title} {...row} />
+            ))}
           </section>
         ))}
       </div>
