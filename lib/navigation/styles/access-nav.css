@@ -258,6 +258,13 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  /* Force dark — companion is always night, ignores data-theme="day" */
+  background: #06090d;
+}
+
+.access-app-layout--companion .access-ds-shell,
+.access-app-layout--companion .access-ds-shell__body {
+  background: #06090d;
 }
 
 .access-app-layout--companion .access-app-layout__main {
