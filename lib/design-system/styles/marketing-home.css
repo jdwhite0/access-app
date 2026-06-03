@@ -2,9 +2,9 @@
 
 .access-marketing-root {
   --mkt-bg: #ffffff;
-  --mkt-surface: #f8fafc;
+  --mkt-surface: #f4f6f9;
   --mkt-border: rgba(26, 31, 54, 0.08);
-  --mkt-text: #1a1f36;
+  --mkt-text: #0f1419;
   --mkt-text-muted: #64748b;
   --mkt-accent: #0ea5b9;
   --mkt-accent-soft: rgba(14, 165, 185, 0.1);
@@ -14,6 +14,19 @@
   --mkt-max: 1240px;
   --mkt-shadow-soft: 0 1px 2px rgba(26, 31, 54, 0.04), 0 20px 48px rgba(26, 31, 54, 0.06);
   --mkt-shadow-lift: 0 2px 4px rgba(26, 31, 54, 0.04), 0 28px 64px rgba(26, 31, 54, 0.08);
+
+  /* Remap global theme tokens so var(--text) etc. work in marketing context */
+  --bg: var(--mkt-bg);
+  --surface: var(--mkt-surface);
+  --border: var(--mkt-border);
+  --text: var(--mkt-text);
+  --text-dim: rgba(15, 20, 25, 0.65);
+  --text-muted: var(--mkt-text-muted);
+  --accent: var(--mkt-accent);
+  --accent-glow: var(--mkt-accent-soft);
+  --on-accent: #ffffff;
+  --success: #2d8a6e;
+
   min-height: 100dvh;
   background: var(--mkt-bg);
   color: var(--mkt-text);
@@ -28,8 +41,8 @@
 /* Document scroll — globals.css sets html/body overflow:hidden for app shell */
 html:has(.access-marketing-root),
 body:has(.access-marketing-root) {
-  background: var(--mkt-bg);
-  color: var(--mkt-text);
+  background: #ffffff;
+  color: #0f1419;
   overflow-x: hidden;
   overflow-y: auto;
   height: auto;

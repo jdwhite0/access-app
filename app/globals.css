@@ -343,7 +343,7 @@ body:has(.access-marketing-root) {
 }
 
 .identity-model-sep {
-  color: rgba(255,255,255,0.15);
+  color: var(--border);
   font-size: 10px;
 }
 
@@ -387,7 +387,7 @@ body:has(.access-marketing-root) {
 }
 
 .eco-divider {
-  color: rgba(255,255,255,0.1);
+  color: var(--border);
 }
 
 .app-position-text {
