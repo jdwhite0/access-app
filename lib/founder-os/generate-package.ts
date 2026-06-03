@@ -236,11 +236,29 @@ export async function generateFounderOsPackageFromSpec(
   options?: { blueprintYamlPath?: string }
 ): Promise<GeneratePackageResult> {
   const stages: GenerateStage[] = ['validating', 'generating_yaml']
-  const outBase = resolveOutputRoot()
   const founderOsId = blueprint.output.founder_os_id
-  const outDir = join(outBase, founderOsId)
   const materializedAt = new Date().toISOString()
   const filesWritten: string[] = []
+
+  // In production/Vercel, filesystem is ephemeral — cloud (Supabase) is the source of truth.
+  // Skip local file generation and return cloud-ready success immediately.
+  const isServerless =
+    !process.env.FOUNDER_OS_OUTPUT_ROOT &&
+    (!!process.env.VERCEL || process.env.NODE_ENV === 'production')
+
+  if (isServerless) {
+    stages.push('generating_registry', 'generating_vault_seeds', 'complete')
+    return {
+      success: true,
+      stages,
+      founderOsId,
+      outDir: 'cloud',
+      filesWritten: [],
+    }
+  }
+
+  const outBase = resolveOutputRoot()
+  const outDir = join(outBase, founderOsId)
 
   try {
     stages.push('generating_registry')

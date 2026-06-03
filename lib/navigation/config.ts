@@ -7,7 +7,7 @@ import type {
 
 export const PRIMARY_NAV: PrimaryNavItem[] = [
   { id: 'dashboard', label: 'Dashboard', href: '/dashboard', glyph: '▣' },
-  { id: 'terminal', label: 'Terminal', href: '/', glyph: '▸' },
+  { id: 'terminal', label: 'Terminal', href: '/terminal', glyph: '▸' },
   { id: 'founder', label: 'Founder', href: '/founder', glyph: '◫' },
   { id: 'companion', label: 'Companion', href: '/companion', glyph: '◎' },
   { id: 'registry', label: 'Registry', href: '/registry', glyph: '◇' },

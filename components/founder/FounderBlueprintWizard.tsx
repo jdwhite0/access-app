@@ -226,10 +226,19 @@ export default function FounderBlueprintWizard() {
         setErrors([gen.message])
         return
       }
-      setFounderOsReady(gen.outDir ?? gen.founderOsId ?? 'ready')
+      const readyLabel =
+        gen.outDir === 'cloud'
+          ? 'Founder OS ready in cloud. Local sync pending when connector connects.'
+          : gen.outDir ?? gen.founderOsId ?? 'ready'
+      setFounderOsReady(readyLabel)
       setStatusLine(gen.message)
-    } catch {
-      setErrors(['Unexpected error while exporting.'])
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (process.env.NODE_ENV === 'development') {
+        setErrors([`Export error: ${msg}`])
+      } else {
+        setErrors(['Export failed. Please try again. If this persists, contact support.'])
+      }
     } finally {
       setBusy(false)
     }
