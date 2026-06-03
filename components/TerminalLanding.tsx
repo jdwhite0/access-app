@@ -23,7 +23,7 @@ export default function TerminalLanding({ onSignIn }: TerminalLandingProps) {
   if (demoMode) return <DemoTerminal onExit={() => setDemoMode(false)} onSignIn={handleSignIn} />
 
   return (
-    <div className="access-landing">
+    <div className="access-landing access-platform access-platform-landing">
       {/* Brand eyebrow */}
       <div className="brand-eyebrow">JD AI SYSTEMS</div>
 

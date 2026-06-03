@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PRIMARY_NAV } from '@/lib/navigation/config'
+import { navIconFor } from '@/lib/navigation/nav-icons'
 import { resolvePrimaryNavId } from '@/lib/navigation/resolve-nav'
 
 export default function AccessPrimaryNav() {
@@ -11,7 +12,7 @@ export default function AccessPrimaryNav() {
 
   return (
     <>
-      <p className="access-nav-section-label">Navigate</p>
+      <p className="access-nav-section-label">Places</p>
       <ul className="access-nav-primary">
         {PRIMARY_NAV.map((item) => {
           const isActive = item.id === active
@@ -23,9 +24,15 @@ export default function AccessPrimaryNav() {
                 aria-current={isActive ? 'page' : undefined}
               >
                 <span className="access-nav-link__glyph" aria-hidden>
-                  {item.glyph}
+                  {(() => {
+                    const Icon = navIconFor(item.id)
+                    return <Icon size={18} strokeWidth={1.75} />
+                  })()}
                 </span>
-                <span className="access-nav-link__label">{item.label}</span>
+                <span className="access-nav-link__text">
+                  <span className="access-nav-link__label">{item.label}</span>
+                  <span className="access-nav-link__subtitle">{item.subtitle}</span>
+                </span>
               </Link>
             </li>
           )

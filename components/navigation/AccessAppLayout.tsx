@@ -2,6 +2,7 @@
 
 import { Suspense, type ReactNode } from 'react'
 import { ACCESSShell } from '@/lib/design-system/shell/ACCESSShell'
+import { PageMotion } from '@/lib/design-system/components/platform'
 import AccessBreadcrumbs from './AccessBreadcrumbs'
 import AccessNavRail from './AccessNavRail'
 import AccessTopbarMeta from './AccessTopbarMeta'
@@ -42,7 +43,9 @@ export default function AccessAppLayout({
         }
         navigation={<AccessNavRail />}
       >
-        <div className="access-app-layout__main">{children}</div>
+        <div className="access-app-layout__main">
+          <PageMotion>{children}</PageMotion>
+        </div>
       </ACCESSShell>
     </div>
   )

@@ -5,13 +5,17 @@ import type {
   PrimaryNavItem,
 } from './types'
 
+/** Places, not tools — label + subtitle in primary rail */
 export const PRIMARY_NAV: PrimaryNavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', href: '/dashboard', glyph: '▣' },
-  { id: 'terminal', label: 'Terminal', href: '/terminal', glyph: '▸' },
-  { id: 'founder', label: 'Founder', href: '/founder', glyph: '◫' },
-  { id: 'companion', label: 'Companion', href: '/companion', glyph: '◎' },
-  { id: 'registry', label: 'Registry', href: '/registry', glyph: '◇' },
-  { id: 'settings', label: 'Settings', href: '/settings', glyph: '⚙' },
+  { id: 'home',      label: 'HOME',      subtitle: 'Today',              href: '/dashboard', glyph: '▣' },
+  { id: 'founder',   label: 'FOUNDER',   subtitle: 'Your Identity',      href: '/founder',   glyph: '◫' },
+  { id: 'projects',  label: 'PROJECTS',  subtitle: "What You're Building",href: '/projects',  glyph: '▤' },
+  { id: 'companion', label: 'COMPANION', subtitle: 'JYSON',              href: '/companion', glyph: '◎' },
+  { id: 'agents',    label: 'AGENTS',    subtitle: 'Your Team',          href: '/agents',    glyph: '◉' },
+  { id: 'memory',    label: 'MEMORY',    subtitle: 'Your Knowledge',     href: '/memory',    glyph: '◌' },
+  { id: 'offers',    label: 'OFFERS',    subtitle: 'What You Sell',      href: '/offers',    glyph: '◈' },
+  { id: 'registry',  label: 'REGISTRY',  subtitle: 'Your Universe',      href: '/registry',  glyph: '◇' },
+  { id: 'settings',  label: 'SETTINGS',  subtitle: 'Preferences',        href: '/settings',  glyph: '⚙' },
 ]
 
 export const FOUNDER_CONTEXT: ContextNavItem[] = [
@@ -31,14 +35,14 @@ export const COMPANION_CONTEXT: ContextNavItem[] = [
 ]
 
 export const SETTINGS_CONTEXT: ContextNavItem[] = [
-  { id: 'general', label: 'General', href: '/settings' },
-  {
-    id: 'command-center',
-    label: 'Command Center',
-    href: '/internal/command-center',
-  },
-  { id: 'status', label: 'Platform Status', href: '/internal/status' },
-  { id: 'public-status', label: 'Public Status', href: '/status' },
+  { id: 'general',        label: 'General',             href: '/settings' },
+  { id: 'profile',        label: 'Profile',             href: '/settings/profile' },
+  { id: 'account',        label: 'Account',             href: '/settings/account' },
+  { id: 'billing',        label: 'Billing',             href: '/settings/billing' },
+  { id: 'command-center', label: 'Command Center',      href: '/internal/command-center' },
+  { id: 'status',         label: 'Platform Status',     href: '/internal/status' },
+  { id: 'public-status',  label: 'Public Status',       href: '/status' },
+  { id: 'terminal',       label: 'Terminal (advanced)', href: '/terminal' },
 ]
 
 export const FOUNDER_STEP_TO_CONTEXT: Record<string, FounderContextId> = {

@@ -20,3 +20,10 @@ export const REGISTRY_ROW_LABELS: Record<RegistryRowKey, string> = {
   connections: 'Connections',
   offers: 'Offers',
 }
+
+export const REGISTRY_RELATIONSHIP_HINTS: Partial<Record<RegistryRowKey, string>> = {
+  systems: 'Connect to blueprints, agents, and builder projects.',
+  agents: 'Route intent and automation across your stack.',
+  projects: 'Active builder work linked to systems and assets.',
+  blueprints: 'Founder OS source of truth for JYSON context.',
+}

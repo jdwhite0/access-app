@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Settings } from 'lucide-react'
 import { Suspense, type ReactNode } from 'react'
 import AccessContextNav from './AccessContextNav'
 import AccessPrimaryNav from './AccessPrimaryNav'
@@ -34,6 +35,15 @@ export default function AccessNavRail({ moduleSlot }: AccessNavRailProps) {
       {moduleSlot ? (
         <div className="access-nav-module-slot">{moduleSlot}</div>
       ) : null}
+
+      <div className="access-nav-rail-footer">
+        <Link href="/settings" className="access-nav-link">
+          <span className="access-nav-link__glyph" aria-hidden>
+            <Settings size={18} strokeWidth={1.75} />
+          </span>
+          <span className="access-nav-link__label">Settings</span>
+        </Link>
+      </div>
     </div>
   )
 }

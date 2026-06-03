@@ -29,7 +29,7 @@ export default function AccessBreadcrumbs({ extra }: AccessBreadcrumbsProps) {
     return () => window.removeEventListener('hashchange', sync)
   }, [])
 
-  const primary = resolvePrimaryNavId(pathname)
+  const primary = resolvePrimaryNavId(pathname) ?? (pathname.startsWith('/terminal') ? 'settings' : null)
   const founderContext = resolveFounderContext(searchParams)
   const companionContext = resolveCompanionContext(hash)
   const settingsId = resolveSettingsContext(pathname)

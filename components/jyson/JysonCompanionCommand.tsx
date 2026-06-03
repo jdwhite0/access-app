@@ -1,10 +1,20 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { routeCompanionCommand } from '@/lib/jyson-bridge/companion-command-router'
 import type { OpenJarvisRuntimeCard } from '@/lib/openjarvis-bridge/runtime-card'
 import type { OpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
-import JysonOrb, { type JysonOrbState } from '@/components/jyson/JysonOrb'
+import {
+  PlanetPresence,
+  type PlanetState,
+  CommandInput,
+  ConnectionStatus,
+  IntelligenceAnswer,
+  RuntimeCard,
+  sectionsFromMessage,
+  type IntelligenceSection,
+  ACCESS_PENDING_PROMPT_KEY,
+} from '@/lib/design-system/components/platform'
 import JysonRuntimeCard from '@/components/jyson/JysonRuntimeCard'
 
 type TranscriptLine = {
@@ -40,13 +50,14 @@ export default function JysonCompanionCommand({
   localConnected,
 }: JysonCompanionCommandProps) {
   const [input, setInput] = useState('')
-  const [orbState, setOrbState] = useState<JysonOrbState>('idle')
+  const [orbState, setOrbState] = useState<PlanetState>('idle')
+  const [intelligence, setIntelligence] = useState<IntelligenceSection | null>(null)
   const [statusLine, setStatusLine] = useState<string | undefined>()
   const [transcript, setTranscript] = useState<TranscriptLine[]>([
     {
       id: nextLineId(),
       role: 'jyson',
-      text: 'Ask me to read a file or explore a folder on your machine. I route through ACCESS and OpenJarvis.',
+      text: 'Ask what to focus on next, or describe what you want to understand in your world.',
     },
   ])
   const [runtime, setRuntime] = useState<OpenJarvisRuntimeState | null>(null)
@@ -56,7 +67,6 @@ export default function JysonCompanionCommand({
   } | null>(null)
   const [busy, setBusy] = useState(false)
   const resultRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const loadRuntime = useCallback(async () => {
     try {
@@ -72,6 +82,18 @@ export default function JysonCompanionCommand({
   useEffect(() => {
     void loadRuntime()
   }, [loadRuntime])
+
+  useEffect(() => {
+    try {
+      const pending = sessionStorage.getItem(ACCESS_PENDING_PROMPT_KEY)
+      if (!pending?.trim()) return
+      sessionStorage.removeItem(ACCESS_PENDING_PROMPT_KEY)
+      setInput(pending.trim())
+      setOrbState('listening')
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   useEffect(() => {
     if (!lastCard) return
@@ -136,10 +158,9 @@ export default function JysonCompanionCommand({
             }
           }
         }
-        setTranscript((prev) => [
-          ...prev,
-          { id: nextLineId(), role: 'jyson', text: accumulated || '…' },
-        ])
+        const reply = accumulated || '…'
+        setTranscript((prev) => [...prev, { id: nextLineId(), role: 'jyson', text: reply }])
+        setIntelligence(sectionsFromMessage(reply))
         setOrbState('idle')
         setStatusLine(undefined)
       } catch {
@@ -190,14 +211,20 @@ export default function JysonCompanionCommand({
           const ok = card.success && body.success
           setOrbState(ok ? 'success' : 'error')
           setStatusLine(ok ? intent : card.error ?? 'Execution failed')
+          setIntelligence({
+            situation: ok ? intent : 'Local tool execution did not complete.',
+            diagnosis: card.error ?? body.error ?? card.permission.reason,
+            recommendation: ok
+              ? 'Review the technical output below or run another command.'
+              : 'Check connector, OpenJarvis, and path permissions.',
+            nextAction: ok ? 'Ask a follow-up or open Advanced tools.' : 'Run connector heartbeat and retry.',
+          })
           setTranscript((prev) => [
             ...prev,
             {
               id: nextLineId(),
               role: 'jyson',
-              text: ok
-                ? `Done — ${intent}. See result below.`
-                : (card.error ?? body.error ?? 'Execution failed.'),
+              text: ok ? `Done — ${intent}.` : (card.error ?? 'Execution failed.'),
             },
           ])
         } else {
@@ -248,6 +275,7 @@ export default function JysonCompanionCommand({
 
     if (route.kind === 'clarify') {
       setTranscript((prev) => [...prev, { id: nextLineId(), role: 'jyson', text: route.message }])
+      setIntelligence(sectionsFromMessage(route.message))
       setOrbState('idle')
       setBusy(false)
       return
@@ -262,95 +290,58 @@ export default function JysonCompanionCommand({
     setBusy(false)
   }, [input, busy, transcript, runChat, runExecute])
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    void handleSend()
-  }
-
   return (
-    <section className="jyson-companion-command" id="jyson">
+    <section className="access-companion-console" id="jyson">
+      <div className="access-companion-console__status">
+        <span className="access-platform-meta">{handle}</span>
+        <ConnectionStatus label="Cloud" online={cloudReady} />
+        <ConnectionStatus label="Local OS" online={localConnected} />
+        {runtime ? (
+          <ConnectionStatus label="Tools" online={runtime.localToolsAvailable} />
+        ) : null}
+      </div>
 
-      {/* Orb — hero visual, leads the page */}
-      <JysonOrb state={orbState} statusLine={statusLine} />
+      <PlanetPresence state={orbState} statusLine={statusLine} />
 
-      {/* Command input */}
-      <form className="jyson-command-box" onSubmit={onSubmit}>
-        <textarea
-          ref={inputRef}
-          className="jyson-command-box-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onFocus={() => setOrbState('listening')}
-          onBlur={() => { if (!busy) setOrbState('idle') }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              void handleSend()
-            }
-          }}
-          placeholder="Ask JYSON or give a command..."
-          rows={2}
-          disabled={busy}
-          aria-label="Ask JYSON or give a command"
-        />
-        <button
-          type="submit"
-          className="jyson-command-box-submit"
-          disabled={busy || !input.trim()}
-          aria-label="Send"
-        >
-          {busy ? '·' : '↑'}
-        </button>
-      </form>
+      <CommandInput
+        value={input}
+        onChange={setInput}
+        onSubmit={() => void handleSend()}
+        busy={busy}
+        disabled={busy}
+        onFocus={() => setOrbState('listening')}
+        onBlur={() => {
+          if (!busy) setOrbState('idle')
+        }}
+      />
 
-      <p className="jyson-command-box-hint">
-        Try: show me the docs folder &middot; read package.json &middot; or just ask anything
+      <p className="access-platform-meta access-companion-console__hint">
+        What should I focus on next? · Summarize my products · What&apos;s in my registry?
       </p>
 
-      {/* Status pills — below the input, not above the orb */}
-      <div className="jyson-companion-command-meta">
-        <span className="jyson-chat-handle">{handle}</span>
-        <span className={`jyson-chat-status ${cloudReady ? 'ok' : 'pending'}`}>
-          {cloudReady ? 'Cloud' : 'Cloud offline'}
-        </span>
-        <span className={`jyson-chat-status ${localConnected ? 'ok' : 'pending'}`}>
-          {localConnected ? 'Local' : 'Local offline'}
-        </span>
-        {runtime && (
-          <span className={`jyson-chat-status ${runtime.localToolsAvailable ? 'ok' : 'pending'}`}>
-            {runtime.localToolsAvailable ? 'Tools live' : 'Tools offline'}
-          </span>
-        )}
+      {intelligence ? (
+        <IntelligenceAnswer
+          title="JYSON"
+          sections={intelligence}
+          technical={
+            lastCard ? (
+              <RuntimeCard title="Runtime output">
+                <JysonRuntimeCard
+                  card={lastCard.card}
+                  apiSuccess={lastCard.apiSuccess}
+                  compact
+                />
+              </RuntimeCard>
+            ) : null
+          }
+        />
+      ) : null}
+
+      <div ref={resultRef} className="access-companion-console__result">
+        {lastCard && !intelligence ? (
+          <JysonRuntimeCard card={lastCard.card} apiSuccess={lastCard.apiSuccess} compact />
+        ) : null}
       </div>
-
-      {/* Transcript */}
-      {transcript.length > 1 && (
-        <ul className="jyson-command-transcript" aria-label="Recent messages">
-          {transcript.slice(-4).map((line) => (
-            <li
-              key={line.id}
-              className={`jyson-command-transcript-line jyson-command-transcript-line--${line.role}`}
-            >
-              <span className="jyson-command-transcript-role">
-                {line.role === 'user' ? 'You' : 'JYSON'}
-              </span>
-              <span>{line.text}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* Tool result card */}
-      <div ref={resultRef} className="jyson-command-result">
-        {lastCard && (
-          <JysonRuntimeCard
-            card={lastCard.card}
-            apiSuccess={lastCard.apiSuccess}
-            compact
-          />
-        )}
-      </div>
-
     </section>
   )
 }

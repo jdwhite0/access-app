@@ -37,7 +37,7 @@ export default function AccessContextNav() {
   } else if (primary === 'companion') {
     items = COMPANION_CONTEXT
     activeId = resolveCompanionContext(hash) ?? 'overview'
-  } else if (primary === 'settings') {
+  } else if (primary === 'settings' || pathname.startsWith('/terminal')) {
     items = SETTINGS_CONTEXT
     activeId = resolveSettingsContext(pathname)
   }

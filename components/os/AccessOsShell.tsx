@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import AccessUniversalShell from '@/components/navigation/AccessUniversalShell'
+import { PageMotion } from '@/lib/design-system/components/platform'
 import AccessOsLeftRail from './AccessOsLeftRail'
 import AccessOsWorkspace from './AccessOsWorkspace'
 import AccessOsContextPanel from './AccessOsContextPanel'
@@ -48,14 +49,16 @@ export default function AccessOsShell({ initialModule = 'dashboard' }: AccessOsS
         ) : null
       }
     >
-      <AccessOsWorkspace
-        activeModule={activeModule}
-        summary={summary}
-        loading={loading}
-        identityError={identityError}
-        selectedKey={selectedKey}
-        onSelectKey={setSelectedKey}
-      />
+      <PageMotion key={activeModule}>
+        <AccessOsWorkspace
+          activeModule={activeModule}
+          summary={summary}
+          loading={loading}
+          identityError={identityError}
+          selectedKey={selectedKey}
+          onSelectKey={setSelectedKey}
+        />
+      </PageMotion>
     </AccessUniversalShell>
   )
 }

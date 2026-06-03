@@ -117,12 +117,13 @@ export default function OnboardingFlow() {
 
   if (step === 'account-type') {
     return (
-      <div className="founder-wizard founder-wizard--onboarding">
+      <div className="founder-wizard founder-wizard--onboarding access-platform access-platform-page">
         <div className="founder-wizard-card fade-in">
           <header className="founder-wizard-hero">
-            <h1 className="founder-wizard-hero-title">You're gaining access.</h1>
+            <h1 className="founder-wizard-hero-title">You&apos;re gaining access.</h1>
             <p className="founder-wizard-hero-subtitle">
-              ACCESS is the door to AI infrastructure. Tell us how you're coming through it.
+              ACCESS is your operating layer — identity in the cloud, Founder OS for builders,
+              and JYSON as intelligence. Local tools connect when your machine runs the connector.
             </p>
           </header>
 
@@ -173,12 +174,13 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="founder-wizard founder-wizard--onboarding">
+    <div className="founder-wizard founder-wizard--onboarding access-platform access-platform-page">
       <div className="founder-wizard-card fade-in">
         <header className="founder-wizard-hero">
-          <h1 className="founder-wizard-hero-title">Confirm Your Identity</h1>
+          <h1 className="founder-wizard-hero-title">Confirm your identity</h1>
           <p className="founder-wizard-hero-subtitle">
-            Your ACCESS handle is how the system knows you permanently.
+            Your handle anchors Founder OS (if you build), JYSON context, and registry objects.
+            Cloud package syncs immediately; local Founder OS syncs when the connector is online.
           </p>
         </header>
 

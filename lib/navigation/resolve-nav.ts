@@ -8,16 +8,22 @@ import type {
   PrimaryNavId,
 } from './types'
 
-export function resolvePrimaryNavId(pathname: string): PrimaryNavId {
-  if (pathname === '/' || pathname === '') return 'terminal'
-  if (pathname.startsWith('/dashboard')) return 'dashboard'
+export function resolvePrimaryNavId(pathname: string): PrimaryNavId | null {
+  if (pathname === '/' || pathname === '') return null
+  if (pathname.startsWith('/terminal')) return null
+  if (pathname.startsWith('/dashboard')) return 'home'
   if (pathname.startsWith('/founder')) return 'founder'
+  if (pathname.startsWith('/projects')) return 'projects'
   if (pathname.startsWith('/companion')) return 'companion'
+  if (pathname.startsWith('/agents')) return 'agents'
+  if (pathname.startsWith('/memory')) return 'memory'
   if (pathname.startsWith('/registry')) return 'registry'
   if (pathname.startsWith('/settings')) return 'settings'
   if (pathname.startsWith('/internal/command-center')) return 'settings'
   if (pathname.startsWith('/internal/status')) return 'settings'
-  return 'dashboard'
+  if (pathname.startsWith('/status')) return 'settings'
+  if (pathname.startsWith('/onboarding')) return null
+  return null
 }
 
 export function resolveFounderContext(
@@ -37,6 +43,7 @@ export function resolveCompanionContext(hash: string): CompanionContextId | null
 }
 
 export function resolveSettingsContext(pathname: string): string {
+  if (pathname.startsWith('/terminal')) return 'terminal'
   if (pathname.startsWith('/internal/command-center')) return 'command-center'
   if (pathname.startsWith('/internal/status')) return 'status'
   if (pathname.startsWith('/status')) return 'public-status'

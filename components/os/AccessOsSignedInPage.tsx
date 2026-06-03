@@ -29,7 +29,7 @@ export default function AccessOsSignedInPage({ module }: AccessOsSignedInPagePro
           Sign in to open this module.
         </p>
         <Link href="/" className="access-nav-link" style={{ display: 'inline-flex', marginTop: '1rem' }}>
-          Go to Terminal
+          Sign in to ACCESS
         </Link>
       </div>
     )

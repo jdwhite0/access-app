@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth, useClerk, useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { PageHeader } from '@/lib/design-system/components/platform'
 import { getOrCreateIdentity } from '@/lib/actions/identity'
 import {
   exportFounderBlueprintYaml,
@@ -305,13 +306,12 @@ export default function FounderBlueprintWizard() {
 
   return (
     <AccessAppLayout variant="founder" userLabel={navHandle}>
-    <div className="founder-wizard">
-      <header className="founder-wizard-header founder-wizard-header--below-nav">
-        <div>
-          <p className="founder-wizard-eyebrow">Founder Blueprint</p>
-          <h1 className="founder-wizard-title-sm">Build your digital world</h1>
-        </div>
-      </header>
+    <div className="founder-wizard access-platform access-platform-page access-platform-page--wide">
+      <PageHeader
+        eyebrow="Founder Blueprint"
+        title="Build your digital world"
+        description="Organizations, products, and experiences become the package JYSON and your registry understand."
+      />
 
       <nav className="founder-wizard-steps" aria-label="Wizard progress">
         {STEPS.map((s, i) => {

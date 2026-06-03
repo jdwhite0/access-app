@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { PageHeader } from '@/lib/design-system/components/platform'
 import { dispatchJysonCommand } from '@/lib/actions/jyson-dispatch'
 
 type OutputLine = {
@@ -70,8 +71,11 @@ export default function TerminalShell() {
 
         push({ type: 'output', text: `Intent: ${d.intent}`, meta: `${Math.round(d.confidence * 100)}% confidence` })
         push({ type: 'output', text: `Route: ${d.destination}` })
-        push({ type: d.allowed ? 'output' : 'error', text: `Access: ${d.allowed ? 'allowed' : 'denied'} — ${d.reason}` })
-        push({ type: 'system', text: d.userMessage })
+        push({
+          type: d.allowed ? 'output' : 'error',
+          text: `Access: ${d.allowed ? 'allowed' : 'denied'} — ${d.reason}`,
+        })
+        push({ type: 'output', text: d.userMessage, meta: 'JYSON' })
       } catch (e) {
         push({ type: 'error', text: e instanceof Error ? e.message : 'Command failed.' })
       } finally {
@@ -113,10 +117,14 @@ export default function TerminalShell() {
 
   return (
     <AccessAppLayout variant="default">
-      <div className="terminal-shell">
+      <div className="access-platform access-terminal-page">
+        <PageHeader
+          eyebrow="Advanced"
+          title="Terminal"
+          description="Cloud and local command surface — natural language, slash commands, and JYSON intent routing. Most work happens in Companion."
+        />
+        <div className="terminal-shell access-ds-terminal">
         <header className="terminal-header">
-          <span className="terminal-eyebrow">ACCESS OS</span>
-          <span className="terminal-title">Terminal</span>
           <span className="terminal-badge">{busy ? 'processing…' : 'ready'}</span>
         </header>
 
@@ -155,8 +163,9 @@ export default function TerminalShell() {
         </form>
 
         <p className="terminal-footnote">
-          JYSON intent routing · P7 dispatch · ↑↓ command history · execution engine pending
+          JYSON intent routing · ↑↓ history · OpenJarvis via Companion advanced tools
         </p>
+        </div>
       </div>
     </AccessAppLayout>
   )

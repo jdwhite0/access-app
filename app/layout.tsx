@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/components/design-system/ThemeProviderClient'
+import JysonGlobalLayer from '@/components/jyson/JysonGlobalLayer'
 import { getThemeBootScript } from '@/lib/design-system/theme/boot-script'
 import './globals.css'
 
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <script dangerouslySetInnerHTML={{ __html: getThemeBootScript() }} />
         </head>
         <body className="h-full">
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <JysonGlobalLayer>{children}</JysonGlobalLayer>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

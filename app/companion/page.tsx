@@ -8,8 +8,8 @@ import { loadJysonContextFromAccessHandle } from '@/lib/jyson-bridge/load-jyson-
 import type { JysonContext } from '@/lib/jyson-bridge/types'
 
 export const metadata = {
-  title: 'JYSON Companion — ACCESS',
-  description: 'Your intelligence companion inside ACCESS. Read-only world awareness.',
+  title: 'JYSON — ACCESS',
+  description: 'Talk to your world. JYSON is the intelligence layer of ACCESS.',
 }
 
 type CompanionPageProps = {
@@ -33,15 +33,7 @@ export default async function CompanionPage({ searchParams }: CompanionPageProps
   }
 
   return (
-    <div className="companion-route-root relative h-full min-h-0 scanline">
-      <div
-        className="pointer-events-none fixed inset-0 opacity-[0.012]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(64,192,208,1) 1px, transparent 1px), linear-gradient(90deg, rgba(64,192,208,1) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
+    <div className="companion-route-root relative h-full min-h-0">
       <CompanionHashScroll />
       <Suspense fallback={null}>
         <JysonCompanionPanel devFixtureContext={devFixtureContext} />

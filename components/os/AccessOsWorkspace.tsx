@@ -1,5 +1,7 @@
 'use client'
 
+import AccessHome from '@/components/platform/AccessHome'
+import { PageHeader } from '@/lib/design-system/components/platform'
 import RegistryModule from './RegistryModule'
 import type { RegistrySummary } from '@/types/db'
 import type { OsModuleId } from './types'
@@ -24,36 +26,12 @@ export default function AccessOsWorkspace({
 }: Props) {
   if (activeModule === 'dashboard') {
     return (
-      <section className="access-os-workspace" aria-label="Dashboard">
-        <header className="access-os-workspace-header">
-          <p className="access-os-workspace-eyebrow">ACCESS OS</p>
-          <h1 className="access-os-workspace-title">Dashboard</h1>
-          <p className="access-os-workspace-sub">
-            Your operating surface. Open Registry, Founder, or Companion from the
-            navigation rail.
-          </p>
-        </header>
-        <div className="access-os-placeholder-grid">
-          <a href="/registry" className="access-os-placeholder-card access-os-stat-card">
-            <span className="access-os-placeholder-label">Registry</span>
-            <span className="access-os-placeholder-value">◇</span>
-          </a>
-          <a href="/founder" className="access-os-placeholder-card access-os-stat-card">
-            <span className="access-os-placeholder-label">Founder</span>
-            <span className="access-os-placeholder-value">◫</span>
-          </a>
-          <a href="/companion" className="access-os-placeholder-card access-os-stat-card">
-            <span className="access-os-placeholder-label">Companion</span>
-            <span className="access-os-placeholder-value">◎</span>
-          </a>
-          <a
-            href="/internal/command-center"
-            className="access-os-placeholder-card access-os-stat-card"
-          >
-            <span className="access-os-placeholder-label">Command Center</span>
-            <span className="access-os-placeholder-value">◈</span>
-          </a>
-        </div>
+      <section className="access-os-workspace access-os-workspace--home" aria-label="Your World">
+        <AccessHome
+          summary={summary}
+          loading={loading}
+          identityError={identityError}
+        />
       </section>
     )
   }
@@ -73,19 +51,19 @@ export default function AccessOsWorkspace({
 
   const registeredTotal = summary?.totalRegistered
 
+  const registryDescription = loading
+    ? 'Loading your ACCESS registry…'
+    : summary
+      ? `${summary.identityHandle} · ${registeredTotal ?? 0} registered object${registeredTotal === 1 ? '' : 's'} across organizations, products, experiences, systems, and agents.`
+      : 'Registry data could not be loaded.'
+
   return (
-    <section className="access-os-workspace" aria-label="Registry workspace">
-      <header className="access-os-workspace-header">
-        <p className="access-os-workspace-eyebrow">Identity layer</p>
-        <h1 className="access-os-workspace-title">Registry</h1>
-        <p className="access-os-workspace-sub">
-          {loading
-            ? 'Loading your ACCESS registry…'
-            : summary
-              ? `${summary.identityHandle} · ${registeredTotal ?? 0} registered object${registeredTotal === 1 ? '' : 's'} across systems, agents, projects, and blueprints.`
-              : 'Registry data could not be loaded.'}
-        </p>
-      </header>
+    <section className="access-platform access-platform-page access-platform-page--wide" aria-label="Registry workspace">
+      <PageHeader
+        eyebrow="ACCESS"
+        title="Your Universe"
+        description={registryDescription}
+      />
 
       <RegistryModule
         summary={summary}

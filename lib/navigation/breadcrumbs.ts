@@ -2,29 +2,34 @@ import type { BreadcrumbSegment } from './types'
 import type { FounderContextId, PrimaryNavId } from './types'
 import { FOUNDER_CONTEXT, PRIMARY_NAV } from './config'
 
-const PRIMARY_LABEL: Record<PrimaryNavId, string> = {
-  dashboard: 'Dashboard',
-  terminal: 'Terminal',
-  founder: 'Founder',
-  companion: 'Companion',
-  registry: 'Registry',
-  settings: 'Settings',
+/** Destination language for breadcrumbs (place names, not tool names) */
+const PRIMARY_DESTINATION: Record<PrimaryNavId, string> = {
+  home: 'Home',
+  founder: 'Your Identity',
+  projects: "What You're Building",
+  companion: 'JYSON',
+  agents: 'Your Team',
+  memory: 'Your Knowledge',
+  offers: 'What You Sell',
+  registry: 'Your Universe',
+  settings: 'Preferences',
 }
 
 export function buildBreadcrumbs(input: {
-  primary: PrimaryNavId
+  primary: PrimaryNavId | null
   founderContext?: FounderContextId | null
   companionContext?: string | null
   settingsContextLabel?: string | null
   extraTail?: BreadcrumbSegment[]
 }): BreadcrumbSegment[] {
-  const trail: BreadcrumbSegment[] = [
-    { label: 'ACCESS', href: '/dashboard' },
-    {
-      label: PRIMARY_LABEL[input.primary],
+  const trail: BreadcrumbSegment[] = [{ label: 'ACCESS', href: '/dashboard' }]
+
+  if (input.primary) {
+    trail.push({
+      label: PRIMARY_DESTINATION[input.primary],
       href: PRIMARY_NAV.find((n) => n.id === input.primary)?.href,
-    },
-  ]
+    })
+  }
 
   if (input.primary === 'founder' && input.founderContext) {
     const ctx = FOUNDER_CONTEXT.find((c) => c.id === input.founderContext)

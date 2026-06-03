@@ -1,10 +1,16 @@
 export type PrimaryNavId =
-  | 'dashboard'
-  | 'terminal'
+  | 'home'
   | 'founder'
+  | 'projects'
   | 'companion'
+  | 'agents'
+  | 'memory'
+  | 'offers'
   | 'registry'
   | 'settings'
+
+/** Advanced / auth landing — not shown in primary rail */
+export type InternalNavId = 'terminal'
 
 export type FounderContextId =
   | 'identity'
@@ -23,6 +29,7 @@ export type CompanionContextId =
 export type PrimaryNavItem = {
   id: PrimaryNavId
   label: string
+  subtitle: string
   href: string
   glyph: string
 }

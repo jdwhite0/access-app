@@ -17,6 +17,7 @@ import {
 import JysonCommandLayer from '@/components/jyson/JysonCommandLayer'
 import JysonCompanionCommand from '@/components/jyson/JysonCompanionCommand'
 import CompanionExecutePanel from '@/components/jyson/CompanionExecutePanel'
+import { PageHeader } from '@/lib/design-system/components/platform'
 
 type JysonCompanionPanelProps = {
   /** Dev-only: `?preview=fixture` on /companion loads jdwhite.access without sign-in. */
@@ -96,9 +97,9 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
     return (
       <div className="jyson-companion jyson-companion--center">
         <div className="jyson-companion-card fade-in">
-          <p className="jyson-companion-eyebrow">JYSON</p>
-          <h1 className="jyson-companion-title">Companion</h1>
-          <p className="jyson-companion-lead">Sign in to ACCESS to load your digital world.</p>
+          <p className="jyson-companion-eyebrow">ACCESS</p>
+          <h1 className="jyson-companion-title">JYSON</h1>
+          <p className="jyson-companion-lead">Sign in to talk to your world.</p>
           <Link href="/" className="jyson-companion-link">
             Go to ACCESS
           </Link>
@@ -182,19 +183,16 @@ function CompanionLoadedView({
 
   return (
     <AccessAppLayout variant="companion" userLabel={ctx.handle}>
-    <div className="jyson-companion">
-      <header className="jyson-companion-header jyson-companion-header--below-nav">
-        <div>
-          <p className="jyson-companion-eyebrow">JYSON</p>
-        </div>
-      </header>
+    <div className="jyson-companion access-platform access-platform-page access-platform-page--wide access-companion-page">
+      <PageHeader
+        eyebrow="JYSON"
+        title={`Hello, ${firstName}`}
+        description="Talk to your world — cloud context, local tools when connected, and structured intelligence below."
+      />
 
       <main className="jyson-companion-main fade-in">
-        <section className="jyson-companion-hero">
+        <section className="jyson-companion-hero access-companion-hero">
           {agentWarning && <p className="jyson-companion-warn">{agentWarning}</p>}
-          <p className="jyson-companion-greeting jyson-companion-greeting--compact">
-            Hello {firstName}.
-          </p>
           <JysonCompanionCommand
             handle={ctx.handle}
             cloudReady={ctx.companionState.cloudReady}
@@ -276,14 +274,18 @@ function CompanionLoadedView({
           </div>
         </details>
 
-        <details className="jyson-companion-drawer" id="agents">
-          <summary className="jyson-companion-drawer-summary">Intent routing (advanced)</summary>
-          <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
+        <details className="jyson-companion-drawer">
+          <summary className="jyson-companion-drawer-summary">Advanced — agent routing</summary>
+          <div id="agents" className="jyson-companion-card jyson-companion-card--nested">
+            <JysonCommandLayer handle={ctx.handle} useFixtureDispatch={useFixtureDispatch} />
+          </div>
         </details>
 
-        <details className="jyson-companion-drawer" id="tools">
-          <summary className="jyson-companion-drawer-summary">Advanced OpenJarvis Tools</summary>
-          <CompanionExecutePanel allowedActions={ctx.allowedActions} advancedOnly />
+        <details className="jyson-companion-drawer">
+          <summary className="jyson-companion-drawer-summary">Advanced — local OpenJarvis tools</summary>
+          <div id="tools" className="jyson-companion-card jyson-companion-card--nested">
+            <CompanionExecutePanel allowedActions={ctx.allowedActions} advancedOnly />
+          </div>
         </details>
       </main>
     </div>

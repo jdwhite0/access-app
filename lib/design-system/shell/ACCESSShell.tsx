@@ -38,6 +38,7 @@ export function ACCESSShell({
     <div
       className={cn(
         'access-ds-shell',
+        'access-platform',
         legacyClassName,
         railOpen && 'is-rail-open access-os-rail-open',
         className
