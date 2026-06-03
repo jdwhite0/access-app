@@ -1,0 +1,171 @@
+/**
+ * ACCESS V4 — motion, rhythm, living interactions (Stripe-informed principles)
+ */
+
+:root,
+html[data-theme='night'] {
+  --motion-fast: 150ms;
+  --motion-standard: 220ms;
+  --motion-emphasis: 380ms;
+  --ease-out-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-premium: cubic-bezier(0.4, 0, 1, 1);
+
+  --v4-space-section: clamp(40px, 6vh, 64px);
+  --v4-space-block: clamp(20px, 3vh, 32px);
+  --v4-read-max: 680px;
+  --v4-focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* Living focus — buttons, links, inputs */
+.access-platform button,
+.access-platform a.access-platform-link,
+.access-home-command__send,
+.access-jyson-layer__send,
+.access-nav-link {
+  transition:
+    color var(--motion-fast) var(--ease-out-premium),
+    background var(--motion-fast) var(--ease-out-premium),
+    border-color var(--motion-fast) var(--ease-out-premium),
+    transform var(--motion-fast) var(--ease-out-premium),
+    box-shadow var(--motion-standard) var(--ease-out-premium);
+}
+
+.access-platform button:focus-visible,
+.access-home-command__input:focus-visible,
+.access-jyson-layer__input:focus-visible,
+.access-nav-link:focus-visible {
+  outline: none;
+  box-shadow: var(--v4-focus-ring);
+}
+
+/* Quieter nav — Stripe-like rail */
+.access-platform .access-ds-shell__rail {
+  background: color-mix(in srgb, var(--os-surface) 92%, transparent);
+  border-right-color: color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.access-platform .access-nav-link {
+  border-radius: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.access-platform .access-nav-link.is-active {
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.access-platform .access-nav-link:hover {
+  transform: translateX(2px);
+}
+
+/* Home V4 — insight-first, not card grid */
+.access-home-v4__insight {
+  max-width: var(--v4-read-max);
+  margin: 0 auto  var(--v4-space-block);
+  text-align: center;
+}
+
+.access-home-v4__headline {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.access-home-v4__insight-text {
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.access-home-v4__attention {
+  width: 100%;
+  max-width: var(--v4-read-max);
+  margin: var(--v4-space-block) auto 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.access-home-v4__attention-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+  backdrop-filter: blur(12px);
+  font-size: var(--text-body);
+  color: var(--text-dim);
+  line-height: 1.5;
+  animation: access-v4-fade-up 0.4s var(--ease-out-premium) both;
+}
+
+.access-home-v4__attention-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.access-home-v4__attention-item:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.access-home-v4__attention-item:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.access-home-v4__attention-action {
+  flex-shrink: 0;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+
+.access-home-v4__attention-action:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes access-v4-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton shimmer — loading states */
+.access-v4-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    color-mix(in srgb, var(--surface-3) 80%, #fff) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: access-v4-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes access-v4-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}

@@ -1,6 +1,17 @@
 # ACCESS Platform Redesign
 
-## UX Philosophy V3 — JYSON as operating layer (current)
+## Design V4 — Research-driven experience (current)
+
+Research: [`ACCESS_DESIGN_V4_RESEARCH.md`](./ACCESS_DESIGN_V4_RESEARCH.md)
+
+- Stripe-informed hierarchy, motion, density, emotion (not visual copy)
+- Contextual home (aware headline + attention list, no “what are we building today?”)
+- `v4-experience.css` motion tokens + quieter nav
+- JYSON layer shows `layerInsight` per route
+
+---
+
+## UX Philosophy V3 — JYSON as operating layer
 
 - **Persistent floating JYSON** on every signed-in route (`JysonGlobalLayer` in root layout).
 - Expand/collapse survives refresh via `localStorage` (`access_jyson_layer_open`).

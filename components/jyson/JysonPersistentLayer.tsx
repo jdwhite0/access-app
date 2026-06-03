@@ -16,6 +16,7 @@ export default function JysonPersistentLayer() {
     submit,
     contextLine,
     greeting,
+    layerInsight,
   } = useJysonLayer()
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -48,6 +49,7 @@ export default function JysonPersistentLayer() {
             <header className="access-jyson-layer__head">
               <div>
                 <p className="access-jyson-layer__greeting">{greeting}</p>
+                <p className="access-jyson-layer__insight">{layerInsight}</p>
                 <p className="access-jyson-layer__context">{contextLine}</p>
               </div>
               <button

@@ -73,6 +73,12 @@
   font-weight: 600;
   color: var(--text);
 }
+.access-jyson-layer__insight {
+  margin: 8px 0 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--text-dim);
+}
 .access-jyson-layer__context {
   margin: 6px 0 0;
   font-size: var(--text-meta);

@@ -28,24 +28,35 @@ export async function createCheckoutSession(
   if (supabase) {
     const { data: identity } = await supabase
       .from('access_identities')
-      .select('stripe_customer_id, handle')
+      .select('handle')
       .eq('clerk_user_id', userId)
       .maybeSingle()
 
-    if (identity?.stripe_customer_id) {
-      customerId = identity.stripe_customer_id
+    // Try to fetch stripe_customer_id separately in case column doesn't exist yet
+    const stripeDataResult = await supabase
+      .from('access_identities')
+      .select('stripe_customer_id')
+      .eq('clerk_user_id', userId)
+      .maybeSingle()
+    const stripeData = stripeDataResult.error ? null : stripeDataResult.data
+
+    const existingCustomerId = (stripeData as { stripe_customer_id?: string } | null)?.stripe_customer_id
+
+    if (existingCustomerId) {
+      customerId = existingCustomerId
     } else {
       // Create a new Stripe customer
       const customer = await stripe.customers.create({
-        metadata: { clerk_user_id: userId, access_handle: identity?.handle ?? '' },
+        metadata: { clerk_user_id: userId, access_handle: (identity as { handle?: string } | null)?.handle ?? '' },
       })
       customerId = customer.id
 
-      // Save to DB
+      // Save to DB — ignore error if stripe_customer_id column doesn't exist yet
       await supabase
         .from('access_identities')
-        .update({ stripe_customer_id: customer.id })
+        .update({ stripe_customer_id: customer.id } as Record<string, unknown>)
         .eq('clerk_user_id', userId)
+        .then(() => null, () => null)
     }
   }
 

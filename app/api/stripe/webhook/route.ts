@@ -39,10 +39,26 @@ export async function POST(req: NextRequest) {
         const clerkUserId = session.metadata?.clerk_user_id
         const plan = session.metadata?.plan
         if (clerkUserId && plan) {
+          // Update plan first — always safe
           await supabase
             .from('access_identities')
-            .update({ plan, stripe_customer_id: session.customer as string })
+            .update({ plan })
             .eq('clerk_user_id', clerkUserId)
+
+          // stripe_customer_id column may not exist yet — update separately, ignore error
+          if (session.customer) {
+            await supabase
+              .from('access_identities')
+              .update({ stripe_customer_id: session.customer as string } as Record<string, unknown>)
+              .eq('clerk_user_id', clerkUserId)
+          }
+
+          console.info('[stripe webhook] plan activated', { clerkUserId, plan })
+        } else {
+          console.warn('[stripe webhook] checkout.session.completed missing metadata', {
+            clerkUserId,
+            plan,
+          })
         }
         break
       }

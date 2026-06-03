@@ -28,4 +28,5 @@ export type JysonLayerContextValue = {
   summaryLoading: boolean
   route: JysonRouteContext
   displayName: string | null
+  layerInsight: string
 }

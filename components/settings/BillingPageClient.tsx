@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
 import type { StripePlan } from '@/lib/stripe/client'
+import { getIdentityPlan } from '@/lib/stripe/get-identity-plan'
 
 /** Founder account — hardcoded until schema_v5_billing.sql is applied and plan column is live */
 const FOUNDER_HANDLES = ['jdwhite']
@@ -47,11 +48,41 @@ export default function BillingPageClient() {
   const [checkoutLoading, setCheckoutLoading] = useState<StripePlan | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
   const [stripeError, setStripeError] = useState<string | null>(null)
+  const [dbPlan, setDbPlan] = useState<string | null>(null)
+  const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null)
+  const [planLoading, setPlanLoading] = useState(true)
 
-  // Handle Stripe redirect back with ?success=1 or ?canceled=1
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   const justPaid = searchParams?.get('success') === '1'
   const justCanceled = searchParams?.get('canceled') === '1'
+
+  useEffect(() => {
+    let cancelled = false
+    setPlanLoading(true)
+    void getIdentityPlan().then((result) => {
+      if (cancelled) return
+      if ('data' in result) {
+        setDbPlan(result.data.plan)
+        setStripeCustomerId(result.data.stripe_customer_id)
+      }
+      setPlanLoading(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [justPaid])
+
+  const effectivePlan = isFounder ? 'founder' : (dbPlan ?? 'free')
+  const planLabel =
+    effectivePlan === 'founder'
+      ? 'Founder'
+      : effectivePlan === 'builder'
+        ? 'Builder'
+        : effectivePlan === 'operator'
+          ? 'Operator'
+          : effectivePlan === 'free'
+            ? 'Free'
+            : effectivePlan
 
   async function handleUpgrade(plan: StripePlan) {
     setCheckoutLoading(plan)
@@ -104,7 +135,8 @@ export default function BillingPageClient() {
 
         {justPaid && (
           <div className="access-billing-banner access-billing-banner--success">
-            ✓ Payment successful — your plan is being activated. This page will reflect your new plan within a minute once the webhook processes.
+            ✓ Payment successful — your plan is being activated. Refresh in a few seconds after the CLI webhook shows{' '}
+            <code>checkout.session.completed</code> → 200.
           </div>
         )}
         {justCanceled && (
@@ -120,18 +152,42 @@ export default function BillingPageClient() {
               <div className="access-billing-plan-card__header">
                 <div>
                   <p className="access-billing-plan-card__name" style={isFounder ? { color: 'var(--gold, #c9a46a)' } : {}}>
-                    {isFounder ? 'Founder' : 'Builder'}
+                    {planLoading ? '…' : planLabel}
                   </p>
                   <p className="access-billing-plan-card__price" style={isFounder ? { color: 'var(--gold, #c9a46a)', fontSize: '20px' } : {}}>
-                    {isFounder ? 'Lifetime · No charge' : '$599 '}{!isFounder && <span>/month</span>}
+                    {isFounder
+                      ? 'Lifetime · No charge'
+                      : effectivePlan === 'operator'
+                        ? '$299 '
+                        : effectivePlan === 'builder'
+                          ? '$599 '
+                          : '— '}
+                    {!isFounder && effectivePlan !== 'free' && effectivePlan !== 'founder' && (
+                      <span>/month</span>
+                    )}
                   </p>
                 </div>
-                <span className={`access-ds-badge access-ds-badge--${isFounder ? 'info' : 'operational'}`}>
-                  {isFounder ? 'Founder' : 'Active'}
+                <span
+                  className={`access-ds-badge access-ds-badge--${
+                    isFounder || effectivePlan === 'founder'
+                      ? 'info'
+                      : effectivePlan === 'free'
+                        ? 'neutral'
+                        : 'operational'
+                  }`}
+                >
+                  {planLoading ? '…' : isFounder ? 'Founder' : effectivePlan === 'free' ? 'Free' : 'Active'}
                 </span>
               </div>
               <ul className="access-billing-features">
-                {(isFounder ? FOUNDER_FEATURES : BUILDER_FEATURES).map(f => (
+                {(isFounder
+                  ? FOUNDER_FEATURES
+                  : effectivePlan === 'operator'
+                    ? OPERATOR_FEATURES
+                    : effectivePlan === 'builder'
+                      ? BUILDER_FEATURES
+                      : OPERATOR_FEATURES
+                ).map(f => (
                   <li key={f}><span className="access-billing-check">✓</span>{f}</li>
                 ))}
               </ul>
@@ -142,9 +198,11 @@ export default function BillingPageClient() {
                   </p>
                 ) : (
                   <>
-                    <p className="access-platform-meta">Next billing date: —</p>
+                    <p className="access-platform-meta">
+                      Stripe customer: {stripeCustomerId ?? '—'}
+                    </p>
                     <p className="access-platform-meta" style={{ marginTop: 4 }}>
-                      Stripe billing integration is being configured. Your plan is active.
+                      Database plan: <strong>{planLoading ? '…' : effectivePlan}</strong>
                     </p>
                   </>
                 )}

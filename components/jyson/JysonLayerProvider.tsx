@@ -18,6 +18,7 @@ import {
   buildContextLine,
   buildGreeting,
 } from '@/lib/jyson-layer/context-lines'
+import { buildLayerOpener, recordLastPlace } from '@/lib/jyson-layer/contextual-awareness'
 import { answerFromWorld, resolveNavIntent } from '@/lib/jyson-layer/route-intents'
 import { readLayerOpen, writeLayerOpen } from '@/lib/jyson-layer/storage'
 import { resolvePrimaryNavId, resolveSettingsContext } from '@/lib/navigation/resolve-nav'
@@ -110,6 +111,10 @@ export function JysonLayerProvider({ children }: Props) {
     }
   }, [pathname, params, companionHash])
 
+  useEffect(() => {
+    recordLastPlace(pathname, route.primary)
+  }, [pathname, route.primary])
+
   const contextLine = useMemo(
     () => buildContextLine(route, summary),
     [route, summary]
@@ -118,6 +123,11 @@ export function JysonLayerProvider({ children }: Props) {
   const greeting = useMemo(
     () => buildGreeting(displayName, summary),
     [displayName, summary]
+  )
+
+  const layerInsight = useMemo(
+    () => buildLayerOpener(route, summary),
+    [route, summary]
   )
 
   const runChat = useCallback(async (text: string, prior: JysonLayerMessage[]) => {
@@ -252,6 +262,7 @@ export function JysonLayerProvider({ children }: Props) {
       summaryLoading,
       route,
       displayName,
+      layerInsight,
     }),
     [
       open,
@@ -266,6 +277,7 @@ export function JysonLayerProvider({ children }: Props) {
       summaryLoading,
       route,
       displayName,
+      layerInsight,
     ]
   )
 

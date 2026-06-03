@@ -28,15 +28,18 @@ export function readRecentIntents(): string[] {
 }
 
 type HomeCommandHeroProps = {
+  /** Optional — prefer parent `access-home-v4__headline` for contextual copy */
   headline?: string
   placeholder?: string
   className?: string
+  hideHeadline?: boolean
 }
 
 export function HomeCommandHero({
-  headline = 'What are we building today?',
-  placeholder = 'Ask JYSON anything…',
+  headline,
+  placeholder = 'Continue or ask anything…',
   className,
+  hideHeadline = false,
 }: HomeCommandHeroProps) {
   const router = useRouter()
   const layer = useJysonLayerOptional()
@@ -63,14 +66,16 @@ export function HomeCommandHero({
 
   return (
     <div className={cn('access-home-command', className)}>
-      <motion.h1
-        className="access-home-command__headline"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.12 }}
-      >
-        {headline}
-      </motion.h1>
+      {!hideHeadline && headline ? (
+        <motion.h1
+          className="access-home-command__headline"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+        >
+          {headline}
+        </motion.h1>
+      ) : null}
 
       <motion.form
         className={cn('access-home-command__form', focused && 'is-focused')}
