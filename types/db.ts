@@ -1,8 +1,10 @@
 export type SystemType       = 'ai' | 'business' | 'content' | 'knowledge'
 export type StatusType       = 'active' | 'inactive' | 'archived'
+/** Registry vault row status (extends generic status for connector sync). */
+export type VaultStatus      = StatusType | 'pending_sync' | 'connected'
 export type ActivationStatus = 'registered' | 'activating' | 'active'
 export type AssetType        = 'code' | 'content' | 'creative' | 'data' | 'document' | 'brand' | 'other'
-export type VaultType        = 'obsidian' | 'notion' | 'drive' | 'local' | 'other'
+export type VaultType        = 'obsidian' | 'notion' | 'drive' | 'local' | 'other' | 'google_drive' | 'manual'
 export type OfferStatus      = 'draft' | 'active' | 'paused' | 'archived'
 
 export interface Profile {
@@ -92,7 +94,10 @@ export interface Vault {
   name: string
   description: string | null
   vault_type: VaultType | null
-  status: StatusType
+  local_path: string | null
+  last_synced_at: string | null
+  file_count: number
+  status: VaultStatus
   created_at: string
   updated_at: string
 }

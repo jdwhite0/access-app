@@ -5,6 +5,7 @@
   "scripts": {
     "preflight": "node scripts/preflight-access-app-root.mjs",
     "dev": "node scripts/preflight-access-app-root.mjs && next dev",
+    "dev:stable": "bash scripts/keep-dev.sh",
     "build": "node scripts/preflight-access-app-root.mjs && next build",
     "start": "node scripts/preflight-access-app-root.mjs && next start",
     "lint": "eslint",
@@ -16,6 +17,7 @@
     "openjarvis:verify-m9": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-milestone9-native-tool.ts",
     "openjarvis:verify-paths": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-list-files-paths.ts",
     "jyson:verify-m11": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-companion-command-router.ts",
+    "jyson:vault:index": "node scripts/preflight-access-app-root.mjs && tsx scripts/jyson-vault-index.ts",
     "connector:build": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run build",
     "connector:dev": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run dev",
     "connector:scan": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run scan",
@@ -24,6 +26,8 @@
     "connector:register": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run register",
     "connector:sync-apply": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run sync:apply",
     "connector:heartbeat": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run heartbeat",
+    "connector:vault:mirror": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run vault:mirror",
+    "connector:vault:watch": "node scripts/preflight-access-app-root.mjs && cd packages/access-connector && npm run vault:mirror:watch",
     "sync:worker": "node scripts/preflight-access-app-root.mjs && tsx scripts/sync-worker.ts --once",
     "pairing:code": "node scripts/preflight-access-app-root.mjs && tsx scripts/create-connector-pairing-code.ts",
     "platform:verify-m0": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-platform-m0.ts",
@@ -37,9 +41,13 @@
     "remotion:studio": "cd remotion && npm run studio",
     "remotion:render": "cd remotion && npm run render:all",
     "higgsfield:install": "npm install -D @higgsfield/client",
-    "higgsfield:render-hero": "tsx scripts/generate-access-marketing-higgsfield-videos.ts"
+    "higgsfield:render-hero": "tsx scripts/generate-access-marketing-higgsfield-videos.ts",
+    "email:daily-brief": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-daily-brief.ts",
+    "email:daily-brief:send": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-daily-brief.ts --send --dispatch",
+    "email:dispatch": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-dispatch-once.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "@clerk/nextjs": "^7.4.2",
     "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.7.0",

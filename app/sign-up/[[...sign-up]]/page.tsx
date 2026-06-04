@@ -2,6 +2,7 @@ import { SignUp } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import SignUpMarketingConsent from '@/components/auth/SignUpMarketingConsent'
 
 export const metadata = {
   title: 'Create your JYSON — JD AI Systems',
@@ -62,6 +63,8 @@ export default async function SignUpPage() {
               <p className="access-auth-form__subtitle">Free forever. Your AI operator is waiting.</p>
             </div>
 
+            <SignUpMarketingConsent />
+
             <SignUp
               forceRedirectUrl="/onboarding"
               appearance={{
@@ -102,9 +105,9 @@ export default async function SignUpPage() {
 
             <p style={{ fontSize: 11, color: '#697386', textAlign: 'center', marginTop: 16, lineHeight: 1.5 }}>
               By creating an account, you agree to our{' '}
-              <Link href="/" style={{ color: '#697386', textDecoration: 'underline' }}>Terms</Link>
+              <Link href="/terms" style={{ color: '#697386', textDecoration: 'underline' }}>Terms</Link>
               {' '}and{' '}
-              <Link href="/" style={{ color: '#697386', textDecoration: 'underline' }}>Privacy Policy</Link>
+              <Link href="/privacy" style={{ color: '#697386', textDecoration: 'underline' }}>Privacy Policy</Link>
               {' '}— Powered by JD AI Systems
             </p>
           </div>

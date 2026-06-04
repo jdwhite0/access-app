@@ -2135,15 +2135,25 @@ body:has(.access-marketing-root) {
   flex: 1;
   min-height: 0;
   display: grid;
+  /* Two regions by default — context column only when panel is rendered */
+  grid-template-columns: var(--os-rail-width) minmax(0, 1fr);
+}
+
+.access-os-body.access-ds-shell__body--with-context {
   grid-template-columns: var(--os-rail-width) minmax(0, 1fr) var(--os-context-width);
 }
 
 .access-os-rail {
   display: flex;
   flex-direction: column;
+  width: var(--os-rail-width);
+  min-width: var(--os-rail-width);
+  max-width: var(--os-rail-width);
+  flex-shrink: 0;
   border-right: 1px solid var(--border);
   background: var(--os-surface);
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: rgba(64, 192, 208, 0.12) transparent;
 }
@@ -2489,7 +2499,6 @@ body:has(.access-marketing-root) {
 @media (max-width: 1024px) {
   :root {
     --os-context-width: 260px;
-    --os-rail-width: 56px;
   }
 
   .access-os-rail-title,
@@ -4261,4 +4270,263 @@ details[open] .jyson-companion-drawer-summary::after {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
   color: var(--text-dim);
+}
+
+/* ── Email preferences & legal pages ── */
+.access-email-required-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.access-email-required-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--text);
+}
+.access-email-required-list__badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.access-email-master {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+.access-email-master__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.access-email-master__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 42ch;
+}
+.access-email-master__switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 52px;
+  height: 30px;
+  cursor: pointer;
+}
+.access-email-master__switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.access-email-master__track {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.2s;
+}
+.access-email-master__track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s;
+}
+.access-email-master__switch input:checked + .access-email-master__track {
+  background: var(--accent);
+}
+.access-email-master__switch input:checked + .access-email-master__track::after {
+  transform: translateX(22px);
+}
+.access-email-master__switch input:disabled + .access-email-master__track {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.access-email-stop-all {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.access-email-stop-all:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--error) 40%, var(--border));
+  color: var(--text);
+  background: var(--error-muted);
+}
+.access-email-stop-all:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.access-email-detail--muted {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.access-email-draft-hint {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.access-email-save-bar {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.access-email-frequency {
+  margin-bottom: 20px;
+}
+.access-email-frequency__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.access-email-frequency__btn {
+  padding: 8px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.access-email-frequency__btn--active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.access-email-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.access-email-toggle-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.access-email-toggle-row__title {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.access-email-toggle-row__desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+.access-legal-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--bg, #0a0b10);
+}
+.access-legal-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 28px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.access-legal-card--wide {
+  max-width: 640px;
+}
+.access-legal-card h1 {
+  margin: 8px 0 16px;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.access-legal-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  margin: 0;
+}
+.access-legal-lead {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin: 0 0 16px;
+}
+.access-legal-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.access-legal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.access-legal-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+.access-legal-body h2 {
+  font-size: 1rem;
+  margin: 20px 0 8px;
+  color: var(--text);
+}
+.access-legal-body ul {
+  padding-left: 1.2rem;
+  margin: 0 0 12px;
+}
+.access-legal-footer-links {
+  margin-top: 24px;
+  font-size: 12px;
+}
+.access-legal-footer-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.access-legal-footer-links a:hover {
+  text-decoration: underline;
 }

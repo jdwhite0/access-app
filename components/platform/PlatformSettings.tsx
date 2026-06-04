@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { PageHeader, SecondaryButton } from '@/lib/design-system/components/platform'
 import { WORKSPACE_LINKS } from '@/lib/navigation/config'
 import { useDensity, DENSITY_LABELS, type DensityMode } from '@/lib/design-system/density/DensityProvider'
@@ -27,13 +28,30 @@ function SettingsRow({ title, description, href, actionLabel }: SettingsRowProps
 
 function DensityControl() {
   const { density, setDensity } = useDensity()
+  const [saved, setSaved] = useState<DensityMode | null>(null)
   const modes: DensityMode[] = ['comfortable', 'more-space', 'larger-text']
+
+  function handleSelect(mode: DensityMode) {
+    setDensity(mode)
+    setSaved(mode)
+    setTimeout(() => setSaved(null), 2000)
+  }
 
   return (
     <div style={{ padding: '16px 0' }}>
-      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', margin: '0 0 4px' }}>Display</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', margin: 0 }}>Display scale</p>
+        {saved && (
+          <span style={{
+            fontSize: 11, color: 'var(--success)', fontWeight: 500,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            ✓ Applied
+          </span>
+        )}
+      </div>
       <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 14px' }}>
-        Choose how much information ACCESS shows on screen.
+        Changes apply instantly and are saved for your next visit.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         {modes.map((mode) => {
@@ -42,16 +60,19 @@ function DensityControl() {
           return (
             <button
               key={mode}
-              onClick={() => setDensity(mode)}
+              onClick={() => handleSelect(mode)}
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
                 gap: 3, padding: '10px 14px', borderRadius: 7, cursor: 'pointer',
-                border: `1px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
-                background: active ? 'rgba(64,192,208,0.07)' : 'transparent',
+                border: `1.5px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
+                background: active ? 'var(--accent-glow)' : 'transparent',
                 minWidth: 140, transition: 'border-color 0.15s, background 0.15s',
               }}
             >
-              <span style={{ fontSize: 12, fontWeight: 600, color: active ? 'var(--accent)' : 'var(--text)' }}>{title}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: active ? 'var(--accent)' : 'var(--text)' }}>{title}</span>
+                {active && <span style={{ fontSize: 10, color: 'var(--accent)' }}>●</span>}
+              </div>
               <span style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.4, textAlign: 'left' }}>{desc}</span>
             </button>
           )
@@ -68,6 +89,7 @@ const SECTIONS = [
     rows: [
       { title: 'Profile', description: 'Edit your name, avatar, and how you appear in the workspace.', href: '/settings/profile', actionLabel: 'Edit profile' },
       { title: 'Account & security', description: 'Sessions, connected accounts, and account deletion.', href: '/settings/account', actionLabel: 'Manage account' },
+      { title: 'Notifications & Email', description: 'Required account emails and optional ACCESS Intelligence preferences.', href: '/settings/notifications-email', actionLabel: 'Manage notifications' },
     ],
   },
   {

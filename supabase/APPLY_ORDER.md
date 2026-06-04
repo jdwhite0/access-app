@@ -7,6 +7,10 @@ Run each file in **Supabase Dashboard → SQL Editor** in this order:
 3. `schema_v3_vault.sql`
 4. `schema_v4_platform_hardening.sql`
 5. `schema_v4_m2_tenant_jwt.sql`
+6. `schema_v5_vaults_extended.sql`
+7. `schema_v5_vault_files.sql`
+8. `schema_v6_email_preferences.sql`
+9. `schema_v7_email_agents.sql`
 
 Then verify from the **ACCESS app root** (not monorepo root):
 

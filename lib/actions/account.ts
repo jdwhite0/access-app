@@ -34,6 +34,18 @@ export async function deleteAccountAction(): Promise<void> {
       )
     )
 
+    const { data: identity } = await supabase
+      .from('access_identities')
+      .select('id')
+      .eq('clerk_user_id', userId)
+      .maybeSingle()
+
+    if (identity?.id) {
+      await supabase.from('email_preferences').delete().eq('user_id', identity.id)
+      await supabase.from('email_consent_log').delete().eq('user_id', identity.id)
+      await supabase.from('email_unsubscribe_events').delete().eq('user_id', identity.id)
+    }
+
     // Delete identity last (it anchors other records)
     await supabase.from('access_identities').delete().eq('clerk_user_id', userId)
     await supabase.from('profiles').delete().eq('clerk_user_id', userId)

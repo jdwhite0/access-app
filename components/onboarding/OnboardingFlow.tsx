@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth, useUser } from '@clerk/nextjs'
 import { getOrCreateIdentity } from '@/lib/actions/identity'
 import { completeOnboarding } from '@/lib/actions/ai-profile'
+import { processSignupMarketingConsentAction } from '@/lib/actions/email-preferences'
+import { MARKETING_CONSENT_SESSION_KEY } from '@/lib/email/constants'
 import { deriveUsername, toAccessHandle } from '@/lib/founder-wizard/client-utils'
 
 type AccountType = 'founder' | 'user'
@@ -96,6 +98,12 @@ export default function OnboardingFlow() {
         setError(identityError ?? 'Could not create your ACCESS identity. Please try again.')
         return
       }
+      let marketingOptIn = false
+      try {
+        marketingOptIn = sessionStorage.getItem(MARKETING_CONSENT_SESSION_KEY) === '1'
+        sessionStorage.removeItem(MARKETING_CONSENT_SESSION_KEY)
+      } catch { /* ignore */ }
+      await processSignupMarketingConsentAction(marketingOptIn)
       // Save JYSON personalization
       await completeOnboarding(answers)
       clearSession()
