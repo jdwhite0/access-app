@@ -10,6 +10,12 @@ import { listBlueprints } from '@/lib/actions/blueprints'
 import { listAssets } from '@/lib/actions/assets'
 import { listWorkflows } from '@/lib/actions/workflows'
 import { listVaults } from '@/lib/actions/vaults'
+import {
+  vaultCardLocationLine,
+  vaultCardShowsTypeBadge,
+  vaultTypeBadgeLabel,
+  vaultTypeHint,
+} from '@/lib/vault/display'
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -152,7 +158,16 @@ function VaultsModule() {
             <p className="access-registry-row__name">{v.name}</p>
             {v.description && <p className="access-registry-row__sub">{v.description}</p>}
           </div>
-          {v.vault_type && <span className="access-registry-row__type">{v.vault_type}</span>}
+          {v.vault_type && (
+            <span
+              className="access-registry-row__type"
+              title={vaultTypeHint(v.vault_type)}
+            >
+              {vaultCardShowsTypeBadge(v.vault_type)
+                ? vaultTypeBadgeLabel(v.vault_type)
+                : vaultCardLocationLine(v.vault_type) ?? vaultTypeBadgeLabel(v.vault_type)}
+            </span>
+          )}
           <StatusBadge status={v.status} />
           <span className="access-platform-meta">{fmtDate(v.created_at)}</span>
         </RegistryRow>
@@ -169,7 +184,7 @@ const MODULES: Array<{ id: ModuleId; label: string; description: string }> = [
   { id: 'blueprints', label: 'Blueprints', description: 'Generated architecture blueprints, linked to your systems.' },
   { id: 'assets',     label: 'Assets',     description: 'Code, content, creative, data, and brand assets.' },
   { id: 'workflows',  label: 'Workflows',  description: 'Automations and process definitions.' },
-  { id: 'vaults',     label: 'Vaults',     description: 'Knowledge stores — Obsidian, Notion, local folders.' },
+  { id: 'vaults',     label: 'Vaults',     description: 'Brain folders on your devices and cloud sources for JYSON.' },
 ]
 
 function ModuleContent({ id }: { id: ModuleId }) {

@@ -15,6 +15,12 @@ import { fetchJysonCompanionContext } from '@/lib/actions/jyson-companion'
 import { listVaults } from '@/lib/actions/vaults'
 import type { JysonContext } from '@/lib/jyson-bridge/types'
 import type { Vault } from '@/types/db'
+import {
+  vaultCardLocationLine,
+  vaultCardShowsTypeBadge,
+  vaultTypeBadgeLabel,
+  vaultTypeHint,
+} from '@/lib/vault/display'
 
 function EntityList({ items, label }: { items: Array<{ id: string; name: string; type?: string }>, label: string }) {
   if (items.length === 0) return <p className="access-platform-meta">No {label.toLowerCase()} registered.</p>
@@ -46,8 +52,18 @@ function VaultSourceRow({ vault }: { vault: Vault }) {
         )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
-        {vault.vault_type && (
-          <span className="access-ds-badge access-ds-badge--neutral">{vault.vault_type}</span>
+        {vault.vault_type && vaultCardShowsTypeBadge(vault.vault_type) && (
+          <span
+            className="access-ds-badge access-ds-badge--neutral access-vault-card__type-badge"
+            title={vaultTypeHint(vault.vault_type)}
+          >
+            {vaultTypeBadgeLabel(vault.vault_type)}
+          </span>
+        )}
+        {vault.vault_type && !vaultCardShowsTypeBadge(vault.vault_type) && vaultCardLocationLine(vault.vault_type) && (
+          <span className="access-platform-meta" title={vaultTypeHint(vault.vault_type)}>
+            {vaultCardLocationLine(vault.vault_type)}
+          </span>
         )}
         <StatusPill
           label={synced ? 'Synced' : 'Pending sync'}
@@ -190,7 +206,7 @@ export default function MemoryPageClient() {
               {vaults.length === 0 ? (
                 <div>
                   <p className="access-platform-meta" style={{ marginBottom: 12 }}>
-                    No vaults connected yet. Connect your Obsidian vault or local folders so JYSON can understand what you&apos;re building.
+                    No vaults connected yet. Connect a brain folder on this device so JYSON can understand what you&apos;re building.
                   </p>
                   <Link href="/vaults" className="access-platform-secondary-btn" style={{ display: 'inline-flex', alignItems: 'center' }}>
                     Connect a vault →

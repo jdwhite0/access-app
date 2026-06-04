@@ -34,6 +34,382 @@
   margin-bottom: 4px;
 }
 
+.access-vault-bridge-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 18px;
+  border-radius: var(--app-radius, 10px);
+  margin-bottom: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  background: var(--info-muted, rgba(64, 192, 208, 0.06));
+}
+
+.access-vault-bridge-banner--operational {
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  background: var(--success-muted);
+}
+
+.access-vault-bridge-banner--operational .access-vault-bridge-banner__status-dot {
+  background: var(--success);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success) 55%, transparent);
+}
+
+.access-vault-bridge-banner--neutral {
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  background: var(--info-muted, rgba(64, 192, 208, 0.06));
+}
+
+.access-vault-bridge-banner--warning {
+  border-color: color-mix(in srgb, var(--warning, #e8b84a) 40%, transparent);
+  background: color-mix(in srgb, var(--warning, #e8b84a) 8%, transparent);
+}
+
+.access-vault-bridge-banner--warning .access-vault-bridge-banner__status-dot {
+  background: var(--warning, #e8b84a);
+}
+
+.access-vault-bridge-banner__status-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.access-vault-bridge-banner__main {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.access-vault-bridge-banner__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.access-vault-bridge-banner--operational .access-vault-bridge-banner__title {
+  color: color-mix(in srgb, var(--success) 75%, var(--text));
+}
+
+.access-vault-bridge-banner__body {
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.access-vault-bridge-banner__success {
+  font-size: 0.8125rem;
+  color: var(--success);
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+.access-vault-bridge-banner__details {
+  margin-top: 2px;
+}
+
+.access-vault-bridge-banner__details-toggle {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.access-vault-bridge-banner__details-toggle:hover {
+  color: var(--accent);
+}
+
+.access-vault-bridge-banner__cmd {
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  border-radius: var(--app-radius-sm, 5px);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--border);
+}
+
+.access-vault-bridge-banner__cmd code {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.access-vault-bridge-banner__actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.access-vault-bridge-banner__action-hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+  text-align: right;
+  max-width: 11rem;
+}
+
+/* ── Device intelligence connection panel ─────────────────────────────────── */
+
+.access-device-connection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--app-radius, 10px);
+  margin-bottom: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  background: var(--info-muted, rgba(64, 192, 208, 0.06));
+}
+
+.access-device-connection--operational {
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+  background: var(--success-muted);
+}
+
+.access-device-connection--neutral {
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.access-device-connection--warning {
+  border-color: color-mix(in srgb, var(--warning, #e8b84a) 40%, transparent);
+  background: color-mix(in srgb, var(--warning, #e8b84a) 8%, transparent);
+}
+
+.access-device-connection__hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.access-device-connection__status-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.access-device-connection--operational .access-device-connection__status-dot {
+  background: var(--success);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success) 55%, transparent);
+}
+
+.access-device-connection--warning .access-device-connection__status-dot {
+  background: var(--warning, #e8b84a);
+}
+
+.access-device-connection__hero-text {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.access-device-connection__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.access-device-connection__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.access-device-connection--operational .access-device-connection__title {
+  color: color-mix(in srgb, var(--success) 75%, var(--text));
+}
+
+.access-device-connection__body {
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.access-device-connection__success {
+  font-size: 0.8125rem;
+  color: var(--success);
+  margin: 2px 0 0;
+}
+
+.access-device-connection__hero-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.access-device-connection__action-hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+  text-align: right;
+  max-width: 11rem;
+}
+
+.access-device-connection__layers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+}
+
+.access-device-connection__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.access-device-connection__row-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.access-device-connection__row-name {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.access-device-connection__row-msg {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 36rem;
+}
+
+.access-device-connection__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding-top: 2px;
+}
+
+.access-device-connection__details-toggle {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.access-device-connection__details-toggle:hover {
+  color: var(--accent);
+}
+
+.access-device-connection__cmd {
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--app-radius-sm, 5px);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--border);
+}
+
+.access-device-connection__cmd code {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.access-device-connection__mobile-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.access-device-connection__loading-tag {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
+
+.access-device-connection__body--warn {
+  color: color-mix(in srgb, var(--warning, #e8b84a) 85%, var(--text-dim));
+}
+
+.access-device-connection__folder-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  padding-top: 4px;
+  border-top: 1px dashed color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.access-device-connection__folder-note strong {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.access-vault-card__type-badge {
+  cursor: help;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.access-vault-card__type-sub {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.access-vault-card__path--meta {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
 /* ── Vault card ────────────────────────────────────────────────────────────── */
 
 .access-vault-list {
@@ -133,8 +509,12 @@
 .access-vault-card__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
+}
+
+.access-vault-card__sync-btn {
+  min-width: 96px;
 }
 
 /* ── Registration form ─────────────────────────────────────────────────────── */

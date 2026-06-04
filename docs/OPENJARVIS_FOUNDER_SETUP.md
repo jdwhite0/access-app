@@ -1,18 +1,17 @@
 # OpenJarvis — Founder 3-terminal setup
 
-Local tool execution in ACCESS requires **three processes** on your Mac. Vault excerpt chat in the JYSON orb works with only Terminal 1 + `npm run jyson:vault:index`; live file tools need all three.
+Local tool execution in ACCESS runs on your Mac. Vault excerpt chat works after **Sync now** on Vaults; live file tools need OpenJarvis plus the local bridge.
 
-**In-site activation:** Agents → **Connect local tools** (or JYSON orb → **Connect tools**) copies commands and polls health — see [LOCAL_TOOLS_SITE_UX.md](./LOCAL_TOOLS_SITE_UX.md). The browser does not start OpenJarvis for you.
+**Recommended (one terminal):** `cd access-app && npm run dev:founder` — starts ACCESS, OpenJarvis, and the bridge heartbeat loop. Alias: `npm run dev:seamless`.
+
+**In-site activation:** Agents → **Connect local tools** (or Vaults bridge banner) — see [LOCAL_TOOLS_SITE_UX.md](./LOCAL_TOOLS_SITE_UX.md) and [VAULT_LOCAL_BRAIN.md](./VAULT_LOCAL_BRAIN.md).
 
 ## Terminals
 
 | # | Command | Purpose |
 |---|---------|---------|
-| **1** | `cd access-app && npm run dev` | ACCESS UI + `/api/jyson/*` |
-| **2** | `cd access-app && npm run connector:heartbeat` | Supabase `connector_devices` heartbeat (90s TTL) |
-| **3** | `cd access-app && npm run openjarvis:serve` | OpenJarvis HTTP on `http://localhost:8000` |
-
-**Optional (2 processes, one terminal):** `npm run dev:founder` runs `dev` + `openjarvis:serve` together. You still need Terminal 2 for `connector:heartbeat`.
+| **1 (recommended)** | `cd access-app && npm run dev:founder` | ACCESS + OpenJarvis + bridge loop |
+| **Legacy split** | `dev` + `connector:heartbeat` + `openjarvis:serve` | Debugging only — see founder-setup.ts |
 
 ## Required `.env.local` (Terminal 1)
 

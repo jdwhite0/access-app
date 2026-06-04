@@ -22,29 +22,19 @@ import {
   terminalVaultRegisterHref,
 } from '@/lib/vault/constants'
 import type { Vault, VaultType } from '@/types/db'
+import { DeviceIntelligenceBanner } from '@/components/platform/DeviceIntelligenceBanner'
+import { useDeviceConnectionStatus } from '@/components/platform/useDeviceConnectionStatus'
+import {
+  VAULT_TYPE_REGISTER_OPTIONS,
+  vaultCardLocationLine,
+  vaultCardShowsTypeBadge,
+  vaultCardSubline,
+  vaultTypeBadgeLabel,
+  vaultTypeHint,
+  vaultTypeRegisterFieldHint,
+} from '@/lib/vault/display'
 
 const TERMINAL_VAULT_HREF = terminalVaultRegisterHref()
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-const VAULT_TYPE_LABELS: Record<VaultType, string> = {
-  obsidian:     'Obsidian',
-  notion:       'Notion',
-  drive:        'Drive',
-  local:        'Local folder',
-  other:        'Other',
-  google_drive: 'Google Drive',
-  manual:       'Manual',
-}
-
-const VAULT_TYPE_OPTIONS: Array<{ value: VaultType; label: string }> = [
-  { value: 'obsidian',     label: 'Obsidian vault' },
-  { value: 'local',        label: 'Local folder' },
-  { value: 'manual',       label: 'Manual (no path)' },
-  { value: 'notion',       label: 'Notion' },
-  { value: 'google_drive', label: 'Google Drive' },
-  { value: 'other',        label: 'Other' },
-]
 
 function fmtDate(iso: string | null): string {
   if (!iso) return 'Never'
@@ -71,10 +61,14 @@ function VaultCard({
   vault,
   onDisconnect,
   onSynced,
+  canLocalSync,
+  deviceLabel,
 }: {
   vault: Vault
   onDisconnect: (id: string) => void
   onSynced: (id: string, updated: Vault, msg: string) => void
+  canLocalSync: boolean
+  deviceLabel: string
 }) {
   const [cardVault, setCardVault] = useState(vault)
   const [state, setState] = useState<CardState>('idle')
@@ -114,19 +108,36 @@ function VaultCard({
         <div className="access-vault-card__title-row">
           <div>
             <p className="access-vault-card__name">{cardVault.name}</p>
-            {cardVault.local_path && (
+            {cardVault.local_path ? (
               <p className="access-vault-card__path">{cardVault.local_path}</p>
+            ) : (
+              <p className="access-vault-card__path access-vault-card__path--meta">
+                Cloud context on this {deviceLabel}
+              </p>
             )}
           </div>
           <div className="access-vault-card__badges">
-            {cardVault.vault_type && (
-              <span className="access-ds-badge access-ds-badge--neutral">
-                {VAULT_TYPE_LABELS[cardVault.vault_type] ?? cardVault.vault_type}
+            {cardVault.vault_type && vaultCardShowsTypeBadge(cardVault.vault_type) && (
+              <span
+                className="access-ds-badge access-ds-badge--neutral access-vault-card__type-badge"
+                title={vaultTypeHint(cardVault.vault_type)}
+              >
+                {vaultTypeBadgeLabel(cardVault.vault_type)}
               </span>
             )}
             <VaultStatusPill vault={cardVault} />
           </div>
         </div>
+        {cardVault.vault_type && vaultCardLocationLine(cardVault.vault_type) && (
+          <p className="access-vault-card__type-sub access-vault-card__type-sub--location">
+            {vaultCardLocationLine(cardVault.vault_type)}
+          </p>
+        )}
+        {cardVault.vault_type && vaultCardSubline(cardVault.vault_type) && (
+          <p className="access-vault-card__type-sub">
+            {vaultCardSubline(cardVault.vault_type)}
+          </p>
+        )}
         {cardVault.description && (
           <p className="access-vault-card__desc">{cardVault.description}</p>
         )}
@@ -154,23 +165,21 @@ function VaultCard({
       )}
 
       <div className="access-vault-card__actions">
-        <button
+        <PrimaryButton
           type="button"
-          className="access-platform-primary-btn"
           onClick={handleSync}
-          disabled={state !== 'idle'}
-          style={{ minWidth: 96 }}
+          disabled={state !== 'idle' || !canLocalSync}
+          className="access-vault-card__sync-btn"
         >
-          {state === 'syncing' ? 'Syncing…' : 'Sync now'}
-        </button>
-        <button
+          {state === 'syncing' ? 'Syncing…' : canLocalSync ? 'Sync now' : 'Sync on desktop'}
+        </PrimaryButton>
+        <SecondaryButton
           type="button"
-          className="access-platform-secondary-btn"
           onClick={handleDisconnect}
           disabled={state !== 'idle'}
         >
           {state === 'disconnecting' ? 'Removing…' : 'Disconnect'}
-        </button>
+        </SecondaryButton>
       </div>
     </div>
   )
@@ -180,9 +189,22 @@ function VaultCard({
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error'
 
-function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => void }) {
+function VaultRegisterForm({
+  onRegistered,
+  canPickLocalFolder,
+  deviceLabel,
+}: {
+  onRegistered: (vault: Vault) => void
+  canPickLocalFolder: boolean
+  deviceLabel: string
+}) {
   const [name, setName] = useState('')
-  const [vaultType, setVaultType] = useState<VaultType>('obsidian')
+  const typeOptions = canPickLocalFolder
+    ? VAULT_TYPE_REGISTER_OPTIONS
+    : VAULT_TYPE_REGISTER_OPTIONS.filter((o) => o.value !== 'local')
+  const [vaultType, setVaultType] = useState<VaultType>(
+    canPickLocalFolder ? 'obsidian' : 'manual',
+  )
   const [localPath, setLocalPath] = useState(DEFAULT_JD_COMMAND_VAULT_PATH)
   const [description, setDescription] = useState('')
   const [formState, setFormState] = useState<FormState>('idle')
@@ -222,7 +244,9 @@ function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => v
       <div className="access-vault-form__header">
         <p className="access-vault-form__title">Connect a vault</p>
         <p className="access-vault-form__note">
-          ACCESS only reads folders you explicitly connect. Your files never leave your machine without the local connector.
+          {canPickLocalFolder
+            ? 'ACCESS only reads folders you explicitly connect on this device. Nothing syncs without your action.'
+            : `On ${deviceLabel}, vaults stay in the cloud. Register sources here; sync folders from a Mac or PC.`}
         </p>
       </div>
 
@@ -241,24 +265,27 @@ function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => v
         </div>
 
         <div className="access-vault-form__field">
-          <label className="access-vault-form__label" htmlFor="vault-type">Type</label>
+          <label className="access-vault-form__label" htmlFor="vault-type">What are you connecting?</label>
           <select
             id="vault-type"
             className="access-vault-form__input"
             value={vaultType}
             onChange={(e) => setVaultType(e.target.value as VaultType)}
           >
-            {VAULT_TYPE_OPTIONS.map(opt => (
+            {typeOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
+          {vaultTypeRegisterFieldHint(vaultType) && (
+            <p className="access-vault-form__hint">{vaultTypeRegisterFieldHint(vaultType)}</p>
+          )}
         </div>
 
-        {needsPath && (
+        {needsPath && canPickLocalFolder && (
           <div className="access-vault-form__field">
             <label className="access-vault-form__label" htmlFor="vault-path">
               Local path
-              <span className="access-vault-form__label-note"> — absolute path on this Mac</span>
+              <span className="access-vault-form__label-note"> — folder on this {deviceLabel}</span>
             </label>
             <input
               id="vault-path"
@@ -307,7 +334,9 @@ function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => v
         <PrimaryButton type="submit" disabled={formState === 'submitting'}>
           {formState === 'submitting' ? 'Registering…' : 'Register vault'}
         </PrimaryButton>
-        <SecondaryButton href={TERMINAL_VAULT_HREF}>Open terminal</SecondaryButton>
+        {canPickLocalFolder && (
+          <SecondaryButton href={TERMINAL_VAULT_HREF}>Advanced: terminal</SecondaryButton>
+        )}
       </div>
     </form>
   )
@@ -317,6 +346,10 @@ function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => v
 
 export default function VaultsPageClient() {
   const layer = useJysonLayerOptional()
+  const { device, status: connectionStatus } = useDeviceConnectionStatus()
+  const canPickLocalFolder = connectionStatus?.capabilities.canPickLocalFolder ?? true
+  const canLocalSync = connectionStatus?.capabilities.canLocalSync ?? true
+  const deviceLabel = connectionStatus?.deviceLabel ?? device.deviceLabel
   const [vaults, setVaults] = useState<Vault[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -350,7 +383,7 @@ export default function VaultsPageClient() {
         <PageHeader
           eyebrow="Assets"
           title="Vaults"
-          description="Knowledge stores connected to JYSON. Register your Obsidian vault, local folders, or any knowledge source."
+          description="Knowledge stores connected to JYSON — on this device and across your ecosystem."
           actions={
             <PrimaryButton
               type="button"
@@ -376,11 +409,7 @@ export default function VaultsPageClient() {
           }
         />
 
-        {/* Security notice */}
-        <div className="access-vault-security-notice">
-          <span className="access-vault-security-notice__icon">🔒</span>
-          <p>ACCESS only reads folders you connect. Files are scanned by the local connector on your Mac — nothing is uploaded to the cloud without your action.</p>
-        </div>
+        <DeviceIntelligenceBanner />
 
         {/* Sync feedback */}
         {syncFeedback && (
@@ -390,7 +419,11 @@ export default function VaultsPageClient() {
         {/* Registration form */}
         {showForm && (
           <SectionPanel title="Register new vault">
-            <VaultRegisterForm onRegistered={handleRegistered} />
+            <VaultRegisterForm
+              onRegistered={handleRegistered}
+              canPickLocalFolder={canPickLocalFolder}
+              deviceLabel={deviceLabel}
+            />
           </SectionPanel>
         )}
 
@@ -401,27 +434,19 @@ export default function VaultsPageClient() {
           <div className="access-vault-empty">
             <p className="access-vault-empty__title">No vaults connected yet.</p>
             <p className="access-vault-empty__body">
-              Connect an Obsidian vault, local folder, or knowledge source so JYSON can understand your workspace.
-              The local connector will scan the path and index your files.
+              {canPickLocalFolder
+                ? 'Connect a brain folder on this device so JYSON can read your priorities, notes, and system context.'
+                : `Your ${deviceLabel} uses cloud vault context. Sync a folder on your Mac or PC, then return here to ask JYSON.`}
             </p>
             <div className="access-vault-empty__actions">
-              <button
-                type="button"
-                className="access-platform-primary-btn"
-                onClick={() => setShowForm(true)}
-              >
-                Connect local vault
-              </button>
-              <button
-                type="button"
-                className="access-platform-secondary-btn"
-                onClick={() => setShowForm(true)}
-              >
-                Register vault manually
-              </button>
-              <Link href={TERMINAL_VAULT_HREF} className="access-platform-secondary-btn">
-                Open terminal
-              </Link>
+              <PrimaryButton type="button" onClick={() => setShowForm(true)}>
+                {canPickLocalFolder ? 'Connect vault' : 'Register source'}
+              </PrimaryButton>
+              {canPickLocalFolder && (
+                <SecondaryButton type="button" onClick={() => setShowForm(true)}>
+                  Register manually
+                </SecondaryButton>
+              )}
             </div>
           </div>
         ) : vaults.length > 0 ? (
@@ -436,6 +461,8 @@ export default function VaultsPageClient() {
                   vault={vault}
                   onDisconnect={handleDisconnected}
                   onSynced={handleSynced}
+                  canLocalSync={canLocalSync}
+                  deviceLabel={deviceLabel}
                 />
               ))}
             </div>
@@ -465,47 +492,6 @@ export default function VaultsPageClient() {
             </div>
           </SectionPanel>
         ) : null}
-
-        {/* Connector requirement notice */}
-        <SectionPanel
-          title="Local connector required"
-          description="The ACCESS connector runs on your Mac and bridges local vault files into ACCESS."
-        >
-          <div className="access-vault-connector-info">
-            <div className="access-vault-connector-info__step">
-              <span className="access-vault-connector-info__num">1</span>
-              <div>
-                <p className="access-platform-body" style={{ fontWeight: 600 }}>Register your vault path above</p>
-                <p className="access-platform-meta">Enter the absolute path on your Mac, e.g. <code>{DEFAULT_JD_COMMAND_VAULT_PATH}</code></p>
-              </div>
-            </div>
-            <div className="access-vault-connector-info__step">
-              <span className="access-vault-connector-info__num">2</span>
-              <div>
-                <p className="access-platform-body" style={{ fontWeight: 600 }}>Start the local connector</p>
-                <p className="access-platform-meta">Run <code>npm run connector:heartbeat</code> from the access-app directory, or pair a device from settings.</p>
-              </div>
-            </div>
-            <div className="access-vault-connector-info__step">
-              <span className="access-vault-connector-info__num">3</span>
-              <div>
-                <p className="access-platform-body" style={{ fontWeight: 600 }}>Sync your vault</p>
-                <p className="access-platform-meta">Click "Sync now" on the vault card. The connector scans .md, .txt, .json, and .csv files and sends metadata to JYSON.</p>
-              </div>
-            </div>
-            <div className="access-vault-connector-info__step">
-              <span className="access-vault-connector-info__num">4</span>
-              <div>
-                <p className="access-platform-body" style={{ fontWeight: 600 }}>Ask JYSON</p>
-                <p className="access-platform-meta">JYSON now has context from your vault. Ask "What am I building?" or "Summarize my vault."</p>
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-            <SecondaryButton href="/companion#diagnostics">Check connector status</SecondaryButton>
-            <SecondaryButton href={TERMINAL_VAULT_HREF}>Open terminal</SecondaryButton>
-          </div>
-        </SectionPanel>
       </div>
     </AccessAppLayout>
   )

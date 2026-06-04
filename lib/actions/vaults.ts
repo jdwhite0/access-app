@@ -15,6 +15,7 @@ import {
 import { scanVaultLocalPath } from '@/lib/vault/scan-local-path'
 import { replaceVaultFileMetadata } from '@/lib/vault/vault-files-store'
 import { syncVaultContentToCloud } from '@/lib/vault/vault-cloud-index'
+import { isLocalDevVaultSyncAllowed } from '@/lib/vault/local-dev-sync'
 import type { Vault, VaultStatus, VaultType } from '@/types/db'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -330,12 +331,18 @@ export async function requestVaultSync(vaultId: string): Promise<VaultSyncReques
     console.error(
       `${SYNC_LOG} connector: online=${connector.online} lastSeenAt=${connector.lastSeenAt ?? 'null'} deviceId=${connector.deviceId ?? 'null'}`,
     )
-    if (!connector.online) {
+    const localDevSync = isLocalDevVaultSyncAllowed(scanPath)
+    if (!connector.online && !localDevSync) {
       return {
         status: 'connector_offline',
         message:
-          'Connector is offline or unreachable. Run npm run connector:heartbeat from access-app, then try again.',
+          'Keep ACCESS running on this Mac with the local bridge active. Start everything with npm run dev:founder from access-app (one terminal), or pair your Mac once in Settings → Connect local tools.',
       }
+    }
+    if (!connector.online && localDevSync) {
+      console.error(
+        `${SYNC_LOG} connector: offline but local dev sync allowed (vault path on this machine)`,
+      )
     }
 
     console.error(`${SYNC_LOG} scan: start path=${scanPath}`)

@@ -33,7 +33,7 @@ UI treats this as **setup complete** (no “Set up on this Mac” CTA). File exe
 | `none` | Nothing required for current tier |
 | `enable_private` | Set `PRIVATE_JYSON_ENABLED=true` in `.env.local` |
 | `start_openjarvis` | Install or run `npm run openjarvis:serve` |
-| `pair_connector` | Run `npm run connector:heartbeat` |
+| `pair_connector` | Run `npm run dev:founder` (includes bridge loop) or pair once — see [VAULT_LOCAL_BRAIN.md](./VAULT_LOCAL_BRAIN.md) |
 
 ## Client
 
