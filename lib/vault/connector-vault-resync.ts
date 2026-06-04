@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { DEFAULT_JD_COMMAND_VAULT_PATH } from '@/lib/vault/constants'
 import { scanVaultLocalPath } from '@/lib/vault/scan-local-path'
+import { syncVaultContentToCloud } from '@/lib/vault/vault-cloud-index'
 
 export type ConnectorVaultResyncInput = {
   clerkUserId: string
@@ -115,6 +116,22 @@ export async function applyConnectorVaultResync(
       vaultsUpdated: vaultRows?.length ?? 0,
       vaultConnectionsUpdated: 0,
     }
+  }
+
+  const primaryVaultId = vaultRows?.[0]?.id ?? vaultIds[0]
+  if (primaryVaultId) {
+    void syncVaultContentToCloud({
+      supabase,
+      vaultId: primaryVaultId,
+      clerkUserId: input.clerkUserId,
+      scanPath,
+      logPrefix: '[connector-vault-resync]',
+    }).catch((err) => {
+      console.error(
+        '[connector-vault-resync] cloud index failed',
+        err instanceof Error ? err.message : err,
+      )
+    })
   }
 
   return {

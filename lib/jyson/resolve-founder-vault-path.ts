@@ -8,35 +8,77 @@ import { isPrivateJysonEnabled } from '@/lib/openjarvis/load-bridge'
 
 export type FounderVaultPathSource = 'vault_row' | 'default' | 'disabled' | 'missing'
 
-/** Local-only vault intelligence (founder machine + Private JYSON). */
-export function isVaultIntelligenceEnabled(): boolean {
-  return isPrivateJysonEnabled()
+export type ResolvedJdCommandVault = {
+  vaultId: string | null
+  path: string | null
+  source: FounderVaultPathSource
+  name: string | null
+}
+
+type VaultRowLike = {
+  id?: string
+  name: string | null
+  local_path: string | null
 }
 
 /**
- * Resolve JD Command Vault path: Supabase vault row local_path, else canonical default.
- * Caller must pass vault rows from listVaults() when available.
+ * Vault excerpt Q&A: enabled for founder private JYSON (local) and production cloud index.
  */
+export function isVaultIntelligenceEnabled(): boolean {
+  if (isPrivateJysonEnabled()) return true
+  if (process.env.VERCEL === '1') return true
+  return false
+}
+
+/** @deprecated Use resolveJdCommandVaultFromRows — kept for callers expecting path-only. */
 export function resolveFounderVaultPathFromRows(
-  vaults: Array<{ name: string | null; local_path: string | null }>,
+  vaults: VaultRowLike[],
 ): { path: string | null; source: FounderVaultPathSource } {
+  const resolved = resolveJdCommandVaultFromRows(vaults)
+  return { path: resolved.path, source: resolved.source }
+}
+
+/**
+ * Resolve JD Command Vault: Supabase row (id + local_path), else canonical default on disk.
+ * On Vercel, returns vaultId from row even when local path is unavailable on the host.
+ */
+export function resolveJdCommandVaultFromRows(vaults: VaultRowLike[]): ResolvedJdCommandVault {
   if (!isVaultIntelligenceEnabled()) {
-    return { path: null, source: 'disabled' }
+    return { vaultId: null, path: null, source: 'disabled', name: null }
   }
 
   const jdRow = vaults.find((v) => isJdCommandVaultRow(v.local_path, v.name))
   if (jdRow) {
     const scanPath = vaultRowScanPath(jdRow.local_path)
-    if (scanPath && existsSync(scanPath)) {
-      return { path: scanPath, source: 'vault_row' }
+    const onDisk = scanPath && existsSync(scanPath)
+    if (onDisk) {
+      return {
+        vaultId: jdRow.id ?? null,
+        path: scanPath,
+        source: 'vault_row',
+        name: jdRow.name,
+      }
+    }
+    if (process.env.VERCEL === '1' && jdRow.id) {
+      return {
+        vaultId: jdRow.id,
+        path: scanPath,
+        source: 'vault_row',
+        name: jdRow.name,
+      }
     }
   }
 
   if (existsSync(DEFAULT_JD_COMMAND_VAULT_PATH)) {
-    return { path: DEFAULT_JD_COMMAND_VAULT_PATH, source: 'default' }
+    return {
+      vaultId: jdRow?.id ?? null,
+      path: DEFAULT_JD_COMMAND_VAULT_PATH,
+      source: 'default',
+      name: jdRow?.name ?? 'JD Command Vault',
+    }
   }
 
-  return { path: null, source: 'missing' }
+  return { vaultId: jdRow?.id ?? null, path: null, source: 'missing', name: jdRow?.name ?? null }
 }
 
 export function resolveFounderVaultPathSync(

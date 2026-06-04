@@ -14,6 +14,7 @@ import {
 } from '@/lib/vault/constants'
 import { scanVaultLocalPath } from '@/lib/vault/scan-local-path'
 import { replaceVaultFileMetadata } from '@/lib/vault/vault-files-store'
+import { syncVaultContentToCloud } from '@/lib/vault/vault-cloud-index'
 import type { Vault, VaultStatus, VaultType } from '@/types/db'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -385,6 +386,22 @@ export async function requestVaultSync(vaultId: string): Promise<VaultSyncReques
             err instanceof Error ? err.message : err,
           )
         })
+    }
+
+    console.error(`${SYNC_LOG} cloud index: start vaultId=${vaultId}`)
+    const cloudIndex = await syncVaultContentToCloud({
+      supabase,
+      vaultId,
+      clerkUserId: userId,
+      scanPath,
+      logPrefix: SYNC_LOG,
+    })
+    if (!cloudIndex.ok && cloudIndex.error) {
+      console.error(`${SYNC_LOG} cloud index: failed error=${cloudIndex.error}`)
+    } else {
+      console.error(
+        `${SYNC_LOG} cloud index: ok stored=${cloudIndex.stored} chunks=${cloudIndex.chunkCount}`,
+      )
     }
 
     console.error(`${SYNC_LOG} complete: synced fileCount=${scan.fileCount}`)

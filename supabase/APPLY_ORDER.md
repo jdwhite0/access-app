@@ -11,6 +11,7 @@ Run each file in **Supabase Dashboard → SQL Editor** in this order:
 7. `schema_v5_vault_files.sql`
 8. `schema_v6_email_preferences.sql`
 9. `schema_v7_email_agents.sql`
+10. `schema_v8_vault_chunks_cloud.sql`
 
 Then verify from the **ACCESS app root** (not monorepo root):
 

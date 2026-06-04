@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto'
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { isPrivateJysonEnabled } from '@/lib/openjarvis/load-bridge'
+import { loadVaultChunksFromCloud } from '@/lib/vault/vault-chunks-store'
 import {
   VAULT_SYNC_ALLOWED_EXTENSIONS,
   type VaultLocalFileRecord,
@@ -40,6 +43,24 @@ export type VaultIndexBuildResult = {
   error: string | null
   indexPath: string
   manifest: VaultContentIndexManifest | null
+}
+
+export type VaultRetrievalSource = 'local_index' | 'cloud_supabase' | 'none'
+
+export type VaultContextRetrieveInput = {
+  query: string
+  clerkUserId: string
+  vaultRoot?: string | null
+  vaultId?: string | null
+  supabase?: SupabaseClient | null
+  vaultLabel?: string | null
+}
+
+export type VaultContextRetrieveResult = {
+  block: string
+  chunkCount: number
+  indexMissing: boolean
+  source: VaultRetrievalSource
 }
 
 function accessAppRoot(): string {
@@ -133,16 +154,20 @@ async function readVaultFileContent(
   }
 }
 
-export async function buildVaultContentIndex(
+/** Build in-memory chunks from a local vault path (no disk index write). */
+export async function buildVaultContentChunksFromRoot(
   vaultRoot: string,
   options?: { maxFiles?: number },
-): Promise<VaultIndexBuildResult> {
+): Promise<{
+  ok: boolean
+  error: string | null
+  chunks: VaultContentChunk[]
+  manifest: VaultContentIndexManifest | null
+}> {
   const root = resolve(vaultRoot.trim())
-  const indexPath = vaultIndexFilePath(root)
-
   const scan = await scanVaultLocalPath(root, { maxFiles: options?.maxFiles ?? 10_000 })
   if (!scan.ok) {
-    return { ok: false, error: scan.error, indexPath, manifest: null }
+    return { ok: false, error: scan.error, chunks: [], manifest: null }
   }
 
   const chunks: VaultContentChunk[] = []
@@ -172,12 +197,27 @@ export async function buildVaultContentIndex(
     truncatedScan: scan.truncated,
   }
 
-  const payload: VaultContentIndex = { manifest, chunks }
+  return { ok: true, error: null, chunks, manifest }
+}
+
+export async function buildVaultContentIndex(
+  vaultRoot: string,
+  options?: { maxFiles?: number },
+): Promise<VaultIndexBuildResult> {
+  const root = resolve(vaultRoot.trim())
+  const indexPath = vaultIndexFilePath(root)
+
+  const built = await buildVaultContentChunksFromRoot(root, options)
+  if (!built.ok || !built.manifest) {
+    return { ok: false, error: built.error, indexPath, manifest: null }
+  }
+
+  const payload: VaultContentIndex = { manifest: built.manifest, chunks: built.chunks }
   const dir = vaultIndexDirForRoot(root)
   await mkdir(dir, { recursive: true })
   await writeFile(indexPath, JSON.stringify(payload), 'utf8')
 
-  return { ok: true, error: null, indexPath, manifest }
+  return { ok: true, error: null, indexPath, manifest: built.manifest }
 }
 
 export async function loadVaultContentIndex(
@@ -255,7 +295,6 @@ export function selectVaultChunksForQuery(
 
   if (selected.length > 0) return selected
 
-  // Cold query — surface high-signal defaults
   const defaults = [
     'daily/today.md',
     'brain/priorities.md',
@@ -274,23 +313,49 @@ export function selectVaultChunksForQuery(
   return selected
 }
 
+function selectChunksFromList(
+  chunks: VaultContentChunk[],
+  query: string,
+  indexedAt: string,
+): VaultContentChunk[] {
+  return selectVaultChunksForQuery({ manifest: { version: 1, vaultRoot: '', indexedAt, fileCount: 0, chunkCount: chunks.length, truncatedScan: false }, chunks }, query)
+}
+
 export function formatVaultContextBlock(input: {
-  vaultRoot: string
+  vaultRoot?: string | null
+  vaultLabel?: string | null
+  retrievalSource: VaultRetrievalSource
   chunks: VaultContentChunk[]
   indexedAt: string
   query: string
 }): string {
+  const vaultLine =
+    input.vaultLabel?.trim() ||
+    (input.vaultRoot ? `Vault path: ${input.vaultRoot}` : 'Vault: cloud index')
+  const sourceLine =
+    input.retrievalSource === 'cloud_supabase'
+      ? 'Retrieval: Supabase cloud vault index'
+      : input.retrievalSource === 'local_index'
+        ? 'Retrieval: local .jyson-vault-index'
+        : 'Retrieval: unavailable'
+
   if (input.chunks.length === 0) {
+    const staleHint =
+      input.retrievalSource === 'cloud_supabase'
+        ? 'Suggest syncing the vault in ACCESS → Vaults (connector online on their Mac).'
+        : 'Suggest `npm run jyson:vault:index` from access-app if the local index is missing or stale.'
+
     return `
 [JYSON VAULT CONTENT — no matching excerpts]
-Vault path: ${input.vaultRoot}
+${vaultLine}
+${sourceLine}
 Index built: ${input.indexedAt}
 Query focus: ${input.query.slice(0, 200)}
 
 No indexed excerpts matched this question. Tell the user clearly:
 - Vault intelligence is on, but nothing in the index matched.
-- Suggest \`npm run jyson:vault:index\` from access-app if the index is missing or stale.
-- For priorities/today, mention checking \`daily/today.md\` and \`brain/priorities.md\` on disk.
+- ${staleHint}
+- For priorities/today, mention checking \`daily/today.md\` and \`brain/priorities.md\`.
 Do not invent vault facts. Do not output a DISCOVERY REPORT for this turn.
 [END JYSON VAULT CONTENT]`.trim()
   }
@@ -304,7 +369,8 @@ Do not invent vault facts. Do not output a DISCOVERY REPORT for this turn.
 
   return `
 [JYSON VAULT CONTENT — grounded excerpts from JD Command Vault]
-Vault path: ${input.vaultRoot}
+${vaultLine}
+${sourceLine}
 Index built: ${input.indexedAt}
 Query focus: ${input.query.slice(0, 200)}
 
@@ -316,57 +382,110 @@ ${body}
 [END JYSON VAULT CONTENT]`.trim()
 }
 
-export async function retrieveVaultContextForQuery(
+async function retrieveFromLocalIndex(
   vaultRoot: string,
   query: string,
-): Promise<{ block: string; chunkCount: number; indexMissing: boolean }> {
+): Promise<VaultContextRetrieveResult | null> {
   let index = await loadVaultContentIndex(vaultRoot)
-  if (!index) {
+  if (!index && isPrivateJysonEnabled() && process.env.VERCEL !== '1') {
     const built = await buildVaultContentIndex(vaultRoot)
-    if (!built.ok || !built.manifest) {
-      return {
-        block: formatVaultContextBlock({
-          vaultRoot,
-          chunks: [],
-          indexedAt: 'not indexed',
-          query,
-        }),
-        chunkCount: 0,
-        indexMissing: true,
-      }
-    }
+    if (!built.ok || !built.manifest) return null
     index = await loadVaultContentIndex(vaultRoot)
   }
-
-  if (!index) {
-    return {
-      block: formatVaultContextBlock({
-        vaultRoot,
-        chunks: [],
-        indexedAt: 'not indexed',
-        query,
-      }),
-      chunkCount: 0,
-      indexMissing: true,
-    }
-  }
+  if (!index) return null
 
   const chunks = selectVaultChunksForQuery(index, query)
   return {
     block: formatVaultContextBlock({
       vaultRoot,
+      retrievalSource: 'local_index',
       chunks,
       indexedAt: index.manifest.indexedAt,
       query,
     }),
     chunkCount: chunks.length,
     indexMissing: false,
+    source: 'local_index',
   }
 }
 
-/** Option 3 scaffold — vector DB not wired; keyword index is active. */
+async function retrieveFromCloud(
+  input: VaultContextRetrieveInput,
+): Promise<VaultContextRetrieveResult | null> {
+  if (!input.vaultId || !input.supabase || !input.clerkUserId) return null
+
+  const loaded = await loadVaultChunksFromCloud(
+    input.supabase,
+    input.vaultId,
+    input.clerkUserId,
+  )
+  if (loaded.error || loaded.chunks.length === 0) return null
+
+  const chunks = selectChunksFromList(loaded.chunks, input.query, loaded.indexedAt ?? 'unknown')
+  return {
+    block: formatVaultContextBlock({
+      vaultRoot: input.vaultRoot,
+      vaultLabel: input.vaultLabel,
+      retrievalSource: 'cloud_supabase',
+      chunks,
+      indexedAt: loaded.indexedAt ?? 'unknown',
+      query: input.query,
+    }),
+    chunkCount: chunks.length,
+    indexMissing: false,
+    source: 'cloud_supabase',
+  }
+}
+
+export async function retrieveVaultContextForQuery(
+  input: VaultContextRetrieveInput | string,
+  legacyQuery?: string,
+): Promise<VaultContextRetrieveResult> {
+  const params: VaultContextRetrieveInput =
+    typeof input === 'string'
+      ? {
+          vaultRoot: input,
+          query: legacyQuery ?? '',
+          clerkUserId: '',
+        }
+      : input
+
+  const query = params.query
+  const empty: VaultContextRetrieveResult = {
+    block: formatVaultContextBlock({
+      vaultRoot: params.vaultRoot,
+      vaultLabel: params.vaultLabel,
+      retrievalSource: 'none',
+      chunks: [],
+      indexedAt: 'not indexed',
+      query,
+    }),
+    chunkCount: 0,
+    indexMissing: true,
+    source: 'none',
+  }
+
+  if (isPrivateJysonEnabled() && params.vaultRoot) {
+    const local = await retrieveFromLocalIndex(params.vaultRoot, query)
+    if (local) return local
+  }
+
+  const cloud = await retrieveFromCloud(params)
+  if (cloud) return cloud
+
+  if (params.vaultRoot && process.env.VERCEL !== '1') {
+    const local = await retrieveFromLocalIndex(params.vaultRoot, query)
+    if (local) return local
+  }
+
+  return empty
+}
+
+/** Option 3 scaffold — vector DB not wired; keyword index is active (local + cloud). */
 export const VAULT_VECTOR_INDEX_STATUS = {
-  mode: 'keyword_file_index' as const,
+  mode: 'keyword_index' as const,
+  localIndex: '.jyson-vault-index',
+  cloudStore: 'vault_chunks',
   vectorDb: 'scaffold_only',
   note: 'Chroma/embedding retrieval can replace scoreVaultChunks later.',
 }

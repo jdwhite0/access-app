@@ -27,11 +27,12 @@ import {
 } from '@/lib/jyson/local-chat-stream'
 import {
   isVaultIntelligenceEnabled,
-  resolveFounderVaultPathFromRows,
+  resolveJdCommandVaultFromRows,
 } from '@/lib/jyson/resolve-founder-vault-path'
 import { retrieveVaultContextForQuery } from '@/lib/jyson/vault-context'
 import { checkUsageLimit, recordUsageEvent } from '@/lib/usage/enforce'
 import { listVaults } from '@/lib/actions/vaults'
+import { createSupabaseAdmin } from '@/lib/supabase'
 
 /** JYSON Core chat API. Local: optional JYSON_INTERNAL_API_URL when not using direct Claude. */
 const JYSON_API_URL = (
@@ -43,7 +44,14 @@ const JYSON_API_URL = (
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-type VaultRow = { name: string; vault_type: string | null; local_path: string | null; last_synced_at: string | null; file_count: number }
+type VaultRow = {
+  id: string
+  name: string
+  vault_type: string | null
+  local_path: string | null
+  last_synced_at: string | null
+  file_count: number
+}
 
 function buildAccessContextBlock(
   ctx: Awaited<ReturnType<typeof loadJysonContextForSession>>['context'],
@@ -198,24 +206,36 @@ export async function POST(req: NextRequest) {
   let retrievedChunkCount = 0
   let firstSource: string | null = null
   let vaultPathSource: string | null = null
+  let vaultRetrievalSource: string | null = null
 
   if (vaultContextEnabled && query) {
-    const { path, source } = resolveFounderVaultPathFromRows(vaults)
-    vaultPathSource = source
-    if (path) {
-      const retrieved = await retrieveVaultContextForQuery(path, query)
+    const resolved = resolveJdCommandVaultFromRows(vaults)
+    vaultPathSource = resolved.source
+    const supabase = createSupabaseAdmin()
+
+    if (resolved.vaultId || resolved.path) {
+      const retrieved = await retrieveVaultContextForQuery({
+        query,
+        clerkUserId: userId,
+        vaultRoot: resolved.path,
+        vaultId: resolved.vaultId,
+        supabase,
+        vaultLabel: resolved.name ?? 'JD Command Vault',
+      })
       vaultContextBlock = retrieved.block
       retrievedChunkCount = retrieved.chunkCount
+      vaultRetrievalSource = retrieved.source
       const excerptMatch = vaultContextBlock.match(/### Excerpt 1: ([^\s(]+)/)
       firstSource = excerptMatch?.[1] ?? null
     } else {
       vaultContextBlock = `
 [JYSON VAULT CONTENT — vault path unavailable]
-Private JYSON is enabled but no JD Command Vault path was found on this machine.
-Connect the vault in ACCESS → Vaults or set the canonical path, then run \`npm run jyson:vault:index\`.
+No JD Command Vault is registered or indexed for this account.
+Connect the vault in ACCESS → Vaults and sync from your Mac (connector online).
 Query focus: ${query.slice(0, 200)}
 Do not invent vault facts. Do not output a DISCOVERY REPORT for this turn.
 [END JYSON VAULT CONTENT]`.trim()
+      vaultRetrievalSource = 'none'
     }
   }
 
@@ -242,16 +262,20 @@ Do not invent vault facts. Do not output a DISCOVERY REPORT for this turn.
   )
   const useLocalClaude = shouldStreamClaudeLocally()
 
-  if (process.env.NODE_ENV === 'development') {
+  const logVaultChat =
+    process.env.NODE_ENV === 'development' || process.env.VERCEL === '1'
+  if (logVaultChat) {
     console.info('[jyson/chat]', {
       jysonApiUrl: useLocalClaude ? '(local Claude in ACCESS)' : JYSON_API_URL,
       useLocalClaude,
       query: query.slice(0, 120),
       vaultContextEnabled,
       vaultPathSource,
+      vaultRetrievalSource,
       retrievedChunkCount,
       firstSource,
       finalPromptHasVaultContext,
+      deployment: process.env.VERCEL === '1' ? 'vercel' : 'local',
     })
   }
 

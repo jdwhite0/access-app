@@ -50,7 +50,18 @@ UI treats this as **setup complete** (no “Set up on this Mac” CTA). File exe
 | JYSON orb line | **File tools active** when `localToolsAvailable`; else **Local intelligence active** when server reachable; hide setup link when `!showSetupCta` |
 | Connect modal hero | **Connected** (full tools) or **Local intelligence active** (server only) |
 
+## Vault cloud index (production JYSON)
+
+| Piece | Role |
+|-------|------|
+| `vault_chunks` (Supabase) | Searchable note chunks per `vault_id` + `clerk_user_id` |
+| `requestVaultSync` | After local scan → `replaceVaultContentChunks` (delete + batch insert) |
+| `retrieveVaultContextForQuery` | Local `.jyson-vault-index` first when `PRIVATE_JYSON_ENABLED`; else `vault_chunks` |
+| `POST /api/vault/index/rebuild` | Manual cloud re-index from vault `local_path` on host |
+
+`vault_files` remains metadata-only (paths, sizes) — unchanged.
+
 ## Future users
 
-- **Cloud signup:** `setupComplete` true on cloud deploy; onboarding checklist may mention local tools as optional enhancement.
+- **Cloud signup:** `setupComplete` true on cloud deploy; vault Q&A works after Mac sync uploads chunks.
 - **Local enhancement:** Agents → optional setup; not a dashboard gate.
