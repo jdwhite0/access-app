@@ -171,8 +171,8 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
           ))}
         </div>
 
-        {/* Two-column layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: 16, marginBottom: 20 }}>
+        {/* Two-column layout — single column on mobile */}
+        <div className="access-home-two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: 16, marginBottom: 20 }}>
 
           {/* Recommended actions */}
           <div>

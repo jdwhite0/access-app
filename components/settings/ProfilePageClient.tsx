@@ -131,13 +131,14 @@ export default function ProfilePageClient() {
                 </p>
               </div>
               {error && <p className="access-settings-form__error">{error}</p>}
+              {saved && <p className="access-settings-form__saved">✓ Changes saved successfully.</p>}
               <div className="access-settings-form__actions">
                 <button
                   type="submit"
                   className="access-settings-btn access-settings-btn--primary"
                   disabled={saving}
                 >
-                  {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save changes'}
+                  {saving ? 'Saving…' : 'Save changes'}
                 </button>
               </div>
             </form>

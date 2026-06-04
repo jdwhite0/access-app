@@ -303,10 +303,13 @@
   .access-jyson-layer__orb {
     width: 56px !important;
     height: 56px !important;
+    max-width: 56px !important;
   }
 
   .access-jyson-layer__orb-btn {
     filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+    min-width: 56px;
+    min-height: 56px;
   }
 
   .access-jyson-layer__orb-label {
@@ -319,6 +322,14 @@
     max-width: 100% !important;
     max-height: 60dvh !important;
     border-radius: 14px 14px 10px 10px;
+  }
+}
+
+/* ── Dashboard two-column → single column ───────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .access-home-two-col {
+    grid-template-columns: 1fr !important;
   }
 }
 

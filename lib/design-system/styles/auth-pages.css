@@ -1,0 +1,324 @@
+/* ACCESS auth pages — sign-in / sign-up
+ * Mobile-first, Stripe-quality.
+ * Two-column on desktop: brand panel left, form right.
+ * Single column on mobile: form only (brand panel hidden).
+ */
+
+/* ── Root layout ──────────────────────────────────────────────────────────── */
+
+.access-auth-root {
+  min-height: 100dvh;
+  background: #f6f9fc;
+  display: flex;
+  align-items: stretch;
+}
+
+.access-auth-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100dvh;
+}
+
+/* ── Brand panel (left, desktop only) ──────────────────────────────────────── */
+
+.access-auth-brand {
+  display: none;
+  flex: 1;
+  background: #0a2540;
+  padding: 48px;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.access-auth-brand::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -60px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(64,192,208,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.access-auth-brand__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+}
+
+.access-auth-brand__wordmark {
+  display: inline-block;
+  font-family: var(--mono, monospace);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 48px;
+  text-transform: uppercase;
+}
+
+.access-auth-brand__tagline {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 40px;
+  max-width: 32ch;
+}
+
+.access-auth-brand__pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.access-auth-brand__pillar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.access-auth-brand__pillar-icon {
+  font-size: 16px;
+  color: #40c0d0;
+  margin-top: 1px;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.access-auth-brand__pillar-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 3px;
+}
+
+.access-auth-brand__pillar-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+}
+
+/* ── Form panel (right) ───────────────────────────────────────────────────── */
+
+.access-auth-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  background: #ffffff;
+  overflow-y: auto;
+}
+
+.access-auth-form__inner {
+  width: 100%;
+  max-width: 420px;
+}
+
+.access-auth-form__wordmark-mobile {
+  display: block;
+  font-family: var(--mono, monospace);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #0a2540;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.access-auth-form__header {
+  margin-bottom: 28px;
+}
+
+.access-auth-form__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #0a2540;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.access-auth-form__subtitle {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #425466;
+  margin: 0;
+}
+
+.access-auth-form__footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #697386;
+  text-align: center;
+}
+
+.access-auth-form__footer-link {
+  color: #0a2540;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.access-auth-form__footer-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Clerk component overrides ────────────────────────────────────────────── */
+
+.access-clerk-root {
+  width: 100% !important;
+}
+
+.access-clerk-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.access-clerk-hidden {
+  display: none !important;
+}
+
+.access-clerk-social-btn {
+  height: 44px !important;
+  border: 1px solid #e6ebf1 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #0a2540 !important;
+  transition: border-color 0.15s, background 0.15s !important;
+}
+
+.access-clerk-social-btn:hover {
+  border-color: #c8d6e5 !important;
+  background: #f6f9fc !important;
+}
+
+.access-clerk-social-btn-text {
+  color: #0a2540 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.access-clerk-divider {
+  margin: 20px 0 !important;
+}
+
+.access-clerk-divider-text {
+  font-size: 12px !important;
+  color: #697386 !important;
+}
+
+.access-clerk-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #0a2540 !important;
+  margin-bottom: 6px !important;
+}
+
+.access-clerk-input {
+  height: 44px !important;
+  border: 1px solid #e6ebf1 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  color: #0a2540 !important;
+  font-size: 15px !important;
+  padding: 0 14px !important;
+  transition: border-color 0.15s !important;
+  box-shadow: none !important;
+}
+
+.access-clerk-input:focus {
+  border-color: #40c0d0 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(64,192,208,0.1) !important;
+}
+
+.access-clerk-primary-btn {
+  height: 44px !important;
+  background: #0a2540 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  transition: background 0.15s !important;
+}
+
+.access-clerk-primary-btn:hover {
+  background: #1a3550 !important;
+}
+
+.access-clerk-footer-link {
+  color: #1a8fa0 !important;
+  font-size: 13px !important;
+}
+
+.access-clerk-identity-text {
+  color: #0a2540 !important;
+  font-size: 14px !important;
+}
+
+.access-clerk-alert-text {
+  font-size: 13px !important;
+  color: #b85a3a !important;
+}
+
+.access-clerk-resend-link {
+  color: #1a8fa0 !important;
+  font-size: 13px !important;
+}
+
+/* ── Desktop layout ───────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .access-auth-brand {
+    display: flex;
+    max-width: 480px;
+  }
+
+  .access-auth-form__wordmark-mobile {
+    display: none;
+  }
+
+  .access-auth-form {
+    max-width: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .access-auth-brand {
+    max-width: 560px;
+  }
+
+  .access-auth-brand__tagline {
+    font-size: 32px;
+  }
+}
+
+/* ── Mobile safe area ─────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .access-auth-form {
+    align-items: flex-start;
+    padding-top: max(48px, env(safe-area-inset-top, 48px));
+    padding-bottom: max(32px, env(safe-area-inset-bottom, 32px));
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}

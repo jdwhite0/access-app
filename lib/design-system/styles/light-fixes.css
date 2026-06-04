@@ -489,3 +489,113 @@ html[data-theme='day'] .access-platform-action-btn:hover {
   border-color: #c8d6e5;
   color: #0a2540;
 }
+
+/* ── JYSON layer panel in light mode ───────────────────────────────────────── */
+
+html[data-theme='day'] .access-jyson-layer__panel {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #c8d6e5;
+  box-shadow: 0 8px 32px rgba(10, 37, 64, 0.12), 0 2px 8px rgba(10, 37, 64, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+html[data-theme='day'] .access-jyson-layer__head {
+  border-bottom-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-jyson-layer__greeting {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-jyson-layer__insight {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-jyson-layer__context {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-jyson-layer__close {
+  border-color: #e6ebf1;
+  color: #697386;
+}
+
+html[data-theme='day'] .access-jyson-layer__close:hover {
+  border-color: #1a8fa0;
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-jyson-layer__form {
+  border-top-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-jyson-layer__input {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-jyson-layer__input:focus {
+  border-color: #1a8fa0;
+}
+
+html[data-theme='day'] .access-jyson-layer__msg--user {
+  background: rgba(26, 143, 160, 0.08);
+  color: #1a8fa0;
+  border-color: rgba(26, 143, 160, 0.2);
+}
+
+html[data-theme='day'] .access-jyson-layer__msg--jyson {
+  background: #f6f9fc;
+  color: #425466;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-jyson-layer__foot {
+  border-top-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-jyson-layer__foot-link {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-jyson-layer__foot-link:hover {
+  color: #1a8fa0;
+}
+
+html[data-theme='day'] .access-jyson-layer__tools {
+  color: #697386;
+  border-bottom-color: #e6ebf1;
+}
+
+/* ── Nav mobile toggle in light mode ───────────────────────────────────────── */
+
+html[data-theme='day'] .access-ds-shell__mobile-toggle {
+  border-color: #e6ebf1;
+  color: #0a2540;
+}
+
+/* ── Sign-out button in light mode ─────────────────────────────────────────── */
+
+html[data-theme='day'] .access-nav-sign-out {
+  border-color: #e6ebf1;
+  color: #425466;
+}
+
+html[data-theme='day'] .access-nav-sign-out:hover {
+  border-color: #1a8fa0;
+  color: #0a2540;
+}
+
+/* ── TopbarMeta in light mode ───────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-nav-topbar-user {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-nav-topbar-avatar {
+  background: rgba(26, 143, 160, 0.1);
+  border-color: rgba(26, 143, 160, 0.25);
+  color: #1a8fa0;
+}

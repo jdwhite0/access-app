@@ -28,7 +28,7 @@ export default function AccessOsSignedInPage({ module }: AccessOsSignedInPagePro
         <p className="access-os-workspace-sub">
           Sign in to open this module.
         </p>
-        <Link href="/" className="access-nav-link" style={{ display: 'inline-flex', marginTop: '1rem' }}>
+        <Link href="/sign-in" className="access-nav-link" style={{ display: 'inline-flex', marginTop: '1rem' }}>
           Sign in to ACCESS
         </Link>
       </div>

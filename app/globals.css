@@ -17,6 +17,7 @@
 @import "../lib/design-system/styles/dense.css";
 @import "../lib/design-system/styles/light-fixes.css";
 @import "../lib/design-system/styles/mobile.css";
+@import "../lib/design-system/styles/auth-pages.css";
 
 /* Token defaults live in themes.css — do not redeclare here */
 
@@ -3482,21 +3483,23 @@ details[open] .jyson-companion-drawer-summary::after {
 .access-settings-form__input {
   width: 100%;
   padding: 10px 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface-raised, var(--surface));
+  border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
   font-family: var(--sans);
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.18s;
+  transition: border-color 0.18s, box-shadow 0.18s;
 }
 .access-settings-form__input:focus {
-  border-color: rgba(64,192,208,0.4);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 .access-settings-form__input:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+  background: var(--surface);
 }
 .access-settings-form__input--mono {
   font-family: var(--mono);
@@ -3505,7 +3508,23 @@ details[open] .jyson-companion-drawer-summary::after {
 .access-settings-form__error {
   font-family: var(--sans);
   font-size: 12px;
-  color: var(--error, #e07b52);
+  color: var(--error);
+  padding: 8px 12px;
+  background: var(--error-muted);
+  border: 1px solid color-mix(in srgb, var(--error) 25%, transparent);
+  border-radius: 6px;
+}
+.access-settings-form__saved {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--success);
+  padding: 8px 12px;
+  background: var(--success-muted);
+  border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .access-settings-form__actions {
   display: flex;
@@ -3530,23 +3549,24 @@ details[open] .jyson-companion-drawer-summary::after {
   border: none;
 }
 .access-settings-btn--primary {
-  background: var(--accent);
-  color: #000;
+  background: var(--button-primary-bg, var(--accent));
+  color: var(--button-primary-text, var(--on-accent));
+  border: 1px solid transparent;
 }
-.access-settings-btn--primary:hover { opacity: 0.85; }
+.access-settings-btn--primary:hover { opacity: 0.88; }
 .access-settings-btn--primary:disabled { opacity: 0.3; cursor: not-allowed; }
 .access-settings-btn--secondary {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: var(--text-dim);
+  background: var(--button-secondary-bg, var(--surface));
+  border: 1px solid var(--border);
+  color: var(--button-secondary-text, var(--text-dim));
 }
-.access-settings-btn--secondary:hover { border-color: rgba(64,192,208,0.35); color: var(--text); }
+.access-settings-btn--secondary:hover { border-color: var(--accent-muted); color: var(--text); }
 .access-settings-btn--ghost {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
   color: var(--text-muted);
 }
-.access-settings-btn--ghost:hover { color: var(--text); }
+.access-settings-btn--ghost:hover { color: var(--text); border-color: var(--border-secondary); }
 .access-settings-btn--danger {
   background: rgba(224,123,82,0.12);
   border: 1px solid rgba(224,123,82,0.3);

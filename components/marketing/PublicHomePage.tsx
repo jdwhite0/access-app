@@ -96,7 +96,6 @@ function RegistryVisual() {
   }
   return (
     <div style={{ background: '#0B0E14', borderRadius: 10, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden', boxShadow: '0 20px 60px rgba(10,37,64,0.2)' }}>
-      {/* Table header */}
       <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 80px 90px', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#0D1017' }}>
         {['Type', 'Name', 'Status', 'Tag'].map((h) => (
           <span key={h} style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--mono)' }}>{h}</span>
@@ -210,168 +209,89 @@ export default function PublicHomePage() {
     <AccessMarketingLayout>
       <PublicHeader />
 
-      {/* ── Hero ── left-right asymmetric, white ground */}
-      <section style={{
-        background: C.bg,
-        paddingTop: 96,
-        paddingBottom: 80,
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          maxWidth: MAX,
-          margin: '0 auto',
-          padding: '0 clamp(20px, 3vw, 48px)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 'clamp(40px, 5vw, 80px)',
-          alignItems: 'center',
-          minHeight: 540,
-        }}>
-          {/* Left: copy */}
-          <div>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 7,
-              background: `rgba(64,192,208,0.08)`,
-              border: `1px solid rgba(64,192,208,0.2)`,
-              borderRadius: 100,
-              padding: '4px 12px',
-              marginBottom: 28,
-              fontSize: 12,
-              fontFamily: 'var(--mono)',
-              letterSpacing: '0.08em',
-              color: C.accentDk,
-            }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: C.accent, display: 'inline-block' }} />
-              Now in early access
-            </div>
-
-            <h1 style={{
-              fontSize: 'clamp(40px, 4.5vw, 58px)',
-              fontWeight: 700,
-              lineHeight: 1.06,
-              letterSpacing: '-0.04em',
-              color: C.text,
-              margin: '0 0 24px',
-            }}>
-              Infrastructure for
-              <br />
-              <span style={{ color: C.accent }}>builders who compound.</span>
-            </h1>
-
-            <p style={{
-              fontSize: 18,
-              lineHeight: 1.6,
-              color: C.textSub,
-              margin: '0 0 36px',
-              maxWidth: '42ch',
-            }}>
-              ACCESS is the operating system for founders and operators — registry, AI memory,
-              projects, and workflows in one platform that gets smarter as you build.
-            </p>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <button
-                onClick={startBuilding}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: '#FFFFFF',
-                  background: C.text,
-                  border: 'none',
-                  borderRadius: 6,
-                  padding: '12px 22px',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s',
-                  whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#1a3550' }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = C.text }}
-              >
-                Start for free <span style={{ fontSize: 16 }}>→</span>
-              </button>
-              <Link href="/plans" style={{
-                fontSize: 15,
-                fontWeight: 500,
-                color: C.textSub,
-                textDecoration: 'none',
-                padding: '12px 18px',
-                border: `1px solid ${C.border}`,
-                borderRadius: 6,
-                transition: 'border-color 0.15s, color 0.15s',
-                whiteSpace: 'nowrap',
+      {/* ── Hero ── */}
+      <section style={{ background: C.bg, paddingTop: 96, paddingBottom: 80, overflow: 'hidden' }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto', padding: '0 clamp(16px, 3vw, 48px)' }}>
+          <div className="access-mkt-hero-grid">
+            {/* Left: copy */}
+            <div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 7,
+                background: `rgba(64,192,208,0.08)`, border: `1px solid rgba(64,192,208,0.2)`,
+                borderRadius: 100, padding: '4px 12px', marginBottom: 24,
+                fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.08em', color: C.accentDk,
               }}>
-                View pricing
-              </Link>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: C.accent, display: 'inline-block' }} />
+                Now in early access
+              </div>
+
+              <h1 style={{
+                fontSize: 'clamp(32px, 4.5vw, 58px)', fontWeight: 700, lineHeight: 1.06,
+                letterSpacing: '-0.04em', color: C.text, margin: '0 0 20px',
+              }}>
+                Infrastructure for
+                <br />
+                <span style={{ color: C.accent }}>builders who compound.</span>
+              </h1>
+
+              <p style={{
+                fontSize: 'clamp(15px, 1.8vw, 18px)', lineHeight: 1.6, color: C.textSub,
+                margin: '0 0 32px', maxWidth: '42ch',
+              }}>
+                ACCESS is the operating system for founders and operators — registry, AI memory,
+                projects, and workflows in one platform that gets smarter as you build.
+              </p>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <button
+                  onClick={startBuilding}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 15, fontWeight: 600, color: '#FFFFFF', background: C.text,
+                    border: 'none', borderRadius: 6, padding: '12px 22px',
+                    cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 44,
+                  }}
+                >
+                  Start for free <span style={{ fontSize: 16 }}>→</span>
+                </button>
+                <Link href="/plans" style={{
+                  fontSize: 15, fontWeight: 500, color: C.textSub, textDecoration: 'none',
+                  padding: '12px 18px', border: `1px solid ${C.border}`, borderRadius: 6,
+                  whiteSpace: 'nowrap', minHeight: 44, display: 'inline-flex', alignItems: 'center',
+                }}>
+                  View pricing
+                </Link>
+              </div>
+
+              <p style={{ marginTop: 14, fontSize: 13, color: C.textMute, fontFamily: 'var(--mono)' }}>
+                Free tier available · No credit card required
+              </p>
             </div>
 
-            <p style={{
-              marginTop: 16,
-              fontSize: 13,
-              color: C.textMute,
-              fontFamily: 'var(--mono)',
-            }}>
-              Free tier available · No credit card required
-            </p>
-          </div>
-
-          {/* Right: product visual */}
-          <div style={{ position: 'relative' }}>
-            <InfrastructureVisual />
+            {/* Right: product visual */}
+            <div className="access-mkt-hero-visual">
+              <InfrastructureVisual />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Trust row — "Built for" ── */}
+      {/* ── Trust row ── */}
       <section style={{
-        background: C.bgAlt,
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
-        padding: '28px clamp(20px, 3vw, 48px)',
+        background: C.bgAlt, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+        padding: '24px clamp(16px, 3vw, 48px)', overflowX: 'hidden',
       }}>
-        <div style={{
-          maxWidth: MAX,
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'clamp(16px, 3vw, 40px)',
-          flexWrap: 'wrap',
-        }}>
-          <p style={{
-            fontSize: 12,
-            fontFamily: 'var(--mono)',
-            letterSpacing: '0.12em',
-            color: C.textMute,
-            textTransform: 'uppercase',
-            flexShrink: 0,
-            margin: 0,
-          }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 'clamp(12px, 3vw, 40px)', flexWrap: 'wrap' }}>
+          <p style={{ fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.12em', color: C.textMute, textTransform: 'uppercase', flexShrink: 0, margin: 0 }}>
             Built for
           </p>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0,
-            flex: 1,
-            flexWrap: 'wrap',
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 0, flex: 1, flexWrap: 'wrap' }}>
             {PROOF_ITEMS.map((item, i) => (
               <div key={item} style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: C.text,
-                  padding: '0 clamp(12px, 2vw, 24px)',
-                }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: C.text, padding: '0 clamp(10px, 2vw, 24px)', whiteSpace: 'nowrap' }}>
                   {item}
                 </span>
-                {i < PROOF_ITEMS.length - 1 && (
-                  <span style={{ color: C.border, fontSize: 18 }}>·</span>
-                )}
+                {i < PROOF_ITEMS.length - 1 && <span style={{ color: C.border, fontSize: 18 }}>·</span>}
               </div>
             ))}
           </div>
@@ -381,27 +301,13 @@ export default function PublicHomePage() {
       {/* ── Stats ── */}
       <section style={{
         background: C.bg,
-        padding: 'clamp(64px, 8vw, 96px) clamp(20px, 3vw, 48px)',
+        padding: 'clamp(48px, 8vw, 96px) clamp(16px, 3vw, 48px)',
         borderBottom: `1px solid ${C.border}`,
       }}>
-        <div style={{
-          maxWidth: MAX,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '32px 48px',
-        }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '28px 40px' }}>
           {STATS.map((s) => (
             <div key={s.value}>
-              <p style={{
-                fontSize: 'clamp(40px, 4vw, 52px)',
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                color: C.text,
-                margin: '0 0 6px',
-                lineHeight: 1,
-                fontFamily: 'var(--mono)',
-              }}>{s.value}</p>
+              <p style={{ fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 700, letterSpacing: '-0.04em', color: C.text, margin: '0 0 6px', lineHeight: 1, fontFamily: 'var(--mono)' }}>{s.value}</p>
               <p style={{ fontSize: 15, fontWeight: 600, color: C.text, margin: '0 0 4px' }}>{s.label}</p>
               <p style={{ fontSize: 13, color: C.textMute, margin: 0, lineHeight: 1.5 }}>{s.sub}</p>
             </div>
@@ -409,7 +315,7 @@ export default function PublicHomePage() {
         </div>
       </section>
 
-      {/* ── Feature sections (alternating left/right) ── */}
+      {/* ── Feature sections ── */}
       {FEATURES.map((feat, i) => (
         <section
           key={feat.eyebrow}
@@ -417,184 +323,130 @@ export default function PublicHomePage() {
           style={{
             background: i % 2 === 0 ? C.bg : C.bgAlt,
             borderBottom: `1px solid ${C.border}`,
-            padding: 'clamp(72px, 9vw, 108px) clamp(20px, 3vw, 48px)',
+            padding: 'clamp(56px, 9vw, 108px) clamp(16px, 3vw, 48px)',
           }}
         >
-          <div style={{
-            maxWidth: MAX,
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 'clamp(40px, 5vw, 80px)',
-            alignItems: 'center',
-            direction: feat.imageRight ? 'ltr' : 'ltr',
-          }}>
-            {/* Text block */}
-            <div style={{ order: feat.imageRight ? 1 : 0 }}>
-              <p style={{
-                fontSize: 12,
-                fontFamily: 'var(--mono)',
-                letterSpacing: '0.12em',
-                color: C.accent,
-                textTransform: 'uppercase',
-                marginBottom: 16,
-              }}>{feat.eyebrow}</p>
-              <h2 style={{
-                fontSize: 'clamp(28px, 3.2vw, 40px)',
-                fontWeight: 700,
-                letterSpacing: '-0.03em',
-                lineHeight: 1.1,
-                color: C.text,
-                margin: '0 0 18px',
-                whiteSpace: 'pre-line',
-              }}>{feat.headline}</h2>
-              <p style={{
-                fontSize: 16,
-                lineHeight: 1.65,
-                color: C.textSub,
-                margin: '0 0 24px',
-                maxWidth: '44ch',
-              }}>{feat.body}</p>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {feat.points.map((pt) => (
-                  <li key={pt} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: C.textSub, lineHeight: 1.5 }}>
-                    <span style={{ color: C.success, fontSize: 13, marginTop: 1, flexShrink: 0, fontWeight: 600 }}>✓</span>
-                    {pt}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {/* Visual block */}
-            <div style={{ order: feat.imageRight ? 0 : 1 }}>
-              {feat.visual}
+          <div style={{ maxWidth: MAX, margin: '0 auto' }}>
+            <div className="access-mkt-feature-grid">
+              <div style={{ order: feat.imageRight ? 1 : 0 }}>
+                <p style={{ fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.12em', color: C.accent, textTransform: 'uppercase', marginBottom: 14 }}>{feat.eyebrow}</p>
+                <h2 style={{ fontSize: 'clamp(24px, 3.2vw, 40px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.1, color: C.text, margin: '0 0 16px', whiteSpace: 'pre-line' }}>{feat.headline}</h2>
+                <p style={{ fontSize: 16, lineHeight: 1.65, color: C.textSub, margin: '0 0 24px', maxWidth: '44ch' }}>{feat.body}</p>
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {feat.points.map((pt) => (
+                    <li key={pt} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: C.textSub, lineHeight: 1.5 }}>
+                      <span style={{ color: C.success, fontSize: 13, marginTop: 1, flexShrink: 0, fontWeight: 600 }}>✓</span>
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div style={{ order: feat.imageRight ? 0 : 1 }}>{feat.visual}</div>
             </div>
           </div>
         </section>
       ))}
 
       {/* ── Enterprise CTA ── */}
-      <section style={{
-        background: C.bgDark,
-        padding: 'clamp(72px, 9vw, 100px) clamp(20px, 3vw, 48px)',
-      }}>
-        <div style={{
-          maxWidth: MAX,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
-          gap: 48,
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}>
-          <div>
-            <p style={{ fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.12em', color: 'rgba(64,192,208,0.7)', textTransform: 'uppercase', marginBottom: 14 }}>Enterprise</p>
-            <h2 style={{
-              fontSize: 'clamp(28px, 3.5vw, 42px)',
-              fontWeight: 700,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.1,
-              color: '#FFFFFF',
-              margin: '0 0 14px',
-            }}>
-              Built for organizations
-              <br />building at scale.
-            </h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0, maxWidth: '48ch' }}>
-              Custom deployments, team infrastructure, dedicated onboarding, and SLA agreements.
-              Contact us to discuss what ACCESS looks like for your organization.
-            </p>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start', flexShrink: 0 }}>
-            <button
-              onClick={startBuilding}
-              style={{
-                fontSize: 15, fontWeight: 600, color: C.text, background: '#FFFFFF',
-                border: 'none', borderRadius: 6, padding: '13px 24px', cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Start for free
-            </button>
-            <Link href="/contact" style={{
-              fontSize: 15, fontWeight: 500, color: 'rgba(255,255,255,0.7)',
-              textDecoration: 'none', padding: '13px 24px',
-              border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6, whiteSpace: 'nowrap',
-              display: 'inline-block', textAlign: 'center',
-            }}>
-              Contact sales →
-            </Link>
+      <section style={{ background: C.bgDark, padding: 'clamp(56px, 9vw, 100px) clamp(16px, 3vw, 48px)' }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto' }}>
+          <div className="access-mkt-cta-grid">
+            <div>
+              <p style={{ fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.12em', color: 'rgba(64,192,208,0.7)', textTransform: 'uppercase', marginBottom: 14 }}>Enterprise</p>
+              <h2 style={{ fontSize: 'clamp(24px, 3.5vw, 42px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#FFFFFF', margin: '0 0 14px' }}>
+                Built for organizations<br />building at scale.
+              </h2>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0, maxWidth: '48ch' }}>
+                Custom deployments, team infrastructure, dedicated onboarding, and SLA agreements.
+                Contact us to discuss what ACCESS looks like for your organization.
+              </p>
+            </div>
+            <div className="access-mkt-cta-actions">
+              <button
+                onClick={startBuilding}
+                style={{ fontSize: 15, fontWeight: 600, color: C.text, background: '#FFFFFF', border: 'none', borderRadius: 6, padding: '13px 24px', cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 44, width: '100%' }}
+              >
+                Start for free
+              </button>
+              <Link href="/contact" style={{
+                fontSize: 15, fontWeight: 500, color: 'rgba(255,255,255,0.7)', textDecoration: 'none',
+                padding: '13px 24px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6,
+                whiteSpace: 'nowrap', display: 'inline-block', textAlign: 'center', minHeight: 44, width: '100%',
+              }}>
+                Contact sales →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{
-        background: C.bgAlt,
-        borderTop: `1px solid ${C.border}`,
-        padding: 'clamp(28px, 4vw, 40px) clamp(20px, 3vw, 48px)',
-      }}>
-        <div style={{
-          maxWidth: MAX,
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}>
+      <footer style={{ background: C.bgAlt, borderTop: `1px solid ${C.border}`, padding: 'clamp(24px, 4vw, 40px) clamp(16px, 3vw, 48px)' }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: C.text, letterSpacing: '0.12em' }}>ACCESS</span>
-          <nav style={{ display: 'flex', gap: 24 }}>
-            {[
-              { label: 'Plans', href: '/plans' },
-              { label: 'Dashboard', href: '/dashboard' },
-              { label: 'Status', href: '/status' },
-              { label: 'Contact', href: '/contact' },
-            ].map((l) => (
+          <nav style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            {[{ label: 'Plans', href: '/plans' }, { label: 'Dashboard', href: '/dashboard' }, { label: 'Status', href: '/status' }, { label: 'Contact', href: '/contact' }].map((l) => (
               <Link key={l.label} href={l.href} style={{ fontSize: 13, color: C.textMute, textDecoration: 'none' }}>{l.label}</Link>
             ))}
           </nav>
-          <p style={{ fontSize: 12, color: C.textMute, fontFamily: 'var(--mono)', margin: 0 }}>
-            © 2026 JD Productions Inc.
-          </p>
+          <p style={{ fontSize: 12, color: C.textMute, fontFamily: 'var(--mono)', margin: 0 }}>© 2026 JD Productions Inc.</p>
         </div>
       </footer>
+
       <style>{`
-        @media (max-width: 768px) {
-          /* Hero: single column, visual below copy */
-          section[aria-labelledby="hero-heading"] > div {
+        /* ── Marketing page — mobile-native responsive ── */
+        .access-mkt-hero-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(32px, 5vw, 80px);
+          align-items: center;
+          min-height: 480px;
+        }
+        .access-mkt-feature-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(32px, 5vw, 80px);
+          align-items: center;
+        }
+        .access-mkt-cta-grid {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 48px;
+          align-items: center;
+        }
+        .access-mkt-cta-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          align-items: flex-start;
+          flex-shrink: 0;
+          min-width: 200px;
+        }
+
+        @media (max-width: 767px) {
+          .access-mkt-hero-grid {
             grid-template-columns: 1fr !important;
-            padding-top: 80px !important;
+            min-height: auto !important;
           }
-          /* Feature sections: stack */
-          section > div[style*="grid-template-columns: 1fr 1fr"] {
+          .access-mkt-hero-visual {
+            display: none !important;
+          }
+          .access-mkt-feature-grid {
             grid-template-columns: 1fr !important;
           }
-          /* Bento grid: single column */
-          section > div[style*="repeat(3, 1fr)"] {
+          .access-mkt-feature-grid > div {
+            order: unset !important;
+          }
+          .access-mkt-cta-grid {
             grid-template-columns: 1fr !important;
           }
-          section > div[style*="repeat(3, 1fr)"] > div {
-            grid-column: span 1 !important;
+          .access-mkt-cta-actions {
+            flex-direction: column !important;
+            width: 100% !important;
+            min-width: 0 !important;
           }
-          /* Stats: 2 columns */
-          section > div[style*="repeat(auto-fit, minmax(200px"] {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-          /* Enterprise CTA: stack */
-          section > div[style*="1fr auto"] {
-            grid-template-columns: 1fr !important;
-          }
-          /* Plan cards: single column */
-          section > div[style*="minmax(240px"] {
-            grid-template-columns: 1fr !important;
-          }
-          /* InfrastructureVisual: hide floating panel on mobile */
-          .infra-visual-float {
-            display: none;
-          }
-          /* Marketing header actions on mobile */
-          header[style*="height: 64px"] {
-            height: 56px !important;
+          .access-mkt-cta-actions > * {
+            width: 100% !important;
           }
         }
       `}</style>

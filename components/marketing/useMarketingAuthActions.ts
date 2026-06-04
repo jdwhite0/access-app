@@ -1,39 +1,40 @@
 'use client'
 
-import { useAuth, useClerk } from '@clerk/nextjs'
+import { useAuth } from '@clerk/nextjs'
 import { useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 /**
- * Shared CTA routing: signed-in → dashboard, else Clerk sign-in.
+ * Shared CTA routing: signed-in → dashboard, else /sign-in.
  */
 export function useMarketingAuthActions() {
   const { isSignedIn, isLoaded } = useAuth()
-  const { redirectToSignIn } = useClerk()
+  const router = useRouter()
 
   const startBuilding = useCallback(() => {
     if (isSignedIn) {
-      window.location.href = '/dashboard'
+      router.push('/dashboard')
       return
     }
-    redirectToSignIn({ redirectUrl: `${window.location.origin}/dashboard` })
-  }, [isSignedIn, redirectToSignIn])
+    router.push('/sign-up')
+  }, [isSignedIn, router])
 
-  const dashboardHref = isLoaded && isSignedIn ? '/dashboard' : undefined
+  const dashboardHref = isLoaded && isSignedIn ? '/dashboard' : '/sign-in'
 
   const handleDashboardClick = useCallback(
     (e: React.MouseEvent) => {
-      if (dashboardHref) return
+      if (isLoaded && isSignedIn) return
       e.preventDefault()
-      redirectToSignIn({ redirectUrl: `${window.location.origin}/dashboard` })
+      router.push('/sign-in')
     },
-    [dashboardHref, redirectToSignIn]
+    [isLoaded, isSignedIn, router]
   )
 
   return {
     isSignedIn: Boolean(isLoaded && isSignedIn),
     isLoaded,
     startBuilding,
-    dashboardHref: dashboardHref ?? '#',
+    dashboardHref,
     handleDashboardClick,
   }
 }
