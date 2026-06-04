@@ -5,16 +5,19 @@ import type {
   PrimaryNavItem,
 } from './types'
 
-/** V5 primary navigation — understandable in 5 seconds */
+/**
+ * Primary navigation — outcome-based labels.
+ * Rule: name what the user gets, not the underlying mechanism.
+ * Benchmark: Stripe (Payments / Billing / Customers / Reports).
+ */
 export const PRIMARY_NAV: PrimaryNavItem[] = [
-  { id: 'home',      label: 'Home',     subtitle: 'Today',                 href: '/dashboard',  glyph: '▣' },
-  { id: 'projects',  label: 'Projects', subtitle: "What you're building",  href: '/projects',   glyph: '▤' },
-  { id: 'companion', label: 'JYSON',    subtitle: 'Your AI companion',     href: '/companion',  glyph: '◎' },
-  { id: 'memory',    label: 'Memory',   subtitle: 'What JYSON remembers',  href: '/memory',     glyph: '◌' },
-  { id: 'agents',    label: 'Agents',   subtitle: 'Your AI team',          href: '/agents',     glyph: '◉' },
-  { id: 'offers',    label: 'Offers',   subtitle: 'What you sell',         href: '/offers',     glyph: '◈' },
-  { id: 'registry',  label: 'Registry', subtitle: 'System records',        href: '/registry',   glyph: '◇' },
-  { id: 'settings',  label: 'Settings', subtitle: 'Account and tools',     href: '/settings',   glyph: '⚙' },
+  { id: 'home',      label: 'Home',          subtitle: 'Dashboard & status',        href: '/dashboard',  glyph: '▣' },
+  { id: 'projects',  label: 'Projects',      subtitle: 'What you\'re building',     href: '/projects',   glyph: '▤' },
+  { id: 'companion', label: 'Intelligence',  subtitle: 'Ask, plan, and decide',     href: '/companion',  glyph: '◎' },
+  { id: 'registry',  label: 'Systems',       subtitle: 'Infrastructure & records',  href: '/registry',   glyph: '◇' },
+  { id: 'agents',    label: 'Automation',    subtitle: 'Agents & workflows',        href: '/agents',     glyph: '◉' },
+  { id: 'offers',    label: 'Offers',        subtitle: 'Products & services',       href: '/offers',     glyph: '◈' },
+  { id: 'settings',  label: 'Settings',      subtitle: 'Account & billing',         href: '/settings',   glyph: '⚙' },
 ]
 
 export const WORKSPACE_LINKS = [
@@ -35,9 +38,9 @@ export const FOUNDER_CONTEXT: ContextNavItem[] = [
 
 export const COMPANION_CONTEXT: ContextNavItem[] = [
   { id: 'overview', label: 'Overview', href: '/companion#overview' },
-  { id: 'memory', label: 'Memory', href: '/companion#memory' },
+  { id: 'memory', label: 'Knowledge', href: '/memory' },
   { id: 'projects', label: 'Projects', href: '/companion#projects' },
-  { id: 'agents', label: 'Agents', href: '/companion#agents' },
+  { id: 'agents', label: 'Automation', href: '/companion#agents' },
   { id: 'diagnostics', label: 'Local tools', href: '/companion#diagnostics' },
 ]
 

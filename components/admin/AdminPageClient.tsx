@@ -1,7 +1,6 @@
 'use client'
 
-import AccessAppLayout from '@/components/navigation/AccessAppLayout'
-import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
+import Link from 'next/link'
 import type { AdminUserRow, AdminStats } from '@/lib/admin/get-all-users'
 
 const PLAN_COLOR: Record<string, string> = {
@@ -9,13 +8,7 @@ const PLAN_COLOR: Record<string, string> = {
   builder: '#7C6CF8',
   operator: '#4A9EFF',
   free: 'var(--text-muted)',
-}
-
-const PLAN_LABEL: Record<string, string> = {
-  founder: 'FOUNDER',
-  builder: 'BUILDER',
-  operator: 'OPERATOR',
-  free: 'FREE',
+  suspended: 'var(--error)',
 }
 
 function formatDate(iso: string | null): string {
@@ -23,126 +16,103 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-function PlanBadge({ plan }: { plan: string }) {
-  return (
-    <span style={{
-      fontSize: '0.62rem',
-      fontFamily: 'var(--mono)',
-      letterSpacing: '0.1em',
-      color: PLAN_COLOR[plan] ?? 'var(--text-muted)',
-      background: 'rgba(255,255,255,0.04)',
-      border: `1px solid ${PLAN_COLOR[plan] ?? 'var(--border)'}`,
-      borderRadius: 4,
-      padding: '2px 7px',
-    }}>
-      {PLAN_LABEL[plan] ?? plan.toUpperCase()}
-    </span>
-  )
-}
-
-function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function StatCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div style={{
       background: 'var(--surface)',
       border: '1px solid var(--border)',
       borderRadius: 8,
-      padding: '18px 20px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 4,
-      minWidth: 120,
+      padding: '16px 18px',
       flex: 1,
+      minWidth: 120,
     }}>
-      <p style={{ fontSize: '0.62rem', fontFamily: 'var(--mono)', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>{label}</p>
-      <p style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>{value}</p>
-      {sub ? <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: 0 }}>{sub}</p> : null}
+      <p style={{ fontSize: 10, fontFamily: 'var(--mono)', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>{label}</p>
+      <p style={{ fontSize: 24, fontWeight: 700, color: color ?? 'var(--text)', margin: '6px 0 2px', letterSpacing: '-0.02em', fontFamily: 'var(--mono)' }}>{value}</p>
+      {sub ? <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>{sub}</p> : null}
     </div>
   )
 }
 
-type Props = {
-  users: AdminUserRow[]
-  stats: AdminStats
-}
-
-export default function AdminPageClient({ users, stats }: Props) {
+export default function AdminPageClient({ users, stats }: { users: AdminUserRow[]; stats: AdminStats }) {
   return (
-    <AccessAppLayout variant="default">
-      <div className="access-platform access-platform-page access-shell-page access-shell-page--wide">
-        <PageHeader
-          title="Admin"
-          description={`${stats.total} users · ${stats.paid} paid · $${stats.mrr_estimate.toLocaleString()} MRR estimate`}
-        />
-
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
-          <StatCard label="Total users" value={String(stats.total)} />
-          <StatCard label="Paid" value={String(stats.paid)} sub={`Builder + Operator`} />
-          <StatCard label="Free" value={String(stats.free)} />
-          <StatCard label="Founder" value={String(stats.founder)} />
-          <StatCard label="MRR estimate" value={`$${stats.mrr_estimate.toLocaleString()}`} sub="Based on active plans" />
-        </div>
-
-        {/* User table */}
-        <SectionPanel title="All users">
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              fontSize: '0.82rem',
-              fontFamily: 'var(--mono)',
-            }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  {['Handle', 'Plan', 'Stripe', 'JYSON (mo)', 'Registry', 'Joined'].map((h) => (
-                    <th key={h} style={{
-                      textAlign: 'left',
-                      padding: '8px 12px',
-                      fontSize: '0.62rem',
-                      letterSpacing: '0.1em',
-                      color: 'var(--text-muted)',
-                      fontWeight: 400,
-                      textTransform: 'uppercase',
-                      whiteSpace: 'nowrap',
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
-                      {u.handle ?? <span style={{ color: 'var(--text-muted)' }}>—</span>}
-                    </td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <PlanBadge plan={u.plan} />
-                    </td>
-                    <td style={{ padding: '10px 12px', color: u.stripe_customer_id ? 'var(--success)' : 'var(--text-muted)' }}>
-                      {u.stripe_customer_id ? '✓' : '—'}
-                    </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>
-                      {u.jyson_messages_mo}
-                    </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>
-                      {u.registry_objects_total}
-                    </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                      {formatDate(u.created_at)}
-                    </td>
-                  </tr>
-                ))}
-                {users.length === 0 && (
-                  <tr>
-                    <td colSpan={6} style={{ padding: '24px 12px', color: 'var(--text-muted)', textAlign: 'center' }}>
-                      No users yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </SectionPanel>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Overview</h1>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>{stats.total} accounts · {stats.paid} paid · ${stats.mrr_estimate.toLocaleString()} MRR estimate</p>
       </div>
-    </AccessAppLayout>
+
+      {/* Stat cards */}
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
+        <StatCard label="Total accounts" value={String(stats.total)} />
+        <StatCard label="Paid" value={String(stats.paid)} sub="Builder + Operator" color="#7C6CF8" />
+        <StatCard label="Free tier" value={String(stats.free)} />
+        <StatCard label="Founder" value={String(stats.founder)} color="var(--gold)" />
+        <StatCard label="MRR estimate" value={`$${stats.mrr_estimate.toLocaleString()}`} sub="Active paid plans" color="var(--success)" />
+      </div>
+
+      {/* User table */}
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ padding: '14px 18px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', margin: 0 }}>All accounts</h2>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>{users.length} total</span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, fontFamily: 'var(--mono)' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                {['Handle', 'Plan', 'Stripe', 'JYSON/mo', 'Registry', 'Joined', 'Actions'].map((h) => (
+                  <th key={h} style={{
+                    textAlign: 'left', padding: '8px 14px', fontSize: 10,
+                    letterSpacing: '0.1em', color: 'var(--text-muted)', fontWeight: 400, textTransform: 'uppercase', whiteSpace: 'nowrap',
+                  }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <td style={{ padding: '10px 14px', color: 'var(--text)', whiteSpace: 'nowrap' }}>
+                    {u.handle ?? <span style={{ color: 'var(--text-muted)' }}>—</span>}
+                  </td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{
+                      fontSize: 10, fontFamily: 'var(--mono)', letterSpacing: '0.08em',
+                      color: PLAN_COLOR[u.plan] ?? 'var(--text-muted)',
+                      background: 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${PLAN_COLOR[u.plan] ?? 'var(--border)'}`,
+                      borderRadius: 3, padding: '2px 7px',
+                    }}>
+                      {u.plan.toUpperCase()}
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px 14px', color: u.stripe_customer_id ? 'var(--success)' : 'var(--text-muted)' }}>
+                    {u.stripe_customer_id ? '✓' : '—'}
+                  </td>
+                  <td style={{ padding: '10px 14px', color: 'var(--text-dim)' }}>{u.jyson_messages_mo}</td>
+                  <td style={{ padding: '10px 14px', color: 'var(--text-dim)' }}>{u.registry_objects_total}</td>
+                  <td style={{ padding: '10px 14px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatDate(u.created_at)}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <Link href={`/admin/users/${u.id}`} style={{
+                      fontSize: 11, color: 'var(--accent)', textDecoration: 'none',
+                      padding: '3px 10px', border: '1px solid rgba(64,192,208,0.25)',
+                      borderRadius: 4, whiteSpace: 'nowrap',
+                    }}>
+                      Manage →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan={7} style={{ padding: '32px 14px', color: 'var(--text-muted)', textAlign: 'center' }}>
+                    No accounts yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   )
 }
