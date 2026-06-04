@@ -406,3 +406,34 @@ body:has(.access-plans-v2) {
   text-decoration: none;
   font-weight: 500;
 }
+
+/* ── Launch pricing ─────────────────────────────────────────────────────────── */
+
+.access-plans-v2__price-original {
+  font-size: 15px;
+  color: var(--plans-text-muted);
+  text-decoration: line-through;
+  font-weight: 400;
+  align-self: baseline;
+}
+
+.access-plans-v2__launch-label {
+  margin: 3px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--plans-accent);
+  letter-spacing: 0.02em;
+}
+
+.access-plans-v2__savings-badge {
+  display: inline-block;
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2d8a6e;
+  background: rgba(45, 138, 110, 0.08);
+  border: 1px solid rgba(45, 138, 110, 0.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+}

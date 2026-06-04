@@ -232,19 +232,21 @@ export default function PublicHomePage() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 14, maxWidth: 860, margin: '0 auto' }}>
           {[
-            { name: 'Free', price: '$0', desc: 'Core registry, 50 JYSON messages/month, 5 objects.', cta: 'Start free', highlight: false },
-            { name: 'Operator', price: '$299', period: '/mo', desc: 'Unlimited registry, 25 objects, full JYSON access, offers, blueprints.', cta: 'Start Operator', highlight: false },
-            { name: 'Builder', price: '$599', period: '/mo', desc: 'Unlimited everything. Full AI, workflows, and enterprise infrastructure.', cta: 'Start Builder', highlight: true },
+            { name: 'Free', price: '$0', desc: 'Core registry, 50 JYSON messages/month, 5 objects.', cta: 'Start free', highlight: false, launchNote: null, originalPrice: null },
+            { name: 'Operator', price: '$149', originalPrice: '$299', period: '/mo', desc: 'Start building with ACCESS. Full JYSON, registry, projects, blueprints.', cta: 'Start Operator', highlight: false, launchNote: '50% founder launch discount applied.' },
+            { name: 'Builder', price: '$299', originalPrice: '$599', period: '/mo', desc: 'Build systems, workflows, and infrastructure. Full AI intelligence stack.', cta: 'Start Builder', highlight: true, launchNote: '50% founder launch discount applied.' },
           ].map((plan) => (
             <div key={plan.name} style={{ background: plan.highlight ? 'var(--accent-glow)' : 'var(--surface)', border: `1px solid ${plan.highlight ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 10, padding: 24, position: 'relative' }}>
               {plan.highlight && (
                 <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: 'var(--accent)', color: 'var(--on-accent)', fontSize: 10, fontFamily: 'var(--mono)', letterSpacing: '0.1em', padding: '3px 12px', borderRadius: 100, whiteSpace: 'nowrap', textTransform: 'uppercase' }}>Most popular</div>
               )}
               <p style={{ fontSize: 12, fontFamily: 'var(--mono)', color: 'var(--text-muted)', margin: '0 0 8px', letterSpacing: '0.06em' }}>{plan.name}</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, marginBottom: 12 }}>
-                <span style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text)' }}>{plan.price}</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
+                <span style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text)' }}>{plan.price}</span>
                 {plan.period && <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{plan.period}</span>}
+                {plan.originalPrice && <span style={{ fontSize: 13, color: 'var(--text-muted)', textDecoration: 'line-through' }}>{plan.originalPrice}</span>}
               </div>
+              {plan.launchNote && <p style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 10 }}>{plan.launchNote}</p>}
               <p style={{ fontSize: 13, color: 'var(--text-dim)', lineHeight: 1.55, marginBottom: 16 }}>{plan.desc}</p>
               <button onClick={startBuilding} style={{ width: '100%', padding: '10px', borderRadius: 6, border: plan.highlight ? 'none' : '1px solid var(--border)', background: plan.highlight ? 'var(--accent)' : 'transparent', color: plan.highlight ? 'var(--on-accent)' : 'var(--text)', fontSize: 13, fontFamily: 'var(--mono)', cursor: 'pointer', letterSpacing: '0.04em' }}>
                 {plan.cta} →

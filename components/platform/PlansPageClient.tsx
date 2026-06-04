@@ -8,6 +8,8 @@ import {
   getPlanCta,
   getPlanDisplayPricing,
   type PlanTierConfig,
+  PLAN_ANNUAL_EQ_MONTHLY_USD,
+  PLAN_ANNUAL_SAVINGS_USD,
 } from '@/lib/stripe/plans'
 import type { BillingInterval } from '@/lib/stripe/prices'
 import { PrimaryButton, SecondaryButton } from '@/lib/design-system/components/platform'
@@ -123,11 +125,22 @@ function PlanCard({
         <div className="access-plans-v2__price-row">
           <span className="access-plans-v2__price">{formatUsd(pricing.amount)}</span>
           <span className="access-plans-v2__period">{pricing.periodLabel}</span>
+          {pricing.originalAmount ? (
+            <span className="access-plans-v2__price-original">{formatUsd(pricing.originalAmount)}</span>
+          ) : null}
         </div>
+        {interval === 'month' && pricing.launchLabel ? (
+          <p className="access-plans-v2__launch-label">{pricing.launchLabel}</p>
+        ) : null}
         {interval === 'year' && pricing.equivalentMonthly ? (
-          <p className="access-plans-v2__compare">
-            {formatUsd(pricing.equivalentMonthly)}/month equivalent
-          </p>
+          <>
+            <p className="access-plans-v2__compare">
+              {formatUsd(pricing.equivalentMonthly)}/month equivalent
+            </p>
+            <p className="access-plans-v2__savings-badge">
+              Save ${PLAN_ANNUAL_SAVINGS_USD[paidPlan].toLocaleString('en-US')}+/year
+            </p>
+          </>
         ) : null}
         {pricing.savingsLabel ? (
           <p className="access-plans-v2__helper">{pricing.savingsLabel}</p>
@@ -185,13 +198,13 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
         </Link>
 
         <header className="access-plans-v2__hero">
-          <p className="access-plans-v2__eyebrow">Plans</p>
+          <p className="access-plans-v2__eyebrow">Founder Launch Pricing</p>
           <h1 className="access-plans-v2__title">
-            Choose the plan that fits you
+            Start building at half the price.
           </h1>
           <p className="access-plans-v2__subtitle">
-            One place for your business ideas and notes. JYSON as your AI guide. Memory that
-            picks up where you left off.
+            50% off your first billing cycle — automatically applied at checkout.
+            No code needed. Prices return to standard after your first month.
           </p>
           {currentPlan && currentPlan !== 'free' ? (
             <p className="access-plans-v2__current">
@@ -225,7 +238,7 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
             </button>
           </div>
           <p className="access-plans-v2__toggle-hint">
-            Monthly is flexible. Annual saves more when you are ready to stay for the year.
+            Annual plans lock in a lower rate — up to $3,200+ in savings vs monthly.
           </p>
           {isDev && !annualBillingEnabled ? (
             <p className="access-plans-v2__dev-warn" role="status">

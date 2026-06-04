@@ -1,0 +1,282 @@
+/**
+ * ACCESS Dense — desktop-first density standard
+ * Target: 2560×1440 primary, 3840×2160 secondary.
+ * All overrides are scoped to large viewports so mobile/tablet are unaffected.
+ *
+ * Benchmark: Stripe Dashboard, Linear, Arc, Notion.
+ * Goal: operational density, not marketing whitespace.
+ */
+
+/* ── Core token overrides at desktop widths ────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  :root,
+  html[data-theme='night'],
+  html[data-theme='day'] {
+    /* Typography — spec-aligned */
+    --text-hero:       clamp(3rem, 3.5vw, 3.5rem);    /* 48–56px */
+    --text-page-title: clamp(1.75rem, 2.2vw, 2rem);   /* 28–32px */
+    --text-section:    clamp(1.25rem, 1.5vw, 1.5rem); /* 20–24px */
+    --text-card-title: 1rem;                           /* 16px */
+    --text-body:       0.875rem;                       /* 14px */
+    --text-meta:       0.75rem;                        /* 12px */
+    --text-code:       0.75rem;                        /* 12px */
+
+    /* Spacing — tighter vertical rhythm */
+    --page-padding-x:  clamp(28px, 2.5vw, 56px);
+    --page-padding-y:  clamp(18px, 1.5vw, 28px);
+
+    /* Shell chrome */
+    --os-topbar-height: 40px;
+    --os-rail-width:    220px;
+    --os-context-width: 280px;
+
+    /* Content containers */
+    --content-max:    1440px;
+    --content-narrow: 860px;
+
+    /* Spacing scale — 20% tighter */
+    --ds-space-1: 3px;
+    --ds-space-2: 6px;
+    --ds-space-3: 10px;
+    --ds-space-4: 14px;
+    --ds-space-5: 18px;
+    --ds-space-6: 20px;
+    --ds-space-8: 28px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root,
+  html[data-theme='night'],
+  html[data-theme='day'] {
+    --content-max:       1680px;
+    --content-narrow:    960px;
+    --page-padding-x:    clamp(40px, 3vw, 72px);
+  }
+}
+
+@media (min-width: 2560px) {
+  :root,
+  html[data-theme='night'],
+  html[data-theme='day'] {
+    --content-max:       1920px;
+    --page-padding-x:    clamp(56px, 3.5vw, 96px);
+    --text-body:         0.9375rem; /* 15px on 4K — easier to read */
+    --text-meta:         0.8125rem;
+  }
+}
+
+/* ── Shell density ─────────────────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-ds-shell__topbar {
+    min-height: var(--os-topbar-height);
+    padding: 0 var(--ds-space-5);
+  }
+
+  .access-ds-shell__main {
+    padding: var(--ds-space-5) var(--ds-space-5) var(--ds-space-8);
+  }
+
+  .access-ds-shell__rail {
+    width: var(--os-rail-width);
+  }
+}
+
+/* ── Nav rail — compact ────────────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-nav-item {
+    padding: 5px 10px;
+    font-size: var(--text-meta);
+  }
+
+  .access-nav-section-label {
+    font-size: 0.625rem;
+    padding: 10px 10px 4px;
+  }
+}
+
+/* ── Platform page container ───────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-platform-page {
+    max-width: none;
+    padding: var(--page-padding-y) var(--page-padding-x) 48px;
+  }
+
+  .access-platform-body {
+    font-size: var(--text-body);
+    line-height: 1.55;
+  }
+
+  .access-platform-meta {
+    font-size: var(--text-meta);
+  }
+}
+
+/* ── Section panel cards — 20-30% smaller ─────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-shell-panel,
+  .access-platform-section-panel {
+    padding: 14px 16px;
+  }
+
+  .access-shell-list-row {
+    padding: 10px 0;
+    min-height: 40px;
+  }
+
+  .access-shell-list-row__title {
+    font-size: var(--text-body);
+  }
+
+  .access-shell-list-row__sub {
+    font-size: var(--text-meta);
+  }
+
+  /* Page header */
+  .access-platform-page-header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+  }
+
+  .access-platform-page-header h1,
+  .access-platform-page-title {
+    font-size: var(--text-page-title);
+  }
+
+  .access-platform-page-description {
+    font-size: var(--text-body);
+    margin-top: 4px;
+  }
+}
+
+/* ── Data grid — registry, projects, agents, assets ───────────────────────── */
+
+@media (min-width: 1440px) {
+  /* Any table within the app shell */
+  .access-ds-shell__main table,
+  .access-platform-page table {
+    font-size: var(--text-meta);
+  }
+
+  .access-ds-shell__main th,
+  .access-platform-page th {
+    padding: 6px 12px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+  }
+
+  .access-ds-shell__main td,
+  .access-platform-page td {
+    padding: 7px 12px;
+  }
+
+  /* Registry module rows */
+  .registry-row,
+  .access-registry-row {
+    padding: 8px 12px;
+    min-height: 36px;
+  }
+
+  /* Project cards */
+  .access-project-card,
+  .builder-project-card {
+    padding: 14px 16px;
+  }
+}
+
+/* ── Marketing pages — wider containers ────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-marketing-root {
+    --mkt-max: 1600px;
+  }
+
+  .access-mkt-hero-v2 > div[style] {
+    max-width: 1000px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .access-marketing-root {
+    --mkt-max: 1760px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .access-marketing-root {
+    --mkt-max: 1920px;
+  }
+}
+
+/* ── Plans page ────────────────────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-plans-v2__inner {
+    max-width: 1200px;
+  }
+
+  .access-plans-v2__card {
+    padding: 22px 24px;
+  }
+
+  .access-plans-v2__price {
+    font-size: 1.875rem; /* 30px — from 2.25rem/36px */
+  }
+
+  .access-plans-v2__card-desc {
+    font-size: var(--text-body);
+  }
+
+  .access-plans-v2__includes li {
+    font-size: var(--text-body);
+    padding: 4px 0;
+  }
+}
+
+/* ── Settings pages — tighter ──────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-settings-profile-grid {
+    gap: 16px;
+  }
+
+  .access-settings-section-panel {
+    padding: 16px 18px;
+  }
+}
+
+/* ── Topbar typography ─────────────────────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  .access-ds-shell__topbar,
+  .access-os-topbar {
+    font-size: var(--text-meta);
+  }
+
+  .access-os-topbar-root,
+  .access-os-topbar-current,
+  .access-nav-breadcrumb-current {
+    font-size: var(--text-meta);
+  }
+}
+
+/* ── Dashboard — full-width utilization ────────────────────────────────────── */
+
+@media (min-width: 1440px) {
+  section[aria-label="Home"] > div {
+    max-width: 1400px;
+    padding-left: var(--page-padding-x);
+    padding-right: var(--page-padding-x);
+  }
+}
+
+@media (min-width: 1920px) {
+  section[aria-label="Home"] > div {
+    max-width: 1680px;
+  }
+}

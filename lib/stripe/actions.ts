@@ -9,7 +9,7 @@ import {
   type StripePlan,
 } from './client'
 import { getCheckoutBrandingSettings, resolveAppOrigin } from './branding'
-import { buildCheckoutSessionMetadata, getPlanTier } from './plans'
+import { buildCheckoutSessionMetadata, getPlanTier, LAUNCH_COUPON_ID } from './plans'
 import { ensureStripeCustomer } from './customer'
 import {
   getStripePriceId,
@@ -109,13 +109,11 @@ export async function createCheckoutSession(
       description: tier.checkoutDescription,
     },
     custom_text: tier.checkoutDescription
-      ? {
-          submit: {
-            message: tier.checkoutDescription,
-          },
-        }
+      ? { submit: { message: tier.checkoutDescription } }
       : undefined,
-    allow_promotion_codes: true,
+    // Apply FOUNDER50 launch coupon automatically on monthly checkout.
+    // Removes allow_promotion_codes since discounts is mutually exclusive with it.
+    discounts: [{ coupon: LAUNCH_COUPON_ID }],
     ...branding,
   })
 

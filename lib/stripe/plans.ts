@@ -14,21 +14,30 @@ export const PLAN_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number>
 
 /** Annual commitment prices (USD). */
 export const PLAN_ANNUAL_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 2388,
-  builder: 4788,
+  operator: 1988,
+  builder: 3988,
 }
 
 /** Equivalent monthly when billed annually (USD). */
 export const PLAN_ANNUAL_EQ_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 199,
-  builder: 399,
+  operator: 165,
+  builder: 332,
 }
 
 /** Annual savings vs paying monthly for 12 months (USD). */
 export const PLAN_ANNUAL_SAVINGS_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 1200,
-  builder: 2400,
+  operator: 1600,
+  builder: 3200,
 }
+
+/** Founder launch displayed prices — applied via FOUNDER50 coupon (50% off first cycle). */
+export const PLAN_LAUNCH_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
+  operator: 149,
+  builder: 299,
+}
+
+/** Coupon ID applied automatically to monthly checkout sessions during the launch window. */
+export const LAUNCH_COUPON_ID = 'FOUNDER50'
 
 /** @deprecated Use PLAN_MONTHLY_USD */
 export const PLAN_FOUNDING_MONTHLY_USD = PLAN_MONTHLY_USD
@@ -42,6 +51,8 @@ export const PLAN_PUBLIC_MONTHLY_USD = PLAN_MONTHLY_USD
 export type PlanDisplayPricing = {
   amount: number
   periodLabel: string
+  originalAmount?: number
+  launchLabel?: string
   equivalentMonthly?: number
   savingsLabel?: string
 }
@@ -52,8 +63,10 @@ export function getPlanDisplayPricing(
 ): PlanDisplayPricing {
   if (interval === 'month') {
     return {
-      amount: PLAN_MONTHLY_USD[plan],
+      amount: PLAN_LAUNCH_MONTHLY_USD[plan],
+      originalAmount: PLAN_MONTHLY_USD[plan],
       periodLabel: '/month',
+      launchLabel: '50% founder launch discount applied.',
     }
   }
 
@@ -61,7 +74,7 @@ export function getPlanDisplayPricing(
     amount: PLAN_ANNUAL_USD[plan],
     periodLabel: '/year',
     equivalentMonthly: PLAN_ANNUAL_EQ_MONTHLY_USD[plan],
-    savingsLabel: `Save $${PLAN_ANNUAL_SAVINGS_USD[plan].toLocaleString('en-US')}/year compared to monthly.`,
+    savingsLabel: `Save $${PLAN_ANNUAL_SAVINGS_USD[plan].toLocaleString('en-US')}+ vs monthly.`,
   }
 }
 
