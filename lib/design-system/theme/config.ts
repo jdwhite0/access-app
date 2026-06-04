@@ -6,7 +6,7 @@ import type { ThemePreference } from './storage'
  *
  * Override: localStorage.setItem('access-theme-preference', 'auto'|'day'|'night')
  */
-export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'auto'
+export const DEFAULT_THEME_PREFERENCE: ThemePreference = 'day'
 
 /** Day: 5:30 AM – 5:59 PM */
 export const DAY_START_MINUTES = 5 * 60 + 30
