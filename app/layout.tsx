@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/components/design-system/ThemeProviderClient'
+import { DensityProvider, DENSITY_INIT_SCRIPT } from '@/lib/design-system/density/DensityProvider'
 import JysonGlobalLayer from '@/components/jyson/JysonGlobalLayer'
 import { getThemeBootScript } from '@/lib/design-system/theme/boot-script'
 import './globals.css'
@@ -17,10 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en" suppressHydrationWarning>
         <head>
           <script dangerouslySetInnerHTML={{ __html: getThemeBootScript() }} />
+          <script dangerouslySetInnerHTML={{ __html: DENSITY_INIT_SCRIPT }} />
         </head>
         <body>
           <ThemeProvider>
-            <JysonGlobalLayer>{children}</JysonGlobalLayer>
+            <DensityProvider>
+              <JysonGlobalLayer>{children}</JysonGlobalLayer>
+            </DensityProvider>
           </ThemeProvider>
         </body>
       </html>

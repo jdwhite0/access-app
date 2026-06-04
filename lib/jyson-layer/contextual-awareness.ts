@@ -45,14 +45,23 @@ export type JysonSuggestion = {
 }
 
 const PLACE_FOCUS: Record<PrimaryNavId, string> = {
-  home: 'Home',
-  projects: 'Projects',
-  companion: 'JYSON',
-  agents: 'Agents',
-  memory: 'Memory',
-  offers: 'Offers',
-  registry: 'Registry',
-  settings: 'Settings',
+  home:         'Home',
+  projects:     'Projects',
+  companion:    'Intelligence',
+  agents:       'Team',
+  memory:       'Knowledge',
+  offers:       'Offers',
+  registry:     'Assets',
+  settings:     'Platform',
+  systems:      'Systems',
+  assets:       'Assets',
+  customers:    'Customers',
+  intelligence: 'Intelligence',
+  knowledge:    'Knowledge',
+  team:         'Team',
+  platform:     'Platform',
+  admin:        'Admin',
+  terminal:     'Terminal',
 }
 
 const LAST_PLACE_LABEL: Record<string, string> = {

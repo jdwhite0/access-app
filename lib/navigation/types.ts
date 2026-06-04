@@ -7,6 +7,18 @@ export type PrimaryNavId =
   | 'offers'
   | 'registry'
   | 'settings'
+  // New outcome-based IDs (map to existing or new routes)
+  | 'systems'
+  | 'assets'
+  | 'customers'
+  | 'intelligence'
+  | 'knowledge'
+  | 'team'
+  | 'platform'
+  | 'admin'
+  | 'terminal'
+
+export type NavGroup = 'main' | 'intelligence' | 'platform' | 'founder'
 
 /** Routes linked from Settings — not primary rail */
 export type WorkspaceRouteId = 'founder'
@@ -34,6 +46,8 @@ export type PrimaryNavItem = {
   subtitle: string
   href: string
   glyph: string
+  group: NavGroup
+  founderOnly?: boolean
 }
 
 export type ContextNavItem = {

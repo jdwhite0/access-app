@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 import MemoryPageClient from '@/components/platform/MemoryPageClient'
 
 export const metadata = {
-  title: 'Memory — ACCESS',
-  description: 'What JYSON knows about you — your identity, world, and context.',
+  title: 'Knowledge — ACCESS',
+  description: 'What ACCESS remembers — your identity, business context, and saved intelligence.',
 }
 
 export default async function MemoryPage() {

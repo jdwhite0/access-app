@@ -3,14 +3,23 @@ import type { FounderContextId, PrimaryNavId } from './types'
 import { FOUNDER_CONTEXT, PRIMARY_NAV } from './config'
 
 const PRIMARY_DESTINATION: Record<PrimaryNavId, string> = {
-  home: 'Home',
-  projects: 'Projects',
-  companion: 'JYSON',
-  agents: 'Agents',
-  memory: 'Memory',
-  offers: 'Offers',
-  registry: 'Registry',
-  settings: 'Settings',
+  home:         'Home',
+  projects:     'Projects',
+  companion:    'Intelligence',
+  agents:       'Team',
+  memory:       'Knowledge',
+  offers:       'Offers',
+  registry:     'Assets',
+  settings:     'Platform',
+  systems:      'Systems',
+  assets:       'Assets',
+  customers:    'Customers',
+  intelligence: 'Intelligence',
+  knowledge:    'Knowledge',
+  team:         'Team',
+  platform:     'Platform',
+  admin:        'Admin',
+  terminal:     'Terminal',
 }
 
 export function buildBreadcrumbs(input: {

@@ -1,0 +1,181 @@
+/**
+ * ACCESS Display Scale System
+ * Inspired by macOS "More Space" — three density modes.
+ * Applied via [data-density] on <html>.
+ *
+ * Default (comfortable) — balanced, works for all users.
+ * more-space — sharper, denser, founder/operator standard.
+ * larger-text — accessibility-first, larger type and spacing.
+ */
+
+/* ── Comfortable (default) ────────────────────────────────────────────────── */
+
+:root,
+html[data-density="comfortable"] {
+  --app-body-font-size:   14px;
+  --app-small-font-size:  12px;
+  --app-meta-font-size:   11px;
+  --app-card-padding:     20px 22px;
+  --app-section-gap:      28px;
+  --app-grid-gap:         16px;
+  --app-row-height:       42px;
+  --app-cell-padding:     10px 14px;
+  --app-content-max:      1160px;
+  --app-sidebar-width:    220px;
+  --app-page-padding-x:   clamp(20px, 3vw, 44px);
+  --app-page-padding-y:   clamp(20px, 3vh, 36px);
+  --app-topbar-height:    44px;
+  --app-radius:           8px;
+  --app-radius-sm:        5px;
+}
+
+/* ── More Space ───────────────────────────────────────────────────────────── */
+
+html[data-density="more-space"] {
+  --app-body-font-size:   13px;
+  --app-small-font-size:  11px;
+  --app-meta-font-size:   10px;
+  --app-card-padding:     14px 16px;
+  --app-section-gap:      20px;
+  --app-grid-gap:         10px;
+  --app-row-height:       34px;
+  --app-cell-padding:     7px 12px;
+  --app-content-max:      1680px;
+  --app-sidebar-width:    200px;
+  --app-page-padding-x:   clamp(16px, 2.5vw, 36px);
+  --app-page-padding-y:   clamp(14px, 2vh, 24px);
+  --app-topbar-height:    38px;
+  --app-radius:           6px;
+  --app-radius-sm:        4px;
+}
+
+/* ── Larger Text ──────────────────────────────────────────────────────────── */
+
+html[data-density="larger-text"] {
+  --app-body-font-size:   16px;
+  --app-small-font-size:  13px;
+  --app-meta-font-size:   12px;
+  --app-card-padding:     24px 28px;
+  --app-section-gap:      36px;
+  --app-grid-gap:         20px;
+  --app-row-height:       52px;
+  --app-cell-padding:     13px 18px;
+  --app-content-max:      1320px;
+  --app-sidebar-width:    248px;
+  --app-page-padding-x:   clamp(24px, 4vw, 56px);
+  --app-page-padding-y:   clamp(24px, 4vh, 48px);
+  --app-topbar-height:    52px;
+  --app-radius:           10px;
+  --app-radius-sm:        6px;
+}
+
+/* ── Apply tokens to shell components ────────────────────────────────────── */
+
+.access-ds-shell__topbar,
+.access-os-topbar {
+  min-height: var(--app-topbar-height);
+}
+
+.access-ds-shell__rail {
+  width: var(--app-sidebar-width);
+}
+
+.access-ds-shell__body,
+.access-ds-shell__body--with-context {
+  grid-template-columns: var(--app-sidebar-width) minmax(0, 1fr);
+}
+
+.access-ds-shell__body--with-context {
+  grid-template-columns: var(--app-sidebar-width) minmax(0, 1fr) var(--os-context-width);
+}
+
+/* Nav links */
+.access-nav-link {
+  font-size: var(--app-small-font-size);
+}
+
+.access-nav-link__subtitle {
+  font-size: var(--app-meta-font-size);
+}
+
+.access-nav-section-label {
+  font-size: var(--app-meta-font-size);
+}
+
+/* Page containers */
+.access-platform-page,
+.access-shell-page {
+  padding: var(--app-page-padding-y) var(--app-page-padding-x);
+}
+
+/* Section panels / cards */
+.access-shell-panel,
+.access-platform-section-panel {
+  padding: var(--app-card-padding);
+  border-radius: var(--app-radius);
+}
+
+/* Row items */
+.access-shell-list-row {
+  min-height: var(--app-row-height);
+  padding: 0;
+}
+
+.access-shell-list-row__title {
+  font-size: var(--app-body-font-size);
+}
+
+.access-shell-list-row__sub {
+  font-size: var(--app-small-font-size);
+}
+
+/* Body and meta text */
+.access-platform-body {
+  font-size: var(--app-body-font-size);
+}
+
+.access-platform-meta {
+  font-size: var(--app-meta-font-size);
+}
+
+/* Page header */
+.access-platform-page-title {
+  font-size: clamp(20px, calc(var(--app-body-font-size) * 1.5), 28px);
+}
+
+.access-platform-page-description {
+  font-size: var(--app-body-font-size);
+}
+
+/* Tables */
+table {
+  font-size: var(--app-body-font-size);
+}
+
+th {
+  font-size: var(--app-meta-font-size);
+  padding: var(--app-cell-padding);
+}
+
+td {
+  padding: var(--app-cell-padding);
+}
+
+/* Buttons */
+.access-settings-btn,
+.access-platform-primary-btn,
+.access-platform-secondary-btn {
+  font-size: var(--app-small-font-size);
+}
+
+/* Form inputs */
+.access-settings-form input,
+.access-settings-form textarea,
+.access-settings-form select {
+  font-size: var(--app-body-font-size);
+}
+
+/* Command bar */
+.access-home-stripe__command-input {
+  font-size: var(--app-body-font-size);
+}

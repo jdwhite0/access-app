@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 import AgentsPageClient from '@/components/platform/AgentsPageClient'
 
 export const metadata = {
-  title: 'Agents — ACCESS',
-  description: 'Your AI team — JYSON, OpenJarvis, and registered agents.',
+  title: 'Team — ACCESS',
+  description: 'AI agents and collaborators — who and what is doing work for you.',
 }
 
 export default async function AgentsPage() {
