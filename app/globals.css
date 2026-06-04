@@ -16,6 +16,7 @@
 @import "../lib/design-system/styles/density.css";
 @import "../lib/design-system/styles/dense.css";
 @import "../lib/design-system/styles/light-fixes.css";
+@import "../lib/design-system/styles/mobile.css";
 
 /* Token defaults live in themes.css — do not redeclare here */
 

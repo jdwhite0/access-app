@@ -45,6 +45,7 @@ export function ACCESSShell({
       )}
     >
       <header className={cn('access-ds-shell__topbar', 'access-os-topbar')}>
+        {/* Mobile: [Menu] | wordmark center | placeholder right */}
         <button
           type="button"
           className="access-ds-shell__mobile-toggle"
@@ -52,7 +53,7 @@ export function ACCESSShell({
           aria-expanded={railOpen}
           onClick={() => setRailOpen((o) => !o)}
         >
-          ≡
+          {railOpen ? '✕' : '≡'}
         </button>
         <div className="access-ds-shell__topbar-inner">{topbar}</div>
       </header>
@@ -68,7 +69,8 @@ export function ACCESSShell({
           className={cn('access-ds-shell__rail', 'access-os-rail')}
           aria-label="Module navigation"
           onClick={(e) => {
-            if ((e.target as HTMLElement).closest('button')) closeRail()
+            const t = e.target as HTMLElement
+            if (t.closest('a') || t.closest('button')) closeRail()
           }}
         >
           {navigation}

@@ -1,0 +1,333 @@
+/**
+ * ACCESS Mobile — native-first layouts for <768px
+ * Reference: Stripe Dashboard mobile, Linear mobile, Notion mobile.
+ * These are NOT responsive overrides. They are dedicated mobile layouts.
+ *
+ * Verified viewports: 390×844, 393×852, 430×932
+ */
+
+@media (max-width: 768px) {
+
+  /* ── Document ──────────────────────────────────────────────────────────── */
+
+  html, body {
+    -webkit-text-size-adjust: 100%;
+    touch-action: pan-y;
+  }
+
+  /* ── Shell topbar — [Menu] ACCESS [Actions] ────────────────────────────── */
+
+  .access-ds-shell__topbar,
+  .access-os-topbar {
+    height: 52px;
+    min-height: 52px;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 48px 1fr 48px;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Mobile toggle — left */
+  .access-ds-shell__mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 20px;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 8px;
+    transition: background 0.12s;
+  }
+
+  .access-ds-shell__mobile-toggle:active {
+    background: rgba(10, 37, 64, 0.06);
+  }
+
+  html[data-theme='night'] .access-ds-shell__mobile-toggle:active {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Topbar inner — center wordmark */
+  .access-ds-shell__topbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+
+  /* Hide breadcrumbs on mobile — show wordmark instead */
+  .access-nav-breadcrumbs,
+  .access-nav-topbar-row {
+    display: none;
+  }
+
+  /* Mobile wordmark (injected via ::before on topbar) */
+  .access-ds-shell__topbar-inner::before {
+    content: 'ACCESS';
+    font-family: var(--mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  /* Right side meta — collapsed on mobile */
+  .access-nav-topbar-meta {
+    display: none;
+  }
+
+  /* ── Navigation drawer — full-height ───────────────────────────────────── */
+
+  .access-ds-shell__rail {
+    top: 52px !important;
+    width: min(296px, 85vw) !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* ── Body layout — single column ───────────────────────────────────────── */
+
+  .access-ds-shell__body,
+  .access-ds-shell__body--with-context {
+    grid-template-columns: 1fr !important;
+    height: calc(100dvh - 52px);
+    overflow: hidden;
+  }
+
+  .access-ds-shell__main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: max(80px, env(safe-area-inset-bottom, 80px));
+  }
+
+  /* Hide context panel on mobile */
+  .access-ds-shell__context {
+    display: none !important;
+  }
+
+  /* ── Page containers ────────────────────────────────────────────────────── */
+
+  .access-platform-page,
+  .access-shell-page,
+  .access-shell-page--wide,
+  .access-platform-page.access-shell-page,
+  .access-platform-page.access-shell-page--wide {
+    max-width: 100% !important;
+    padding: 16px !important;
+    gap: 16px !important;
+  }
+
+  /* ── Cards — full width, fixed padding ─────────────────────────────────── */
+
+  .access-shell-card,
+  .access-shell-stat,
+  .access-shell-panel,
+  .access-platform-section-panel,
+  .access-settings-section-panel {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  /* Force any grid to single column */
+  .access-settings-profile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* ── Typography — mobile scale ──────────────────────────────────────────── */
+
+  .access-platform-hero-title {
+    font-size: 32px !important;
+    line-height: 1.1;
+  }
+
+  .access-platform-page-title {
+    font-size: 22px !important;
+  }
+
+  h1 {
+    font-size: 22px !important;
+    letter-spacing: -0.025em;
+  }
+
+  .access-platform-body {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Dashboard (AccessHome) ─────────────────────────────────────────────── */
+
+  /* Stat card grid → 2 columns on mobile */
+  section[aria-label="Home"] > div {
+    padding: 16px !important;
+  }
+
+  /* ── Plans page ─────────────────────────────────────────────────────────── */
+
+  .access-plans-v2__grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .access-plans-v2__inner {
+    padding: 0 16px 80px !important;
+  }
+
+  .access-plans-v2__hero {
+    padding: 24px 0 !important;
+  }
+
+  .access-plans-v2__title {
+    font-size: 26px !important;
+  }
+
+  .access-plans-v2__toggle-wrap {
+    margin: 0 0 20px !important;
+  }
+
+  /* ── Marketing pages ────────────────────────────────────────────────────── */
+
+  .access-mkt-header {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .access-mkt-header__nav {
+    display: none !important;
+  }
+
+  .access-mkt-header__actions {
+    gap: 8px;
+  }
+
+  /* Hero — single column */
+  section[aria-labelledby="hero-heading"] > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Feature sections — stack */
+  .access-feature-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Settings ────────────────────────────────────────────────────────────── */
+
+  .access-settings-stripe {
+    padding: 0 !important;
+  }
+
+  .access-settings-row {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+  }
+
+  .access-settings-row__action {
+    width: 100%;
+  }
+
+  .access-settings-row__action > * {
+    width: 100%;
+  }
+
+  /* ── Admin pages ─────────────────────────────────────────────────────────── */
+
+  /* Admin sidebar → hidden, use back link */
+  .admin-nav-sidebar {
+    display: none !important;
+  }
+
+  /* ── Buttons — touch targets ─────────────────────────────────────────────── */
+
+  button,
+  .access-settings-btn,
+  .access-platform-primary-btn,
+  .access-platform-secondary-btn {
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Inputs ──────────────────────────────────────────────────────────────── */
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    min-height: 44px;
+  }
+
+  /* ── Tables — horizontal scroll container ───────────────────────────────── */
+
+  .access-ds-shell__main table,
+  .access-platform-page table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* ── No horizontal overflow ──────────────────────────────────────────────── */
+
+  .access-ds-shell__main {
+    overflow-x: hidden;
+  }
+
+  /* ── Backdrop overlay ────────────────────────────────────────────────────── */
+
+  .access-ds-shell__backdrop {
+    background: rgba(10, 37, 64, 0.4) !important;
+  }
+
+  html[data-theme='night'] .access-ds-shell__backdrop {
+    background: rgba(0, 0, 0, 0.6) !important;
+  }
+}
+
+/* ── JYSON FAB — mobile bottom-right ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .access-jyson-layer {
+    right: 16px;
+    bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  }
+
+  .access-jyson-layer__orb {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .access-jyson-layer__orb-btn {
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+  }
+
+  .access-jyson-layer__orb-label {
+    display: none;
+  }
+
+  /* Expanded JYSON panel on mobile */
+  .access-jyson-layer__drawer {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+    max-height: 60dvh !important;
+    border-radius: 14px 14px 10px 10px;
+  }
+}
+
+/* ── Safe area insets ─────────────────────────────────────────────────────── */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    .access-ds-shell__main {
+      padding-bottom: max(80px, env(safe-area-inset-bottom));
+    }
+  }
+}

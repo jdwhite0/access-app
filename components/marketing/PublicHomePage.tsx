@@ -558,6 +558,46 @@ export default function PublicHomePage() {
           </p>
         </div>
       </footer>
+      <style>{`
+        @media (max-width: 768px) {
+          /* Hero: single column, visual below copy */
+          section[aria-labelledby="hero-heading"] > div {
+            grid-template-columns: 1fr !important;
+            padding-top: 80px !important;
+          }
+          /* Feature sections: stack */
+          section > div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Bento grid: single column */
+          section > div[style*="repeat(3, 1fr)"] {
+            grid-template-columns: 1fr !important;
+          }
+          section > div[style*="repeat(3, 1fr)"] > div {
+            grid-column: span 1 !important;
+          }
+          /* Stats: 2 columns */
+          section > div[style*="repeat(auto-fit, minmax(200px"] {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          /* Enterprise CTA: stack */
+          section > div[style*="1fr auto"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* Plan cards: single column */
+          section > div[style*="minmax(240px"] {
+            grid-template-columns: 1fr !important;
+          }
+          /* InfrastructureVisual: hide floating panel on mobile */
+          .infra-visual-float {
+            display: none;
+          }
+          /* Marketing header actions on mobile */
+          header[style*="height: 64px"] {
+            height: 56px !important;
+          }
+        }
+      `}</style>
     </AccessMarketingLayout>
   )
 }
