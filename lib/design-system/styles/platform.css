@@ -39,14 +39,13 @@ html[data-theme='night'] {
 }
 
 html[data-theme='day'] {
-  --surface-0: #e8ecef;
-  --surface-1: #f4f6f8;
+  --surface-0: #ffffff;
+  --surface-1: #f6f9fc;
   --surface-2: #ffffff;
   --surface-3: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.85);
-  --gradient-page: radial-gradient(ellipse 120% 80% at 50% -20%, rgba(26, 143, 160, 0.1), transparent 55%),
-    linear-gradient(180deg, #e8ecef 0%, #f0f3f6 100%);
-  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);
+  --surface-glass: rgba(255, 255, 255, 0.92);
+  --gradient-page: none;
+  --gradient-card: none;
 }
 
 .access-platform,

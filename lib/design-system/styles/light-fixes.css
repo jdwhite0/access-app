@@ -1,0 +1,491 @@
+/**
+ * ACCESS Light Theme Fixes
+ * Targeted overrides for day mode only.
+ *
+ * Problem: Many components use color-mix(in srgb, var(--surface-2, #0f1114) X%, transparent)
+ * The dark fallback #0f1114 leaks when --surface-2 isn't resolved or is mixed incorrectly.
+ * This file re-declares those patterns for day mode using white/light values.
+ *
+ * Also fixes rgba(240,240,240,...) hardcoded night-only text colors in globals.
+ */
+
+/* ── App shell color tokens — override dark leaks in day mode ──────────────── */
+
+html[data-theme='day'] {
+
+  /* Shell background layers */
+  --bg:           #ffffff;
+  --surface:      #f6f9fc;
+  --surface-0:    #ffffff;
+  --surface-1:    #f6f9fc;
+  --surface-2:    #ffffff;
+  --surface-3:    #ffffff;
+  --os-surface:   #ffffff;
+
+  /* Text — Stripe quality */
+  --text:         #0a2540;
+  --text-dim:     #425466;
+  --text-muted:   #697386;
+  --text-primary: #0a2540;
+  --text-secondary: #425466;
+
+  /* Borders */
+  --border:          #e6ebf1;
+  --border-primary:  #e6ebf1;
+  --border-secondary: #c8d6e5;
+
+  /* Buttons */
+  --button-primary-bg:     #0a2540;
+  --button-primary-text:   #ffffff;
+  --button-secondary-bg:   #ffffff;
+  --button-secondary-text: #0a2540;
+
+  /* html/body */
+  background: #ffffff;
+  color: #0a2540;
+}
+
+html[data-theme='day'] body {
+  background: #ffffff;
+  color: #0a2540;
+}
+
+/* ── Shell container — white ground ──────────────────────────────────────── */
+
+html[data-theme='day'] .access-ds-shell,
+html[data-theme='day'] .access-app-layout,
+html[data-theme='day'] .access-os-shell,
+html[data-theme='day'] .access-os-workspace {
+  background: #ffffff;
+}
+
+html[data-theme='day'] .access-ds-shell__topbar,
+html[data-theme='day'] .access-os-topbar {
+  background: #ffffff;
+  border-bottom-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-ds-shell__rail {
+  background: #f6f9fc;
+  border-right-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-ds-shell__main,
+html[data-theme='day'] .access-ds-shell__body {
+  background: #ffffff;
+}
+
+/* ── Navigation — override dark surfaces ────────────────────────────────── */
+
+html[data-theme='day'] .access-nav-rail {
+  background: #f6f9fc;
+  border-right: 1px solid #e6ebf1;
+}
+
+html[data-theme='day'] .access-nav-link {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-nav-link:hover {
+  background: rgba(10, 37, 64, 0.04);
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-nav-link.is-active {
+  background: rgba(26, 143, 160, 0.08);
+  color: #1a8fa0;
+}
+
+html[data-theme='day'] .access-nav-link__subtitle {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-nav-section-label {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-nav-rail-brand {
+  border-bottom-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-nav-rail-title {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-nav-rail-footer {
+  border-top-color: #e6ebf1;
+}
+
+/* ── App shell cards/panels — fix color-mix dark fallbacks ─────────────── */
+
+html[data-theme='day'] .access-shell-card {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  box-shadow: 0 1px 3px rgba(10, 37, 64, 0.06);
+}
+
+html[data-theme='day'] .access-shell-card--interactive:hover,
+html[data-theme='day'] a.access-shell-card:hover,
+html[data-theme='day'] button.access-shell-card:hover {
+  background: #f6f9fc;
+  border-color: #c8d6e5;
+  box-shadow: 0 2px 8px rgba(10, 37, 64, 0.08);
+}
+
+html[data-theme='day'] .access-shell-stat {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  box-shadow: 0 1px 3px rgba(10, 37, 64, 0.05);
+}
+
+html[data-theme='day'] .access-shell-panel {
+  background: #ffffff;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-shell-list-row {
+  border-bottom-color: #e6ebf1;
+  color: #425466;
+}
+
+html[data-theme='day'] .access-shell-list-row:hover {
+  background: rgba(10, 37, 64, 0.03);
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-shell-list-row__title {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-shell-list-row__sub {
+  color: #697386;
+}
+
+/* ── Section panel ──────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-platform-section-panel,
+html[data-theme='day'] .access-settings-section-panel {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  box-shadow: 0 1px 3px rgba(10, 37, 64, 0.05);
+}
+
+/* ── Page header ────────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-platform-page-header,
+html[data-theme='day'] .access-platform-page-header + hr {
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-platform-page-title,
+html[data-theme='day'] .access-platform-page-description {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-platform-body {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-platform-meta {
+  color: #697386;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-platform-primary-btn,
+html[data-theme='day'] .access-settings-btn--primary {
+  background: #0a2540;
+  color: #ffffff;
+  border-color: #0a2540;
+}
+
+html[data-theme='day'] .access-platform-primary-btn:hover,
+html[data-theme='day'] .access-settings-btn--primary:hover {
+  background: #1a3550;
+}
+
+html[data-theme='day'] .access-platform-secondary-btn,
+html[data-theme='day'] .access-settings-btn,
+html[data-theme='day'] .access-settings-btn--secondary {
+  background: #ffffff;
+  color: #0a2540;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-platform-secondary-btn:hover,
+html[data-theme='day'] .access-settings-btn:hover {
+  background: #f6f9fc;
+  border-color: #c8d6e5;
+}
+
+html[data-theme='day'] .access-settings-btn--ghost {
+  background: transparent;
+  color: #425466;
+  border-color: #e6ebf1;
+}
+
+/* ── Inputs / Forms ─────────────────────────────────────────────────────── */
+
+html[data-theme='day'] input,
+html[data-theme='day'] textarea,
+html[data-theme='day'] select {
+  background: #ffffff;
+  color: #0a2540;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] input::placeholder,
+html[data-theme='day'] textarea::placeholder {
+  color: #697386;
+}
+
+html[data-theme='day'] input:focus,
+html[data-theme='day'] textarea:focus,
+html[data-theme='day'] select:focus {
+  border-color: #1a8fa0;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(26, 143, 160, 0.12);
+}
+
+html[data-theme='day'] .access-settings-form input,
+html[data-theme='day'] .access-settings-form textarea,
+html[data-theme='day'] .access-settings-form select {
+  background: #ffffff;
+  color: #0a2540;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] label,
+html[data-theme='day'] .access-settings-form label {
+  color: #0a2540;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+
+html[data-theme='day'] table {
+  color: #0a2540;
+}
+
+html[data-theme='day'] th {
+  color: #697386;
+  border-bottom-color: #e6ebf1;
+  background: #f6f9fc;
+}
+
+html[data-theme='day'] td {
+  color: #425466;
+  border-bottom-color: #e6ebf1;
+}
+
+html[data-theme='day'] tr:hover td {
+  background: rgba(10, 37, 64, 0.02);
+}
+
+/* ── Settings pages ─────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-settings-row {
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-settings-row__title {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-settings-row__desc {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-settings-stripe__section h2 {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-settings-stripe__lead {
+  color: #697386;
+}
+
+/* ── Home stripe dashboard ──────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-home-stripe {
+  background: #ffffff;
+}
+
+html[data-theme='day'] .access-home-stripe__title {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-home-stripe__subtitle {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-home-stripe__metric {
+  background: #ffffff;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-home-stripe__metric-value {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-home-stripe__panel {
+  background: #ffffff;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-home-stripe__section-label {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-home-stripe__list-item {
+  border-bottom-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-home-stripe__list-button,
+html[data-theme='day'] .access-home-stripe__list-link {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-home-stripe__list-button:hover {
+  color: #0a2540;
+  background: rgba(10, 37, 64, 0.03);
+}
+
+html[data-theme='day'] .access-home-stripe__quick-link {
+  background: #f6f9fc;
+  border-color: #e6ebf1;
+  color: #425466;
+}
+
+html[data-theme='day'] .access-home-stripe__quick-link:hover {
+  background: #eef2f7;
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-home-stripe__command-form {
+  background: #ffffff;
+  border-color: #e6ebf1;
+}
+
+html[data-theme='day'] .access-home-stripe__command-input {
+  color: #0a2540;
+  background: transparent;
+}
+
+html[data-theme='day'] .access-home-stripe__command-input::placeholder {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-home-stripe__status {
+  color: #697386;
+}
+
+/* ── Topbar / breadcrumbs ────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-os-topbar-root,
+html[data-theme='day'] .access-os-topbar-sep,
+html[data-theme='day'] .access-nav-breadcrumb-current,
+html[data-theme='day'] .access-nav-breadcrumbs {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-os-topbar-current,
+html[data-theme='day'] .access-nav-breadcrumb-current {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-os-topbar-badge {
+  color: #2d8a6e;
+  border-color: rgba(45, 138, 110, 0.3);
+  background: rgba(45, 138, 110, 0.08);
+}
+
+/* ── Status pills / badges ──────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-ds-status-pill {
+  background: #f6f9fc;
+  border-color: #e6ebf1;
+  color: #425466;
+}
+
+/* ── Plans page ─────────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-plans-v2 {
+  background: #ffffff;
+}
+
+html[data-theme='day'] .access-plans-v2__card {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  box-shadow: 0 1px 3px rgba(10, 37, 64, 0.06);
+}
+
+html[data-theme='day'] .access-plans-v2__card--featured {
+  border-color: #1a8fa0;
+}
+
+html[data-theme='day'] .access-plans-v2__plan-name {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-plans-v2__price {
+  color: #0a2540;
+}
+
+html[data-theme='day'] .access-plans-v2__period,
+html[data-theme='day'] .access-plans-v2__compare,
+html[data-theme='day'] .access-plans-v2__card-desc {
+  color: #697386;
+}
+
+html[data-theme='day'] .access-plans-v2__includes li {
+  color: #425466;
+}
+
+html[data-theme='day'] .access-plans-v2__title,
+html[data-theme='day'] .access-plans-v2__subtitle {
+  color: #0a2540;
+}
+
+/* ── Admin pages ────────────────────────────────────────────────────────── */
+
+html[data-theme='day'] .access-platform-page {
+  background: #ffffff;
+}
+
+/* ── jyson layer (companion panel) ─────────────────────────────────────── */
+/* Companion intentionally stays dark — it's a product surface, not a page */
+html[data-theme='day'] .companion-route-root,
+html[data-theme='day'] .jyson-companion-panel {
+  background: #06090d;
+}
+
+/* ── Terminal — always dark ─────────────────────────────────────────────── */
+html[data-theme='day'] .access-ds-terminal,
+html[data-theme='day'] .access-terminal-root {
+  background: #030303;
+  color: #f0f0f0;
+}
+
+/* ── Navigation accent cursor ───────────────────────────────────────────── */
+html[data-theme='day'] .cursor {
+  background: #1a8fa0;
+}
+
+/* ── V4/V5 platform components ──────────────────────────────────────────── */
+
+html[data-theme='day'] .access-platform-empty-state {
+  background: #f6f9fc;
+  border-color: #e6ebf1;
+  color: #697386;
+}
+
+html[data-theme='day'] .access-platform-action-btn {
+  background: #ffffff;
+  border-color: #e6ebf1;
+  color: #425466;
+}
+
+html[data-theme='day'] .access-platform-action-btn:hover {
+  background: #f6f9fc;
+  border-color: #c8d6e5;
+  color: #0a2540;
+}
