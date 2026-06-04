@@ -242,6 +242,21 @@ export interface ConnectorDevice {
   updated_at: string
 }
 
+export type CustomerType = 'client' | 'lead' | 'subscriber' | 'partner' | 'contact'
+
+export interface Customer {
+  id: string
+  clerk_user_id: string
+  owner_handle: string
+  name: string
+  email: string | null
+  type: CustomerType
+  notes: string | null
+  status: 'active' | 'inactive' | 'archived'
+  created_at: string
+  updated_at: string
+}
+
 export interface RegistrySummary {
   identityHandle: string
   identityCreatedAt: string | null

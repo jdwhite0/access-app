@@ -155,7 +155,11 @@ export default function AgentsPageClient() {
             <SectionPanel
               id="execution"
               title="JYSON local capabilities"
-              description="Optional intelligence on this Mac — file access, vault depth, and future local layers. Cloud chat works without this."
+              description={
+                isMobile
+                  ? `Optional on ${deviceLabel} — cloud JYSON works without local file tools. Mac or PC can enable deeper vault access.`
+                  : 'Optional intelligence on this device — file access, vault depth, and future local layers. Cloud chat works without this.'
+              }
             >
               <div className="access-agent-card">
                 <div className="access-agent-card__header">

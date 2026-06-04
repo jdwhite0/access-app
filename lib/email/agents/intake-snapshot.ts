@@ -30,8 +30,15 @@ export async function publishDailyBriefSnapshot(input: {
     scheduled_for: published_at,
     metadata: {
       snapshot: true,
+      artifact: input.intake.source_type === 'access_intelligence_dossier'
+        ? 'access_intelligence_dossier'
+        : 'email_intake',
       intake: input.intake,
       dossier_path: input.dossier_path ?? input.intake.source_path ?? null,
+      access_intelligence_dossier_id:
+        typeof input.intake.payload?.access_intelligence_dossier_id === 'string'
+          ? input.intake.payload.access_intelligence_dossier_id
+          : input.intake.source_id ?? null,
       published_at,
     },
   }

@@ -97,41 +97,41 @@ const SECTIONS = [
     lead: 'Plan, payment method, invoices, and usage.',
     rows: [
       { title: 'Billing', description: 'Manage your plan, payment method, invoices, and usage.', href: '/settings/billing', actionLabel: 'Manage billing' },
-      { title: 'Plans', description: 'Compare Operator, Builder, and Enterprise tiers.', href: '/plans', actionLabel: 'View plans' },
+      { title: 'Plans', description: 'Compare Operator, Builder, and Enterprise tiers.', href: '/plans', actionLabel: 'Compare all plans' },
     ],
   },
   {
-    title: 'Workspace',
-    lead: 'Identity and blueprint — use the main menu for Projects, Offers, and Systems.',
+    title: 'Your workspace',
+    lead: 'Identity, blueprint, and knowledge — the foundation JYSON reads from.',
     rows: WORKSPACE_LINKS.map((link) => ({
       title: link.label,
       description: link.note,
       href: link.href,
-      actionLabel: 'Open',
+      actionLabel: 'Open Founder blueprint',
     })),
   },
   {
-    title: 'Integrations',
-    lead: 'Intelligence, personalization, local tools, and connected systems.',
+    title: 'Connected tools',
+    lead: 'JYSON intelligence, local tools, and connected systems.',
     rows: [
-      { title: 'Intelligence (JYSON)', description: 'Full AI view, diagnostics, and companion settings.', href: '/companion', actionLabel: 'Open Intelligence' },
-      { title: 'AI personalization', description: 'Rename your AI, set its role, tone, and purpose.', href: '/settings/intelligence', actionLabel: 'Personalize AI' },
+      { title: 'JYSON', description: 'Full AI view, diagnostics, and companion settings.', href: '/companion', actionLabel: 'Open JYSON' },
+      { title: 'AI personalization', description: 'Rename your AI, set its role, tone, and purpose.', href: '/settings/intelligence', actionLabel: 'Personalize JYSON' },
       { title: 'Local capabilities', description: 'Enable JYSON local intelligence on this Mac — files, vault depth, and future local layers.', href: '/agents?connect=tools#execution', actionLabel: 'Set up on this Mac' },
     ],
   },
   {
-    title: 'Security',
-    lead: 'Access control and platform visibility.',
+    title: 'Security & access',
+    lead: 'Platform visibility and uptime.',
     rows: [
-      { title: 'Public status', description: 'Uptime and incident history for ACCESS services.', href: '/status', actionLabel: 'View status' },
-      { title: 'Internal status', description: 'Operator view of platform health (signed in).', href: '/internal/status', actionLabel: 'Open internal status' },
+      { title: 'Public status', description: 'Uptime and incident history for ACCESS services.', href: '/status', actionLabel: 'View public uptime' },
+      { title: 'Internal status', description: 'Operator view of platform health.', href: '/internal/status', actionLabel: 'View platform health' },
     ],
   },
   {
-    title: 'Developer tools',
-    lead: 'Advanced operator surfaces — use when you need full control.',
+    title: 'Advanced',
+    lead: 'Command surfaces and developer tools — use when you need full control.',
     rows: [
-      { title: 'Terminal', description: 'Command-line interface for registry, agents, and scripts.', href: '/terminal', actionLabel: 'Open terminal' },
+      { title: 'Terminal', description: 'Command-line interface for registry, agents, vault registration, and scripts.', href: '/terminal', actionLabel: 'Open command terminal' },
       { title: 'Command Center', description: 'Internal orchestration and system registry.', href: '/internal/command-center', actionLabel: 'Open command center' },
     ],
   },
@@ -142,7 +142,7 @@ export default function PlatformSettings() {
     <div className="access-platform access-platform-page access-shell-page access-shell-page--wide">
       <PageHeader
         title="Platform"
-        description="Account, billing, workspace, integrations, display, and developer tools."
+        description="How your workspace is configured — account, billing, tools, and display."
       />
       <div className="access-settings-stripe">
 

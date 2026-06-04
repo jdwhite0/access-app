@@ -74,7 +74,7 @@ export default function OffersPageClient() {
       <div className="access-platform access-platform-page access-shell-page">
         <PageHeader
           title="Offers"
-          description="Package what you sell and connect it to subscriptions, checkout, and delivery."
+          description="What you sell — products, services, packages, and subscriptions connected to your revenue."
           actions={
             <PrimaryButton href="/terminal">Create offer</PrimaryButton>
           }
@@ -85,7 +85,7 @@ export default function OffersPageClient() {
 
         <SectionPanel
           title="Monetization status"
-          description="What is live today — no projected revenue until checkout is connected."
+          description="What's connected and live today."
         >
           <div className="access-capability-row">
             <div>
@@ -96,30 +96,21 @@ export default function OffersPageClient() {
                   : 'No paid plan active — upgrade to unlock more leverage.'}
               </p>
             </div>
-            <SecondaryButton href="/plans">View plans</SecondaryButton>
+            <SecondaryButton href="/plans">Compare all plans</SecondaryButton>
           </div>
           <div className="access-capability-row">
             <div>
-              <p className="access-settings-row__title">Stripe checkout</p>
+              <p className="access-settings-row__title">Stripe</p>
               <p className="access-settings-row__desc">
                 {stripeConnected
-                  ? 'Billing identity is linked. Confirm webhooks in Billing after checkout.'
-                  : 'Not connected — complete checkout in Billing to accept payments.'}
+                  ? 'Billing identity linked — confirm webhooks in Billing after checkout.'
+                  : 'Connect Stripe to accept payments and attach offers to checkout.'}
               </p>
             </div>
             <StatusPill
-              label={stripeConnected ? 'Account linked' : 'Not connected'}
+              label={stripeConnected ? 'Connected' : 'Not connected'}
               tone={stripeConnected ? 'operational' : 'neutral'}
             />
-          </div>
-          <div className="access-capability-row">
-            <div>
-              <p className="access-settings-row__title">Revenue tracking</p>
-              <p className="access-settings-row__desc">
-                Offer records live in your registry. Revenue dashboards are not built in this release.
-              </p>
-            </div>
-            <StatusPill label="Not available yet" tone="neutral" />
           </div>
         </SectionPanel>
 
@@ -127,8 +118,8 @@ export default function OffersPageClient() {
           <div className="access-platform-loading">Loading offers…</div>
         ) : offers.length === 0 ? (
           <PlatformEmptyState
-            title="No offers yet"
-            description="You do not have any offers yet. Create your first offer in Terminal with /register-offer, or ask JYSON to help package what you sell."
+            title="No offers registered yet."
+            description="Offers are the products and services you sell — packages, retainers, subscriptions, and services. Register your first offer to connect it to Stripe and track your revenue."
             actionHref="/terminal"
             actionLabel="Create offer"
           />
@@ -164,11 +155,16 @@ export default function OffersPageClient() {
           </div>
         )}
 
-        <SectionPanel title="Next offer to build">
+        <SectionPanel title="Connect Stripe to enable checkout">
           <p className="access-platform-body">
-            Use Terminal to register offers, then connect Stripe in{' '}
-            <Link href="/settings/billing">Billing</Link> so checkout can attach to a plan.
+            Register offers in Terminal, then connect Stripe in{' '}
+            <Link href="/settings/billing">Billing</Link> so each offer can attach to a checkout session.
+            Once connected, buyers can purchase directly from your offer links.
           </p>
+          <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+            <SecondaryButton href="/settings/billing">Connect Stripe</SecondaryButton>
+            <SecondaryButton href="/terminal">Register offer in terminal</SecondaryButton>
+          </div>
         </SectionPanel>
       </div>
     </AccessAppLayout>

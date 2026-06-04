@@ -759,6 +759,152 @@ html[data-theme='day'] .access-vault-connector-info code {
 
 /* ── Mobile ────────────────────────────────────────────────────────────────── */
 
+/* ── Recovery guide (account + operations blockers) ─────────────────────── */
+
+.access-recovery {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+.access-recovery--inline {
+  padding: 14px;
+  margin-top: 8px;
+}
+
+.access-recovery__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.access-recovery__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.access-recovery__body {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.access-recovery__question-prompt {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.access-recovery__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.access-recovery__choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.access-recovery__choice.is-selected {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.access-recovery__choice-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.access-recovery__choice-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.access-recovery__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.access-recovery__link-secondary {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.access-recovery__link-secondary:hover {
+  color: var(--accent);
+}
+
+.access-recovery__note {
+  font-size: 0.8125rem;
+  color: var(--success);
+  margin: 0;
+}
+
+.access-recovery__technical {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin: 0;
+  word-break: break-word;
+}
+
+.access-companion-recovery-wrap {
+  width: 100%;
+  max-width: min(520px, 100%);
+  padding: 16px;
+  gap: 12px;
+}
+
+.access-recovery__extras {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .access-recovery__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .access-recovery__actions .access-platform-btn-primary,
+  .access-recovery__actions .access-platform-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .access-vault-card__title-row {
     flex-direction: column;

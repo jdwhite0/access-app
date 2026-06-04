@@ -22,7 +22,10 @@ import {
   terminalVaultRegisterHref,
 } from '@/lib/vault/constants'
 import type { Vault, VaultType } from '@/types/db'
+import { AccessRecoveryGuide } from '@/components/platform/AccessRecoveryGuide'
 import { DeviceIntelligenceBanner } from '@/components/platform/DeviceIntelligenceBanner'
+import { buildRecoveryPlanFromVaultSync } from '@/lib/access/recovery-plans'
+import type { RecoveryPlan } from '@/lib/access/recovery-framework'
 import { useDeviceConnectionStatus } from '@/components/platform/useDeviceConnectionStatus'
 import {
   VAULT_TYPE_REGISTER_OPTIONS,
@@ -63,16 +66,19 @@ function VaultCard({
   onSynced,
   canLocalSync,
   deviceLabel,
+  isMobile,
 }: {
   vault: Vault
   onDisconnect: (id: string) => void
   onSynced: (id: string, updated: Vault, msg: string) => void
   canLocalSync: boolean
   deviceLabel: string
+  isMobile: boolean
 }) {
   const [cardVault, setCardVault] = useState(vault)
   const [state, setState] = useState<CardState>('idle')
   const [syncMsg, setSyncMsg] = useState<string | null>(null)
+  const [recoveryPlan, setRecoveryPlan] = useState<RecoveryPlan | null>(null)
 
   useEffect(() => {
     setCardVault(vault)
@@ -81,12 +87,19 @@ function VaultCard({
   async function handleSync() {
     setState('syncing')
     setSyncMsg(null)
+    setRecoveryPlan(null)
     try {
       const result = await requestVaultSync(cardVault.id)
       setSyncMsg(result.message)
       if (result.status === 'synced' && result.vault) {
         setCardVault(result.vault)
         onSynced(cardVault.id, result.vault, result.message)
+      } else {
+        const plan = buildRecoveryPlanFromVaultSync(result, {
+          isMobile,
+          deviceLabel,
+        })
+        setRecoveryPlan(plan)
       }
     } catch (err) {
       setSyncMsg(err instanceof Error ? err.message : 'Sync failed unexpectedly')
@@ -158,10 +171,22 @@ function VaultCard({
         </div>
       </div>
 
-      {syncMsg && (
-        <div className="access-vault-card__sync-msg">
-          {syncMsg}
-        </div>
+      {syncMsg && !recoveryPlan && (
+        <div className="access-vault-card__sync-msg">{syncMsg}</div>
+      )}
+
+      {recoveryPlan && (
+        <AccessRecoveryGuide
+          plan={recoveryPlan}
+          variant="inline"
+          onAction={(id) => {
+            if (id === 'sync_vault') {
+              void handleSync()
+              return true
+            }
+            return false
+          }}
+        />
       )}
 
       <div className="access-vault-card__actions">
@@ -349,6 +374,7 @@ export default function VaultsPageClient() {
   const { device, status: connectionStatus } = useDeviceConnectionStatus()
   const canPickLocalFolder = connectionStatus?.capabilities.canPickLocalFolder ?? true
   const canLocalSync = connectionStatus?.capabilities.canLocalSync ?? true
+  const isMobile = connectionStatus?.capabilities.isMobile ?? device.isMobile
   const deviceLabel = connectionStatus?.deviceLabel ?? device.deviceLabel
   const [vaults, setVaults] = useState<Vault[]>([])
   const [loading, setLoading] = useState(true)
@@ -463,6 +489,7 @@ export default function VaultsPageClient() {
                   onSynced={handleSynced}
                   canLocalSync={canLocalSync}
                   deviceLabel={deviceLabel}
+                  isMobile={isMobile}
                 />
               ))}
             </div>

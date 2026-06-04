@@ -1,0 +1,339 @@
+/**
+ * ACCESS platform pages — mobile UX pass (<768px)
+ * Readability, touch targets, single-column flow, bottom tab navigation.
+ */
+
+.access-mobile-tabbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --access-mobile-tabbar-height: 56px;
+  }
+
+  /* ── Bottom tab bar ───────────────────────────────────────────────────── */
+
+  .access-mobile-tabbar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 48;
+    height: calc(var(--access-mobile-tabbar-height) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: color-mix(in srgb, var(--os-surface, var(--surface)) 94%, transparent);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .access-ds-shell.is-rail-open .access-mobile-tabbar,
+  .access-os-shell.is-rail-open .access-mobile-tabbar {
+    display: none !important;
+  }
+
+  .access-ds-shell.is-rail-open .access-jyson-layer {
+    display: none !important;
+  }
+
+  .access-ds-shell__rail {
+    padding-bottom: calc(var(--access-mobile-tabbar-height, 56px) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .access-ds-shell.is-rail-open .access-ds-shell__rail {
+    z-index: 52;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .access-mobile-tabbar__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: var(--access-mobile-tabbar-height);
+    padding: 6px 4px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .access-mobile-tabbar__item.is-active {
+    color: var(--accent);
+  }
+
+  .access-mobile-tabbar__label {
+    line-height: 1.2;
+  }
+
+  .access-ds-shell__main {
+    padding-bottom: calc(
+      24px + var(--access-mobile-tabbar-height) + env(safe-area-inset-bottom, 0px)
+    ) !important;
+  }
+
+  /* JYSON FAB sits above tab bar */
+  .access-jyson-layer[data-open='false'] {
+    right: 12px !important;
+    bottom: calc(
+      var(--access-mobile-tabbar-height) + env(safe-area-inset-bottom, 0px) + 12px
+    ) !important;
+  }
+
+  .access-app-layout--companion .access-jyson-layer {
+    display: none !important;
+  }
+
+  /* ── Page headers ─────────────────────────────────────────────────────── */
+
+  .access-platform-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .access-platform-page-header__actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .access-platform-page-header__actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .access-agents-page__header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .access-agents-page__header-actions > * {
+    width: 100%;
+  }
+
+  /* ── Intelligence layer banner ───────────────────────────────────────── */
+
+  .access-device-connection {
+    padding: 14px 14px !important;
+    gap: 14px !important;
+  }
+
+  .access-device-connection__hero {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .access-device-connection__hero-actions {
+    align-items: stretch;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .access-device-connection__hero-actions .access-platform-btn-primary {
+    width: 100%;
+  }
+
+  .access-device-connection__action-hint {
+    text-align: left;
+    max-width: none;
+  }
+
+  .access-device-connection__title {
+    font-size: 1.0625rem !important;
+    line-height: 1.3;
+  }
+
+  .access-device-connection__row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .access-device-connection__row .access-ds-status-pill,
+  .access-device-connection__row .access-platform-status-pill {
+    align-self: flex-start;
+  }
+
+  .access-device-connection__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .access-device-connection__footer .access-platform-btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* ── Vault cards ───────────────────────────────────────────────────────── */
+
+  .access-vault-card {
+    padding: 14px !important;
+  }
+
+  .access-vault-card__path {
+    font-size: 0.75rem !important;
+    word-break: break-all;
+    line-height: 1.45;
+  }
+
+  .access-vault-card__badges {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .access-vault-card__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .access-vault-card__actions .access-platform-btn-primary,
+  .access-vault-card__actions .access-platform-btn-secondary {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .access-vault-suggestions {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px;
+    margin: 0 -4px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .access-vault-suggestions .access-jyson-layer__chip {
+    flex-shrink: 0;
+  }
+
+  /* ── Companion page ────────────────────────────────────────────────────── */
+
+  .access-companion-page {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    gap: 12px !important;
+  }
+
+  .access-companion-page .access-platform-page-header {
+    padding: 0 4px;
+  }
+
+  .access-companion-page .access-platform-page-title {
+    font-size: 1.5rem !important;
+  }
+
+  .access-companion-console {
+    padding: 0 4px 8px;
+  }
+
+  .jyson-companion-hero,
+  .access-companion-hero {
+    padding: 16px 8px 12px !important;
+    max-width: 100% !important;
+  }
+
+  .jyson-companion-command {
+    padding: 0 8px 12px !important;
+    max-width: 100% !important;
+  }
+
+  .access-command-input {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px !important;
+  }
+
+  .access-command-input__field {
+    min-height: 72px;
+    font-size: 16px !important;
+  }
+
+  .access-command-input__submit {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.9375rem;
+  }
+
+  .access-companion-console__status {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .jyson-companion--center {
+    padding: 16px !important;
+    min-height: auto;
+  }
+
+  .jyson-repair-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 16px !important;
+    margin: 0;
+  }
+
+  .jyson-repair-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .jyson-repair-actions .jyson-command-submit,
+  .jyson-repair-actions .jyson-repair-secondary,
+  .jyson-repair-actions .jyson-repair-link-btn {
+    width: 100%;
+    min-height: 44px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .jyson-companion-drawer-summary {
+    min-height: 48px;
+    padding: 14px 16px !important;
+  }
+
+  .jyson-companion-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Agents / team ─────────────────────────────────────────────────────── */
+
+  .access-agent-capabilities {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .access-agent-card__header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .access-agents-page__setup-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .access-agents-page__setup-actions > * {
+    width: 100%;
+  }
+
+  .access-connect-tools__grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Section panels ────────────────────────────────────────────────────── */
+
+  .access-platform-section-panel {
+    padding: 14px !important;
+  }
+}

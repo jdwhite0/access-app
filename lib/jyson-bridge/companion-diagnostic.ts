@@ -63,9 +63,9 @@ export interface CompanionDiagnostic {
   agentContextLoaded?: boolean
 }
 
-const RECOVERY_TITLE = 'Your ACCESS world is not ready yet.'
+const RECOVERY_TITLE = 'Setting up your ACCESS world'
 const RECOVERY_BODY =
-  'JYSON needs your Blueprint and ACCESS system package before it can load your world.'
+  'JYSON is connecting to your identity and vault. This usually takes a moment — tap Retry or wait while we finish.'
 
 function panelActionsFor(status: CompanionDiagnosticStatus): CompanionPanelAction[] {
   switch (status) {

@@ -1,6 +1,16 @@
 import type { EmailIntakePayload, IntakeRouteResult } from '@/lib/email/agents/types'
 
 const SOURCE_TO_AGENT: Record<string, IntakeRouteResult> = {
+  access_intelligence_dossier: {
+    email_type: 'daily_brief',
+    category: 'daily_brief',
+    transactional_or_marketing: 'marketing',
+    priority: 'normal',
+    target_audience: 'daily_brief_subscribers',
+    required_send_window: 'scheduled',
+    routed_agent: 'daily-brief-agent',
+    routing_reason: 'ACCESS Intelligence Dossier → daily brief adapter',
+  },
   jdai_dossier: {
     email_type: 'daily_brief',
     category: 'daily_brief',

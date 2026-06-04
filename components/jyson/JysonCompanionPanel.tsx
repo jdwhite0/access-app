@@ -73,7 +73,7 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       .finally(() => setLoading(false))
   }, [isLoaded, isSignedIn, devFixtureContext, loadCompanion])
 
-  /** Cloud-ready founders (vault synced) sometimes need one server retry after hydration. */
+  /** Cloud-ready accounts: retry once after first paint (mobile hydration / package load). */
   useEffect(() => {
     if (devFixtureContext || loading || ctx || !diagnostic?.cloudReady) return
     if (autoRetriedRef.current) return
@@ -81,13 +81,16 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       diagnostic.status === 'cloud_package_ready' ||
       diagnostic.status === 'local_sync_pending' ||
       diagnostic.status === 'local_founder_os_ready' ||
-      diagnostic.status === 'companion_ready'
+      diagnostic.status === 'companion_ready' ||
+      diagnostic.status === 'blueprint_draft'
     if (!retryable) return
     autoRetriedRef.current = true
-    void loadCompanion().then(({ context }) => {
-      if (!context) return
-      setLoading(false)
-    })
+    setLoading(true)
+    void loadCompanion()
+      .then(({ context: loaded }) => {
+        if (loaded) setCtx(loaded)
+      })
+      .finally(() => setLoading(false))
   }, [devFixtureContext, loading, ctx, diagnostic, loadCompanion])
 
   function handleRepaired(loaded: JysonContext, diag: CompanionDiagnostic) {
@@ -145,8 +148,8 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       <JysonCompanionRepairPanel
         diagnostic={{
           status: 'unknown_error',
-          title: 'Your ACCESS world is not ready yet.',
-          body: 'JYSON needs your Founder blueprint and ACCESS package before context can load.',
+          title: 'Setting up your ACCESS world',
+          body: 'JYSON is connecting to your identity and vault. Tap Retry below if this takes more than a few seconds.',
           message: 'World not loaded.',
           canRepair: true,
           repairAction: 'repair_connection',

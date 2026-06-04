@@ -38,7 +38,12 @@ function SystemsModule() {
 
   if (loading) return <div className="access-platform-loading">Loading systems…</div>
   if (systems.length === 0) return (
-    <PlatformEmptyState title="No systems registered" description="Register your first system from the terminal with /register-system." actionHref="/terminal" actionLabel="Open Terminal" />
+    <PlatformEmptyState
+      title="No systems registered yet."
+      description="Systems are the AI tools, automations, and operating infrastructure that run your work. Register your first system to start building your operational stack."
+      actionHref="/terminal"
+      actionLabel="Register system"
+    />
   )
   return (
     <div className="access-registry-list">
@@ -67,7 +72,12 @@ function BlueprintsModule() {
 
   if (loading) return <div className="access-platform-loading">Loading blueprints…</div>
   if (blueprints.length === 0) return (
-    <PlatformEmptyState title="No blueprints yet" description="Generate a blueprint from the terminal with /build-ai-system or /build-business." actionHref="/terminal" actionLabel="Open Terminal" />
+    <PlatformEmptyState
+      title="No blueprints generated yet."
+      description="Blueprints are the architectural plans JYSON uses to build your AI and business systems. Generate your first to define how your infrastructure should work."
+      actionHref="/terminal"
+      actionLabel="Generate AI system blueprint"
+    />
   )
   return (
     <div className="access-registry-list">
@@ -95,7 +105,12 @@ function AssetsModule() {
 
   if (loading) return <div className="access-platform-loading">Loading assets…</div>
   if (assets.length === 0) return (
-    <PlatformEmptyState title="No assets registered" description="Register assets from the terminal with /register-asset." actionHref="/terminal" actionLabel="Open Terminal" />
+    <PlatformEmptyState
+      title="No assets registered yet."
+      description="Assets are what you own — IP, brand materials, frameworks, code, and resources. Register your first asset to start building an inventory of your work."
+      actionHref="/terminal"
+      actionLabel="Register asset"
+    />
   )
   return (
     <div className="access-registry-list">
@@ -122,7 +137,12 @@ function WorkflowsModule() {
 
   if (loading) return <div className="access-platform-loading">Loading workflows…</div>
   if (workflows.length === 0) return (
-    <PlatformEmptyState title="No workflows registered" description="Register workflows from the terminal with /register-workflow." actionHref="/terminal" actionLabel="Open Terminal" />
+    <PlatformEmptyState
+      title="No workflows running yet."
+      description="Workflows are the automations and sequences that execute your systems without manual work. Connect your first workflow to start building leverage."
+      actionHref="/terminal"
+      actionLabel="Add workflow"
+    />
   )
   return (
     <div className="access-registry-list">
@@ -180,11 +200,11 @@ function VaultsModule() {
 type ModuleId = 'systems' | 'blueprints' | 'assets' | 'workflows' | 'vaults'
 
 const MODULES: Array<{ id: ModuleId; label: string; description: string }> = [
-  { id: 'systems',    label: 'Systems',    description: 'Registered AI, business, content, and knowledge systems.' },
-  { id: 'blueprints', label: 'Blueprints', description: 'Generated architecture blueprints, linked to your systems.' },
-  { id: 'assets',     label: 'Assets',     description: 'Code, content, creative, data, and brand assets.' },
-  { id: 'workflows',  label: 'Workflows',  description: 'Automations and process definitions.' },
-  { id: 'vaults',     label: 'Vaults',     description: 'Brain folders on your devices and cloud sources for JYSON.' },
+  { id: 'systems',    label: 'Systems',    description: 'How your work runs — AI tools, automations, and operating infrastructure.' },
+  { id: 'blueprints', label: 'Blueprints', description: 'Architectural plans JYSON uses to build your AI and business systems.' },
+  { id: 'assets',     label: 'Assets',     description: 'What you own — IP, brand materials, frameworks, code, and resources.' },
+  { id: 'workflows',  label: 'Workflows',  description: 'Automations and sequences that execute your systems without manual work.' },
+  { id: 'vaults',     label: 'Vaults',     description: 'Knowledge stores — Obsidian vaults and local folders JYSON reads.' },
 ]
 
 function ModuleContent({ id }: { id: ModuleId }) {

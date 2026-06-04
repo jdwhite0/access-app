@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   experimental: {
     cpus: 1,
   },
+  // Prevent IDE extension packages from being bundled by Turbopack
+  serverExternalPackages: ['@cursor/sdk'],
 };
 
 export default nextConfig;

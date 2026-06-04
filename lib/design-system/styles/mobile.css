@@ -327,6 +327,10 @@
 
 /* ── Dashboard two-column → single column ───────────────────────────────────── */
 
+.access-home-two-col {
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
 @media (max-width: 768px) {
   .access-home-two-col {
     grid-template-columns: 1fr !important;

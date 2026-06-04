@@ -6,6 +6,10 @@ import {
   fetchDailyBriefSnapshot,
   publishDailyBriefSnapshot,
 } from '@/lib/email/agents/intake-snapshot'
+import {
+  intakeFromIntelligenceDossierJson,
+  resolveLatestIntelligenceDossierJson,
+} from '@/lib/intelligence/load-dossier'
 
 function extractSection(md: string, heading: string): string {
   const re = new RegExp(`## ${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?(?=\\n## |$)`, 'i')
@@ -74,6 +78,14 @@ export function parseDossierToIntakePayload(
   }
 }
 
+function intelligenceDossierDir(root = jdaiContentEngineRoot()): string {
+  return join(root, 'intelligence', 'dossiers')
+}
+
+export function resolveLatestIntelligenceDossierPath(root = jdaiContentEngineRoot()): string | null {
+  return resolveLatestIntelligenceDossierJson(intelligenceDossierDir(root))
+}
+
 type ManifestCycle = {
   dossierPath?: string
   highestSignalScore?: number
@@ -81,6 +93,9 @@ type ManifestCycle = {
 }
 
 export function resolveLatestDossierPath(root = jdaiContentEngineRoot()): string | null {
+  const jsonPath = resolveLatestIntelligenceDossierPath(root)
+  if (jsonPath) return jsonPath
+
   const manifestPath = join(root, 'manifest.json')
   if (existsSync(manifestPath)) {
     try {
@@ -113,6 +128,17 @@ export function resolveLatestDossierPath(root = jdaiContentEngineRoot()): string
   return files[0] ?? null
 }
 
+function buildIntakeFromPath(
+  dossierPath: string,
+  options?: { handle?: string }
+): EmailIntakePayload {
+  const abs = resolve(dossierPath)
+  if (abs.endsWith('.json')) {
+    return intakeFromIntelligenceDossierJson(abs)
+  }
+  return parseDossierToIntakePayload(abs, { handle: options?.handle })
+}
+
 export function buildDailyBriefIntakeFromLatest(options?: {
   dossierPath?: string
   handle?: string
@@ -122,7 +148,7 @@ export function buildDailyBriefIntakeFromLatest(options?: {
     options?.dossierPath ??
     resolveLatestDossierPath(root) ??
     (() => {
-      throw new Error(`No dossier found under ${root}/dossiers or manifest.json`)
+      throw new Error(`No dossier found under ${root}/intelligence/dossiers, dossiers/, or manifest.json`)
     })()
 
   const abs = resolve(dossierPath)
@@ -132,7 +158,7 @@ export function buildDailyBriefIntakeFromLatest(options?: {
 
   return {
     dossierPath: abs,
-    intake: parseDossierToIntakePayload(abs, { handle: options?.handle }),
+    intake: buildIntakeFromPath(abs, { handle: options?.handle }),
   }
 }
 
@@ -182,6 +208,6 @@ export async function resolveDailyBriefIntake(options?: {
   }
 
   throw new Error(
-    'No daily brief intake source: dossier missing locally and no Supabase snapshot. Run npm run email:publish-dossier from a machine with jdai-content-engine.'
+    'No daily brief intake source: dossier missing locally and no Supabase snapshot. Run npm run intelligence:run -- --publish from access-app.'
   )
 }

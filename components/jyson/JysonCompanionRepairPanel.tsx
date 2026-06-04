@@ -1,14 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { AccessRecoveryGuide } from '@/components/platform/AccessRecoveryGuide'
+import { buildRecoveryPlanFromCompanion } from '@/lib/access/recovery-plans'
 import { detectDeviceFromNavigator } from '@/lib/vault/device-detection'
-import {
-  generateAccessWorld,
-  getCompanionDiagnostics,
-  refreshJysonCompanion,
-} from '@/lib/actions/jyson-companion-repair'
+import { getCompanionDiagnostics, refreshJysonCompanion } from '@/lib/actions/jyson-companion-repair'
 import type { CompanionDiagnostic } from '@/lib/jyson-bridge/companion-diagnostic'
 import type {
   CompanionWorldDiagnostics,
@@ -27,177 +24,54 @@ export default function JysonCompanionRepairPanel({
   worldDiagnostics: initialWorld,
   onLoaded,
 }: Props) {
-  const [busy, setBusy] = useState(false)
-  const [note, setNote] = useState<string | null>(null)
   const [showDiagnostics, setShowDiagnostics] = useState(false)
   const [checks, setChecks] = useState<DiagnosticCheck[]>(initialWorld?.checks ?? [])
 
-  async function runGenerate() {
-    setBusy(true)
-    setNote(null)
-    try {
-      const result = await generateAccessWorld()
-      setNote(result.repairMessage ?? null)
-      if (result.context) onLoaded(result.context, result.diagnostic)
-    } catch (e) {
-      setNote(e instanceof Error ? e.message : 'Generation failed.')
-    } finally {
-      setBusy(false)
-    }
-  }
+  const device = detectDeviceFromNavigator()
+  const plan = useMemo(
+    () =>
+      buildRecoveryPlanFromCompanion(diagnostic, {
+        isMobile: device.isMobile,
+        deviceLabel: device.deviceLabel,
+      }),
+    [diagnostic, device.isMobile, device.deviceLabel]
+  )
 
-  async function runRefresh() {
-    setBusy(true)
-    setNote(null)
-    try {
-      const result = await refreshJysonCompanion()
-      if (result.context) {
-        onLoaded(result.context, result.diagnostic)
-      } else {
-        setNote(result.diagnostic.message)
-      }
-    } catch (e) {
-      setNote(e instanceof Error ? e.message : 'Retry failed.')
-    } finally {
-      setBusy(false)
-    }
+  async function handleCompanionLoaded() {
+    const result = await refreshJysonCompanion()
+    if (result.context) onLoaded(result.context, result.diagnostic)
   }
 
   async function loadDiagnostics() {
     setShowDiagnostics(true)
-    setBusy(true)
     try {
       const world = await getCompanionDiagnostics()
       setChecks(world.checks)
     } catch {
-      setNote('Could not load diagnostics.')
-    } finally {
-      setBusy(false)
+      /* ignore */
     }
   }
 
-  const device = detectDeviceFromNavigator()
-  const actions = diagnostic.panelActions?.length
-    ? diagnostic.panelActions
-    : ['retry_loading', 'view_diagnostics']
-
-  const showGenerateWorld =
-    actions.includes('generate_access_world') &&
-    diagnostic.canRepair &&
-    !diagnostic.cloudReady &&
-    device.isDesktop
-
-  const showCloudChatFirst =
-    diagnostic.cloudReady &&
-    (diagnostic.status === 'local_sync_pending' ||
-      diagnostic.status === 'cloud_package_ready' ||
-      diagnostic.status === 'local_founder_os_ready')
-
   return (
     <AccessAppLayout variant="companion" userLabel={diagnostic.handle ?? null}>
-    <div className="jyson-companion jyson-companion--center">
-      <div className="jyson-companion-card jyson-repair-card fade-in">
-        <p className="jyson-companion-eyebrow">JYSON · COMPANION</p>
-        <h1 className="jyson-companion-title">{diagnostic.title}</h1>
-        <p className="jyson-companion-lead">{diagnostic.body}</p>
-
-        {diagnostic.missingStep && (
-          <div className="jyson-repair-block">
-            <span className="jyson-companion-label">Detected missing step</span>
-            <p className="jyson-repair-highlight">{diagnostic.missingStep}</p>
-          </div>
-        )}
-
-        {diagnostic.recommendedFix && (
-          <div className="jyson-repair-block">
-            <span className="jyson-companion-label">Recommended fix</span>
-            <p className="jyson-companion-body">{diagnostic.recommendedFix}</p>
-          </div>
-        )}
-
-        {diagnostic.steps.length > 0 && (
-          <ul className="jyson-repair-steps">
-            {diagnostic.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ul>
-        )}
-
-        {(diagnostic.handle || diagnostic.founderOsId) && (
-          <div className="jyson-repair-meta">
-            {diagnostic.handle && (
-              <p>
-                <span className="jyson-companion-label">Handle</span>{' '}
-                <code>{diagnostic.handle}</code>
-              </p>
-            )}
-            {diagnostic.founderOsId && (
-              <p>
-                <span className="jyson-companion-label">Founder OS</span>{' '}
-                <code>{diagnostic.founderOsId}</code>
-              </p>
-            )}
-            {diagnostic.packagePath && (
-              <p className="jyson-repair-path">{diagnostic.packagePath}</p>
-            )}
-          </div>
-        )}
-
-        <p className="jyson-companion-error subtle">Reason: {diagnostic.message}</p>
-
-        {note && <p className="jyson-repair-note">{note}</p>}
-
-        <div className="jyson-repair-actions">
-          {showCloudChatFirst && (
-            <button
-              type="button"
-              className="jyson-command-submit"
-              disabled={busy}
-              onClick={() => void runRefresh()}
-            >
-              {busy ? 'Loading…' : 'Open JYSON chat'}
-            </button>
-          )}
-          {actions.includes('complete_blueprint') && (
-            <Link href="/founder" className="jyson-repair-secondary jyson-repair-link-btn">
-              Complete Blueprint
-            </Link>
-          )}
-          {showGenerateWorld && (
-            <button
-              type="button"
-              className="jyson-command-submit"
-              disabled={busy}
-              onClick={() => void runGenerate()}
-            >
-              {busy ? 'Working…' : 'Generate ACCESS World'}
-            </button>
-          )}
-          {actions.includes('retry_loading') && !showCloudChatFirst && (
-            <button
-              type="button"
-              className={showGenerateWorld ? 'jyson-repair-secondary' : 'jyson-command-submit'}
-              disabled={busy}
-              onClick={() => void runRefresh()}
-            >
-              {busy ? 'Loading…' : 'Retry loading'}
-            </button>
-          )}
-          {actions.includes('view_diagnostics') && (
-            <button
-              type="button"
-              className="jyson-repair-secondary"
-              disabled={busy}
-              onClick={() => void loadDiagnostics()}
-            >
-              View Diagnostics
-            </button>
-          )}
+      <div className="jyson-companion jyson-companion--center access-companion-recovery-wrap">
+        <AccessRecoveryGuide
+          plan={plan}
+          autoFix={plan.jysonCanAutoFix}
+          onCompanionLoaded={() => void handleCompanionLoaded()}
+          showTechnical={process.env.NODE_ENV === 'development'}
+        />
+        <div className="access-recovery__extras">
+          <button
+            type="button"
+            className="access-recovery__link-secondary"
+            onClick={() => void loadDiagnostics()}
+          >
+            {showDiagnostics ? 'Refresh diagnostics' : 'What is blocking me?'}
+          </button>
         </div>
-
         {showDiagnostics && checks.length > 0 && (
-          <div className="jyson-diagnostics-table">
-            <span className="jyson-companion-label">Diagnostics</span>
+          <div className="jyson-diagnostics-table access-recovery__diagnostics">
             <ul>
               {checks.map((c) => (
                 <li key={c.id} className={c.ok ? 'ok' : 'fail'}>
@@ -209,20 +83,7 @@ export default function JysonCompanionRepairPanel({
             </ul>
           </div>
         )}
-
-        {device.isMobile && diagnostic.cloudReady && (
-          <p className="access-platform-meta jyson-repair-mobile-note">
-            On {device.deviceLabel}, JYSON uses your cloud vault — local folder sync is optional on a Mac or PC.
-          </p>
-        )}
-
-        {diagnostic.repairAction === 'sign_in' && (
-          <Link href="/" className="jyson-companion-link">
-            Sign in to ACCESS
-          </Link>
-        )}
       </div>
-    </div>
     </AccessAppLayout>
   )
 }

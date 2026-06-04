@@ -18,6 +18,7 @@
 @import "../lib/design-system/styles/dense.css";
 @import "../lib/design-system/styles/light-fixes.css";
 @import "../lib/design-system/styles/mobile.css";
+@import "../lib/design-system/styles/mobile-platform-ux.css";
 @import "../lib/design-system/styles/auth-pages.css";
 
 /* Token defaults live in themes.css — do not redeclare here */

@@ -13,19 +13,24 @@ type AccessHomeProps = {
   identityError: string | null
 }
 
-// ── Stat card colors ───────────────────────────────────────────────────────────
-
 const STAT_ACCENT = ['#40C0D0', '#7C6CF8', '#4ABDA0', '#C9A46A', '#4A9EFF', '#E07B52'] as const
 
-// ── Action cards ──────────────────────────────────────────────────────────────
-
 const ACTION_CARDS = [
-  { id: 'projects',  label: 'Open projects',        href: '/projects',   desc: 'See what you\'re building and what needs attention.' },
-  { id: 'offers',    label: 'Review offers',         href: '/offers',     desc: 'Check your monetization paths and active services.' },
-  { id: 'systems',   label: 'Review systems',        href: '/systems',    desc: 'Workflows, automations, and operating infrastructure.' },
-  { id: 'jyson',     label: 'Ask Intelligence',      href: '/companion',  desc: 'Ask JYSON what deserves attention next.' },
-  { id: 'customers', label: 'Check relationships',   href: '/customers',  desc: 'Clients, leads, and revenue opportunities.' },
-  { id: 'billing',   label: 'Manage billing',        href: '/settings/billing', desc: 'Plan, subscription, and payment details.' },
+  { id: 'projects',   label: 'Open projects',      href: '/projects',         desc: 'See what you\'re actively building.' },
+  { id: 'offers',     label: 'Review offers',       href: '/offers',           desc: 'What you sell — services, products, and packages.' },
+  { id: 'systems',    label: 'Review systems',      href: '/systems',          desc: 'How your work runs — automations and infrastructure.' },
+  { id: 'jyson',      label: 'Ask JYSON',           href: '/companion',        desc: 'What deserves your attention next.' },
+  { id: 'customers',  label: 'View customers',      href: '/customers',        desc: 'Clients, leads, and revenue relationships.' },
+  { id: 'billing',    label: 'Manage billing',      href: '/settings/billing', desc: 'Plan, subscription, and payment details.' },
+] as const
+
+const QUICK_TILES = [
+  { label: 'Projects',   href: '/projects',  icon: '▤' },
+  { label: 'Systems',    href: '/systems',   icon: '◇' },
+  { label: 'Assets',     href: '/assets',    icon: '▣' },
+  { label: 'JYSON',      href: '/companion', icon: '◎' },
+  { label: 'Knowledge',  href: '/memory',    icon: '◌' },
+  { label: 'Team',       href: '/agents',    icon: '⬡' },
 ] as const
 
 function getTimeGreeting(): string {
@@ -63,31 +68,31 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
 
   const stats = useMemo(() => [
     {
-      id: 'projects', label: 'Active projects', href: '/projects',
+      id: 'projects', label: 'Projects', href: '/projects',
       value: loading ? '—' : String(counts?.projects ?? 0),
-      desc: 'Initiatives in progress',
+      desc: 'Active initiatives',
       color: STAT_ACCENT[0],
     },
     {
-      id: 'systems', label: 'Connected systems', href: '/systems',
+      id: 'systems', label: 'Systems', href: '/systems',
       value: loading ? '—' : String(counts?.systems ?? 0),
-      desc: 'Workflows and automations',
+      desc: 'Workflows & automations',
       color: STAT_ACCENT[1],
     },
     {
-      id: 'assets', label: 'Registered assets', href: '/assets',
+      id: 'assets', label: 'Assets', href: '/assets',
       value: loading ? '—' : String(counts?.assets ?? (counts as Record<string, number> | null | undefined)?.blueprints ?? 0),
-      desc: 'IP, frameworks, and resources',
+      desc: 'IP, brand, and resources',
       color: STAT_ACCENT[2],
     },
     {
-      id: 'offers', label: 'Monetization paths', href: '/offers',
+      id: 'offers', label: 'Offers', href: '/offers',
       value: loading ? '—' : String(counts?.offers ?? 0),
-      desc: 'Products and services',
+      desc: 'Products & services',
       color: STAT_ACCENT[3],
     },
     {
-      id: 'agents', label: 'Team members', href: '/agents',
+      id: 'agents', label: 'Team', href: '/agents',
       value: loading ? '—' : String(counts?.agents ?? 0),
       desc: 'AI agents active',
       color: STAT_ACCENT[4],
@@ -119,11 +124,11 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
                 {getTimeGreeting()}, {displayName}.
               </h1>
               <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
-                Here is what is active across your workspace.
+                What needs your attention today.
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-              <span style={{
+              <span className="access-ds-badge" style={{
                 fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.08em',
                 color: planColor, background: `${planColor}18`,
                 border: `1px solid ${planColor}40`, padding: '3px 10px',
@@ -132,7 +137,7 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
                 {planLabel}
               </span>
               {localConnected === true && (
-                <span style={{
+                <span className="access-ds-badge" style={{
                   fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.08em',
                   color: 'var(--success)', background: 'var(--success-muted)',
                   border: '1px solid rgba(74,189,160,0.2)', padding: '3px 10px', borderRadius: 100,
@@ -172,9 +177,9 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
         </div>
 
         {/* Two-column layout — single column on mobile */}
-        <div className="access-home-two-col" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: 16, marginBottom: 20 }}>
+        <div className="access-home-two-col" style={{ display: 'grid', gap: 16, marginBottom: 20 }}>
 
-          {/* Recommended actions */}
+          {/* Actions */}
           <div>
             <h2 style={{ fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.1em', color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>Actions</h2>
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
@@ -199,18 +204,18 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
             </div>
           </div>
 
-          {/* Status + recent */}
+          {/* Status + get started */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
               <h2 style={{ fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.1em', color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>Status</h2>
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 16px' }}>
                 {[
-                  { label: 'Platform',    value: 'Operational',                       color: 'var(--success)' },
+                  { label: 'Platform',    value: 'Operational',  color: 'var(--success)' },
                   { label: 'Local tools', value: localConnected === true ? 'Connected' : localConnected === false ? 'Offline' : 'Unknown', color: localConnected === true ? 'var(--success)' : 'var(--text-muted)' },
-                  { label: 'Intelligence', value: 'Active',                           color: 'var(--success)' },
+                  { label: 'JYSON',       value: 'Active',       color: 'var(--success)' },
                   { label: 'Billing',     value: planLabel !== '—' ? planLabel : '—', color: planColor },
                 ].map((row) => (
-                  <div key={row.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div key={row.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid var(--border)' }}>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: 'var(--mono)' }}>{row.label}</span>
                     <span style={{ fontSize: 12, color: row.color, fontFamily: 'var(--mono)', fontWeight: 500 }}>{row.value}</span>
                   </div>
@@ -218,31 +223,44 @@ export default function AccessHome({ summary, loading }: AccessHomeProps) {
               </div>
             </div>
 
+            {/* JYSON suggestions */}
             <div>
-              <h2 style={{ fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.1em', color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>Recent activity</h2>
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '16px' }}>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6, textAlign: 'center' }}>
-                  No recent activity yet.
-                  <br />
-                  <span style={{ fontSize: 11 }}>Actions across projects, offers, and sessions will appear here.</span>
-                </p>
+              <h2 style={{ fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.1em', color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>Ask JYSON</h2>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
+                {[
+                  'What project should I focus on this week?',
+                  'What\'s my most urgent next action?',
+                  'Summarize what I\'m building right now.',
+                  'What offer is closest to its first sale?',
+                ].map((prompt, i) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => layer ? void layer.submit(prompt) : undefined}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', textAlign: 'left',
+                      padding: '10px 14px',
+                      borderBottom: i < 3 ? '1px solid var(--border)' : 'none',
+                      background: 'transparent', border: 'none',
+                      cursor: layer ? 'pointer' : 'default',
+                      gap: 10,
+                    }}
+                  >
+                    <span style={{ fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.4 }}>{prompt}</span>
+                    <span style={{ fontSize: 14, color: 'var(--accent)', flexShrink: 0 }}>›</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick nav tiles — Stripe's bottom shortcut pattern */}
+        {/* Quick access */}
         <div>
           <h2 style={{ fontSize: 11, fontFamily: 'var(--mono)', letterSpacing: '0.1em', color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>Quick access</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 8 }}>
-            {[
-              { label: 'Projects', href: '/projects', icon: '▤' },
-              { label: 'Systems', href: '/systems', icon: '◇' },
-              { label: 'Assets', href: '/assets', icon: '▣' },
-              { label: 'Intelligence', href: '/companion', icon: '◎' },
-              { label: 'Knowledge', href: '/memory', icon: '◌' },
-              { label: 'Team', href: '/agents', icon: '⬡' },
-            ].map((item) => (
+            {QUICK_TILES.map((item) => (
               <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
                 <div style={{
                   background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 7,

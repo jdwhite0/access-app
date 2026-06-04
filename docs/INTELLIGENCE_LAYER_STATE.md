@@ -1,5 +1,7 @@
 # Intelligence layer state (ACCESS)
 
+**Recovery framework:** When account function or user operations block work, JYSON routes fixes via `RecoveryPlan` + `AccessRecoveryGuide` (see `docs/ACCESS_ACCOUNT_OPERATIONS_FRAMEWORK.md`, `POST /api/access/recovery/plan`).
+
 Single source of truth for how ACCESS decides what the user sees and what JYSON can run.
 
 ## Server

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import AccessMobileTabBar from '@/components/navigation/AccessMobileTabBar'
 import { cn } from '../components/cn'
 
 export type ACCESSShellProps = {
@@ -92,6 +93,8 @@ export function ACCESSShell({
         tabIndex={railOpen ? 0 : -1}
         onClick={closeRail}
       />
+
+      <AccessMobileTabBar hidden={railOpen} />
     </div>
   )
 }

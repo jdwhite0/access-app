@@ -15,21 +15,21 @@ import type {
  */
 export const PRIMARY_NAV: PrimaryNavItem[] = [
   // ── Main ──────────────────────────────────────────────────────────────────
-  { id: 'home',         label: 'Home',           subtitle: 'Today',                    href: '/dashboard',   glyph: '▣', group: 'main' },
+  { id: 'home',         label: 'Home',           subtitle: 'Today\'s focus',           href: '/dashboard',   glyph: '▣', group: 'main' },
   { id: 'projects',     label: 'Projects',       subtitle: 'What you\'re building',    href: '/projects',    glyph: '▤', group: 'main' },
   { id: 'systems',      label: 'Systems',        subtitle: 'How work runs',            href: '/systems',     glyph: '◇', group: 'main' },
   { id: 'assets',       label: 'Assets',         subtitle: 'What you own',             href: '/assets',      glyph: '▣', group: 'main' },
   { id: 'customers',    label: 'Customers',      subtitle: 'Who you serve',            href: '/customers',   glyph: '◉', group: 'main' },
   { id: 'offers',       label: 'Offers',         subtitle: 'What you sell',            href: '/offers',      glyph: '◈', group: 'main' },
   // ── Intelligence ──────────────────────────────────────────────────────────
-  { id: 'intelligence', label: 'Intelligence',   subtitle: 'JYSON',                    href: '/companion',   glyph: '◎', group: 'intelligence' },
-  { id: 'knowledge',    label: 'Knowledge',      subtitle: 'What JYSON remembers',     href: '/memory',      glyph: '◌', group: 'intelligence' },
-  { id: 'team',         label: 'Team',           subtitle: 'Agents & collaborators',   href: '/agents',      glyph: '⬡', group: 'intelligence' },
+  { id: 'intelligence', label: 'Intelligence',   subtitle: 'Ask JYSON',                href: '/companion',   glyph: '◎', group: 'intelligence' },
+  { id: 'knowledge',    label: 'Knowledge',      subtitle: 'Memory and context',       href: '/memory',      glyph: '◌', group: 'intelligence' },
+  { id: 'team',         label: 'Team',           subtitle: 'Your AI team',             href: '/agents',      glyph: '⬡', group: 'intelligence' },
   // ── Platform ──────────────────────────────────────────────────────────────
-  { id: 'platform',     label: 'Platform',       subtitle: 'Settings & integrations',  href: '/settings',    glyph: '⚙', group: 'platform' },
+  { id: 'platform',     label: 'Platform',       subtitle: 'Your workspace',           href: '/settings',    glyph: '⚙', group: 'platform' },
   // ── Founder only ──────────────────────────────────────────────────────────
-  { id: 'admin',        label: 'Admin',          subtitle: 'Users & billing',          href: '/admin',       glyph: '◈', group: 'founder', founderOnly: true },
-  { id: 'terminal',     label: 'Terminal',       subtitle: 'Developer tools',          href: '/terminal',    glyph: '▶', group: 'founder', founderOnly: true },
+  { id: 'admin',        label: 'Admin',          subtitle: 'Platform overview',        href: '/admin',       glyph: '◈', group: 'founder', founderOnly: true },
+  { id: 'terminal',     label: 'Terminal',       subtitle: 'Command surface',          href: '/terminal',    glyph: '▶', group: 'founder', founderOnly: true },
 ]
 
 export const NAV_GROUP_LABELS: Record<string, string> = {

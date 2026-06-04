@@ -31,6 +31,7 @@ export type EmailDeliveryStatus =
   | 'complained'
 
 export type EmailIntakeSourceType =
+  | 'access_intelligence_dossier'
   | 'jdai_dossier'
   | 'jdai_claude_packet'
   | 'product_release'
