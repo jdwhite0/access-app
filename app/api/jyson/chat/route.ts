@@ -4,37 +4,72 @@
  * This is the bridge between ACCESS and JYSON Core.
  * It enriches the conversation with the user's ACCESS context
  * (identity, handle, blueprint, organizations, products, experiences)
- * and proxies to the JYSON chat API for actual intelligence.
+ * and streams intelligence back to the orb.
+ *
+ * Local dev (preferred): when PRIVATE_JYSON_ENABLED + ANTHROPIC_API_KEY,
+ * stream Claude directly in ACCESS — no proxy to jyson.vercel.app.
+ * Fallback: proxy to JYSON Core; on retired-Gemini errors, retry local Claude.
  *
  * Architecture:
  *   Client → POST /api/jyson/chat
  *           → loads JysonContext from Supabase
- *           → injects ACCESS context into messages
- *           → streams from JYSON API
+ *           → injects ACCESS + vault context into messages
+ *           → local Claude OR JYSON API proxy
  *           → SSE back to client
  */
 import { NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { loadJysonContextForSession } from '@/lib/jyson-bridge/load-jyson-context'
+import { isGeminiRetiredProxyError } from '@/lib/jyson/is-gemini-retired-proxy-error'
+import {
+  shouldStreamClaudeLocally,
+  streamLocalClaudeChat,
+} from '@/lib/jyson/local-chat-stream'
+import {
+  isVaultIntelligenceEnabled,
+  resolveFounderVaultPathFromRows,
+} from '@/lib/jyson/resolve-founder-vault-path'
+import { retrieveVaultContextForQuery } from '@/lib/jyson/vault-context'
 import { checkUsageLimit, recordUsageEvent } from '@/lib/usage/enforce'
+import { listVaults } from '@/lib/actions/vaults'
 
-const JYSON_API_URL = process.env.JYSON_INTERNAL_API_URL
+/** JYSON Core chat API. Local: optional JYSON_INTERNAL_API_URL when not using direct Claude. */
+const JYSON_API_URL = (
+  process.env.JYSON_INTERNAL_API_URL
   ?? process.env.NEXT_PUBLIC_JYSON_URL
   ?? 'https://jyson.vercel.app'
+).replace(/\/$/, '')
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-function buildAccessContextBlock(ctx: Awaited<ReturnType<typeof loadJysonContextForSession>>['context']): string {
+type VaultRow = { name: string; vault_type: string | null; local_path: string | null; last_synced_at: string | null; file_count: number }
+
+function buildAccessContextBlock(
+  ctx: Awaited<ReturnType<typeof loadJysonContextForSession>>['context'],
+  vaults: VaultRow[],
+): string {
   if (!ctx) return ''
 
-  const orgs = ctx.organizations.map((o) => `  - ${o.name} (${o.id})`).join('\n') || '  (none yet)'
+  const orgs = ctx.organizations.map((o) => `  - ${o.name}`).join('\n') || '  (none yet)'
   const products = ctx.products
-    .map((p) => `  - ${p.name} [${p.type}]${p.organization_id ? ` @ ${p.organization_id}` : ''}`)
+    .map((p) => `  - ${p.name} [${p.type}]`)
     .join('\n') || '  (none yet)'
   const experiences = ctx.experiences
     .map((e) => `  - ${e.name}${e.url ? ` → ${e.url}` : ''}`)
     .join('\n') || '  (none yet)'
+
+  const vaultLines = vaults.length
+    ? vaults.map((v) => {
+        const synced = v.last_synced_at ? `last synced ${new Date(v.last_synced_at).toLocaleDateString()}` : 'not yet synced'
+        const path = v.local_path ? ` at ${v.local_path}` : ''
+        return `  - ${v.name} [${v.vault_type ?? 'vault'}]${path} — ${v.file_count} files, ${synced}`
+      }).join('\n')
+    : '  (no vaults connected yet)'
+
+  const connectorLine = ctx.companionState?.connectorOnline
+    ? 'online (OpenJarvis live tools available)'
+    : 'offline (OpenJarvis live tools unavailable — does NOT block vault excerpt Q&A)'
 
   return `
 [JYSON RUNTIME — ACCESS CONTEXT]
@@ -42,7 +77,15 @@ You are speaking with ${ctx.identity.displayName}.
 Their ACCESS handle is: ${ctx.handle}
 Their Founder OS: ${ctx.userSystemId ?? 'pending generation'}
 Cloud package: ${ctx.companionState?.cloudReady ? 'ready' : 'pending'}
-Local OS: ${ctx.companionState?.localConnected ? 'connected' : 'sync pending'}
+Local connector: ${connectorLine}
+
+KNOWLEDGE VAULTS (Obsidian / JD Command Vault on their Mac):
+${vaultLines}
+
+Vault intelligence in chat: when a later message includes [JYSON VAULT CONTENT] with excerpt bodies,
+those excerpts ARE the vault read for this session — answer from them and cite paths.
+Connector offline does NOT mean you cannot read vault notes for that turn.
+Connector offline only blocks OpenJarvis live tools (read_file, list_files via connector), not excerpt-based Q&A.
 
 Their registered world:
 Organizations:
@@ -54,12 +97,62 @@ ${products}
 Experiences:
 ${experiences}
 
-System summary: ${ctx.summary.consumer}
+Context summary: ${ctx.summary.consumer}
 
-You are their personal JYSON companion. Speak from knowledge of their specific world above.
-Do not be generic. Reference their actual orgs, products, and experiences when relevant.
+You are their personal JYSON companion. Reference their actual organizations, products, vaults, and vault paths.
+Do not be generic. When they ask "what am I building?" or "what's in my vault?" — answer from the context above.
 [END ACCESS CONTEXT]
 `.trim()
+}
+
+function lastUserMessageText(messages: Array<{ role: string; content: string }>): string {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i]?.role === 'user' && messages[i].content?.trim()) {
+      return messages[i].content.trim()
+    }
+  }
+  return ''
+}
+
+async function proxyJysonToChunks(
+  enrichedMessages: Array<{ role: string; content: string }>,
+): Promise<{ ok: boolean; chunks: string[]; combinedText: string }> {
+  const chunks: string[] = []
+  let combinedText = ''
+
+  const jysonRes = await fetch(`${JYSON_API_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: enrichedMessages }),
+    signal: AbortSignal.timeout(55_000),
+  })
+
+  if (!jysonRes.ok || !jysonRes.body) {
+    return { ok: false, chunks: [], combinedText: '' }
+  }
+
+  const reader = jysonRes.body.getReader()
+  const dec = new TextDecoder()
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    const piece = dec.decode(value)
+    chunks.push(piece)
+    for (const line of piece.split('\n')) {
+      if (!line.startsWith('data: ')) continue
+      const payload = line.slice(6).trim()
+      if (!payload || payload === '[DONE]') continue
+      try {
+        const parsed = JSON.parse(payload) as { text?: string }
+        if (parsed.text) combinedText += parsed.text
+      } catch {
+        // ignore non-JSON lines
+      }
+    }
+  }
+
+  return { ok: true, chunks, combinedText }
 }
 
 export async function POST(req: NextRequest) {
@@ -83,7 +176,6 @@ export async function POST(req: NextRequest) {
     return new Response('Invalid messages', { status: 400 })
   }
 
-  // Usage limit check — blocks free-tier users who've hit their monthly cap
   const limitCheck = await checkUsageLimit('jyson_message')
   if (!limitCheck.allowed) {
     return new Response(
@@ -92,48 +184,127 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Record usage (fire-and-forget)
   void recordUsageEvent('jyson_message', { message_count: messages.length })
 
-  // Load ACCESS context to enrich the conversation
-  const { context } = await loadJysonContextForSession()
-  const contextBlock = buildAccessContextBlock(context)
+  const [{ context }, vaults] = await Promise.all([
+    loadJysonContextForSession(),
+    listVaults().catch(() => []),
+  ])
+  const contextBlock = buildAccessContextBlock(context, vaults)
 
-  // Inject ACCESS context as the first user message (JYSON reads it as system context)
-  const enrichedMessages = contextBlock
-    ? [{ role: 'user', content: contextBlock }, { role: 'assistant', content: "Understood. I have your ACCESS context loaded. I'm ready." }, ...messages]
-    : messages
+  const vaultContextEnabled = isVaultIntelligenceEnabled()
+  const query = lastUserMessageText(messages)
+  let vaultContextBlock = ''
+  let retrievedChunkCount = 0
+  let firstSource: string | null = null
+  let vaultPathSource: string | null = null
 
-  // Proxy to JYSON chat API with SSE streaming
+  if (vaultContextEnabled && query) {
+    const { path, source } = resolveFounderVaultPathFromRows(vaults)
+    vaultPathSource = source
+    if (path) {
+      const retrieved = await retrieveVaultContextForQuery(path, query)
+      vaultContextBlock = retrieved.block
+      retrievedChunkCount = retrieved.chunkCount
+      const excerptMatch = vaultContextBlock.match(/### Excerpt 1: ([^\s(]+)/)
+      firstSource = excerptMatch?.[1] ?? null
+    } else {
+      vaultContextBlock = `
+[JYSON VAULT CONTENT — vault path unavailable]
+Private JYSON is enabled but no JD Command Vault path was found on this machine.
+Connect the vault in ACCESS → Vaults or set the canonical path, then run \`npm run jyson:vault:index\`.
+Query focus: ${query.slice(0, 200)}
+Do not invent vault facts. Do not output a DISCOVERY REPORT for this turn.
+[END JYSON VAULT CONTENT]`.trim()
+    }
+  }
+
+  const preamble: Array<{ role: string; content: string }> = []
+  if (contextBlock) {
+    preamble.push({ role: 'user', content: contextBlock })
+    preamble.push({
+      role: 'assistant',
+      content: "Understood. I have your ACCESS context loaded. I'm ready.",
+    })
+  }
+  if (vaultContextBlock) {
+    preamble.push({ role: 'user', content: vaultContextBlock })
+    preamble.push({
+      role: 'assistant',
+      content:
+        'Understood. I have grounded vault excerpts with full note text. I will answer from those excerpts, cite paths, and will not ask you to connect the connector for vault Q&A on this turn.',
+    })
+  }
+
+  const enrichedMessages = preamble.length > 0 ? [...preamble, ...messages] : messages
+  const finalPromptHasVaultContext = enrichedMessages.some((m) =>
+    m.content.includes('[JYSON VAULT CONTENT'),
+  )
+  const useLocalClaude = shouldStreamClaudeLocally()
+
+  if (process.env.NODE_ENV === 'development') {
+    console.info('[jyson/chat]', {
+      jysonApiUrl: useLocalClaude ? '(local Claude in ACCESS)' : JYSON_API_URL,
+      useLocalClaude,
+      query: query.slice(0, 120),
+      vaultContextEnabled,
+      vaultPathSource,
+      retrievedChunkCount,
+      firstSource,
+      finalPromptHasVaultContext,
+    })
+  }
+
   const stream = new ReadableStream({
     async start(controller) {
       const enc = new TextEncoder()
+      const enqueue = (s: string) => controller.enqueue(enc.encode(s))
+
+      const runLocal = async (reason?: string) => {
+        if (reason && process.env.NODE_ENV === 'development') {
+          console.info('[jyson/chat] local Claude:', reason)
+        }
+        await streamLocalClaudeChat(enrichedMessages, enqueue)
+      }
 
       try {
-        const jysonRes = await fetch(`${JYSON_API_URL}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: enrichedMessages }),
-          signal: AbortSignal.timeout(55_000),
-        })
-
-        if (!jysonRes.ok || !jysonRes.body) {
-          controller.enqueue(enc.encode(`data: ${JSON.stringify({ text: `JYSON unavailable (${jysonRes.status}). Check JYSON deployment.` })}\n\ndata: [DONE]\n\n`))
-          controller.close()
+        if (useLocalClaude) {
+          await runLocal('PRIVATE_JYSON + ANTHROPIC_API_KEY')
           return
         }
 
-        const reader = jysonRes.body.getReader()
-        const dec = new TextDecoder()
+        const proxied = await proxyJysonToChunks(enrichedMessages)
 
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          controller.enqueue(enc.encode(dec.decode(value)))
+        if (!proxied.ok) {
+          if (process.env.ANTHROPIC_API_KEY?.trim()) {
+            await runLocal('JYSON proxy unavailable')
+          } else {
+            enqueue(`data: ${JSON.stringify({ text: 'JYSON unavailable. Add ANTHROPIC_API_KEY to access-app/.env.local for local orb chat.' })}\n\ndata: [DONE]\n\n`)
+          }
+          return
+        }
+
+        const geminiStale = isGeminiRetiredProxyError(proxied.combinedText)
+        if (geminiStale && process.env.ANTHROPIC_API_KEY?.trim()) {
+          await runLocal('retired Gemini error from JYSON proxy — retrying with Claude')
+          return
+        }
+
+        for (const chunk of proxied.chunks) {
+          enqueue(chunk)
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Connection failed.'
-        controller.enqueue(enc.encode(`data: ${JSON.stringify({ text: `\n\n[JYSON Error: ${msg}]` })}\n\ndata: [DONE]\n\n`))
+        if (process.env.ANTHROPIC_API_KEY?.trim()) {
+          try {
+            await runLocal(`error fallback: ${msg}`)
+          } catch (localErr) {
+            const localMsg = localErr instanceof Error ? localErr.message : 'Local Claude failed.'
+            enqueue(`data: ${JSON.stringify({ text: `\n\n[JYSON Error: ${localMsg}]` })}\n\ndata: [DONE]\n\n`)
+          }
+        } else {
+          enqueue(`data: ${JSON.stringify({ text: `\n\n[JYSON Error: ${msg}]` })}\n\ndata: [DONE]\n\n`)
+        }
       } finally {
         controller.close()
       }
@@ -145,7 +316,7 @@ export async function POST(req: NextRequest) {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache, no-transform',
       'Connection': 'keep-alive',
-      'X-JYSON-Harness': 'access-runtime',
+      'X-JYSON-Harness': useLocalClaude ? 'access-local-claude' : 'access-runtime',
     },
   })
 }

@@ -256,9 +256,9 @@ export function buildContextualHome(input: {
   if (input.localToolsConnected === false) {
     jysonRecommendations.push({
       id: 'local',
-      text: 'Connect local tools so JYSON can read files and your vault on this machine.',
-      action: 'Connect local tools',
-      href: '/companion#diagnostics',
+      text: 'Optional: turn on file tools on this Mac for live reads. Vault Q&A in chat still works from indexed notes.',
+      action: 'Set up on this Mac',
+      href: '/agents?connect=tools#execution',
     })
   }
 
@@ -318,13 +318,13 @@ export function buildContextualHome(input: {
     },
     {
       id: 'local',
-      title: 'Connect local tools',
+      title: 'File tools on this Mac',
       description:
         input.localToolsConnected
-          ? 'OpenJarvis is connected — JYSON can use local files and vault.'
-          : 'Start OpenJarvis and the connector to unlock local execution.',
-      href: '/companion#diagnostics',
-      actionLabel: input.localToolsConnected ? 'View connection' : 'Connect local tools',
+          ? 'Local file tools are on — JYSON can read and list files on this computer.'
+          : 'Optional setup on this Mac. Vault chat excerpts work without it when your vault is indexed.',
+      href: '/agents?connect=tools#execution',
+      actionLabel: input.localToolsConnected ? 'View setup' : 'Set up on this Mac',
     },
     {
       id: 'billing',

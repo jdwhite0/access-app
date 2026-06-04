@@ -3,6 +3,7 @@ export { PlanetPresence, type PlanetState } from './PlanetPresence'
 export { CommandInput } from './CommandInput'
 export {
   IntelligenceAnswer,
+  displayTextFromJysonReply,
   sectionsFromMessage,
   type IntelligenceSection,
 } from './IntelligenceAnswer'

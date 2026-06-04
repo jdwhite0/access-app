@@ -1,7 +1,83 @@
 'use server'
 
 import { loadJysonContextForSession } from '@/lib/jyson-bridge/load-jyson-context'
+import { registerVaultWithPath } from '@/lib/actions/vaults'
+import { DEFAULT_JD_COMMAND_VAULT_PATH } from '@/lib/vault/constants'
 import type { CompanionDispatchDecision } from '@/lib/jyson-bridge/build-agent-context-for-dispatch'
+import type { VaultType } from '@/types/db'
+
+// ── Local command intercepts (run before JYSON routing) ───────────────────────
+
+function parseFlag(text: string, flag: string): string | null {
+  const re = new RegExp(`--${flag}\\s+(?:"([^"]+)"|'([^']+)'|(\\S+))`)
+  const m = text.match(re)
+  return m ? (m[1] ?? m[2] ?? m[3] ?? null) : null
+}
+
+const VALID_VAULT_TYPES: VaultType[] = ['obsidian', 'local', 'notion', 'drive', 'google_drive', 'manual', 'other']
+
+async function handleRegisterVault(
+  commandText: string
+): Promise<{ decision: CompanionDispatchDecision } | null> {
+  if (!commandText.trim().startsWith('/register-vault') && !commandText.trim().startsWith('access vault register')) {
+    return null
+  }
+
+  const name = parseFlag(commandText, 'name')
+  const typeRaw = parseFlag(commandText, 'type')
+  const path = parseFlag(commandText, 'path')
+
+  if (!name) {
+    return {
+      decision: {
+        intent: 'register_vault',
+        destination: 'vault',
+        confidence: 1,
+        allowed: true,
+        reason: 'Local command intercepted',
+        userMessage: `Missing --name flag. Example: /register-vault --name "JD Command Vault" --type obsidian --path "${DEFAULT_JD_COMMAND_VAULT_PATH}"`,
+        commandLabel: 'register vault',
+      },
+    }
+  }
+
+  const vaultType: VaultType = VALID_VAULT_TYPES.includes(typeRaw as VaultType)
+    ? (typeRaw as VaultType)
+    : 'local'
+
+  const { vault, error } = await registerVaultWithPath({
+    name,
+    vault_type: vaultType,
+    local_path: path?.trim() ? path : DEFAULT_JD_COMMAND_VAULT_PATH,
+    description: `Registered via terminal command.`,
+  })
+
+  if (error || !vault) {
+    return {
+      decision: {
+        intent: 'register_vault',
+        destination: 'vault',
+        confidence: 1,
+        allowed: true,
+        reason: 'Local command intercepted',
+        userMessage: `Registration failed: ${error ?? 'unknown error'}. Check your input and try again.`,
+        commandLabel: 'register vault',
+      },
+    }
+  }
+
+  return {
+    decision: {
+      intent: 'register_vault',
+      destination: 'vault',
+      confidence: 1,
+      allowed: true,
+      reason: 'Local command intercepted',
+      userMessage: `✓ Vault registered: "${vault.name}" [${vault.vault_type ?? 'vault'}]${vault.local_path ? ` at ${vault.local_path}` : ''}.\n\nGo to Assets → Vaults to sync it with the local connector.\n\nJYSON can now reference this vault when you ask about your workspace.`,
+      commandLabel: 'register vault',
+    },
+  }
+}
 
 /**
  * Cloud-safe JYSON intent classification.
@@ -84,6 +160,10 @@ export async function dispatchJysonCommand(
   handle?: string
   error?: string
 }> {
+  // Local intercepts run before JYSON routing — these work without connector
+  const vaultResult = await handleRegisterVault(commandText)
+  if (vaultResult) return { ...vaultResult, handle: 'local' }
+
   const { context, error } = await loadJysonContextForSession()
   if (!context) {
     return { decision: null, error: error ?? 'Sign in to route commands.' }

@@ -176,7 +176,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 0 16px 12px;
+  padding: 0 16px 10px;
+  max-height: 88px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .access-jyson-layer__chip {

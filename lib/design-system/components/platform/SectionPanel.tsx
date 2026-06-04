@@ -7,6 +7,7 @@ type SectionPanelProps = {
   actions?: ReactNode
   children: ReactNode
   className?: string
+  id?: string
 }
 
 export function SectionPanel({
@@ -15,9 +16,10 @@ export function SectionPanel({
   actions,
   children,
   className,
+  id,
 }: SectionPanelProps) {
   return (
-    <section className={cn('access-platform-section-panel', className)}>
+    <section id={id} className={cn('access-platform-section-panel', className)}>
       <div className="access-platform-section-panel__head">
         <div>
           <h2 className="access-platform-section-title">{title}</h2>

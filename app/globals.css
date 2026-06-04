@@ -5,6 +5,7 @@
 @import "../lib/design-system/styles/home-stripe.css";
 @import "../lib/design-system/styles/access-app-shell.css";
 @import "../lib/design-system/styles/jyson-layer.css";
+@import "../lib/design-system/styles/connect-local-tools.css";
 @import "../lib/design-system/styles/v4-experience.css";
 @import "../lib/design-system/styles/visual-world.css";
 @import "../lib/design-system/styles/interface-clarity.css";
@@ -3936,6 +3937,40 @@ details[open] .jyson-companion-drawer-summary::after {
   font-family: var(--sans);
   font-size: 11px;
   color: var(--text-dim);
+}
+.access-jyson-cap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.access-jyson-cap-card {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+}
+.access-jyson-cap-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.access-jyson-cap-card__title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+.access-jyson-cap-card__desc {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.45;
+  margin: 0;
 }
 
 /* ── Memory page ── */

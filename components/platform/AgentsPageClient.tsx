@@ -1,44 +1,83 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { ConnectLocalToolsModal } from '@/components/platform/ConnectLocalToolsModal'
 import {
   PageHeader,
   SectionPanel,
   PlatformEmptyState,
   StatusPill,
   PrimaryButton,
+  SecondaryButton,
 } from '@/lib/design-system/components/platform'
-import { localToolsLabel, connectorLabel, cloudStatusLabel } from '@/lib/access/status-labels'
+import {
+  localToolsLabel,
+  localIntelligenceActiveLabel,
+  connectorLabel,
+  cloudStatusLabel,
+} from '@/lib/access/status-labels'
 import { listAgents } from '@/lib/actions/agents'
+import { useOpenJarvisHealth } from '@/lib/openjarvis/use-openjarvis-health'
+import {
+  JYSON_CAPABILITY_CARDS,
+  resolveJysonCapabilityStatus,
+} from '@/lib/openjarvis/jyson-capabilities'
 import type { Agent } from '@/types/db'
-
-type OJHealth = { localToolsAvailable: boolean; connectorOnline: boolean; message?: string }
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 export default function AgentsPageClient() {
+  const searchParams = useSearchParams()
   const [agents, setAgents] = useState<Agent[]>([])
-  const [ojHealth, setOjHealth] = useState<OJHealth | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loadingAgents, setLoadingAgents] = useState(true)
+  const [connectOpen, setConnectOpen] = useState(false)
+
+  const {
+    runtime,
+    capabilities,
+    loading: loadingHealth,
+    refresh,
+    showSetupCta,
+    fileToolsLive,
+    localIntelligenceActive,
+    connectedBadge,
+  } = useOpenJarvisHealth()
+
+  const loading = loadingAgents || loadingHealth
 
   useEffect(() => {
-    Promise.all([
-      listAgents().catch(() => [] as Agent[]),
-      fetch('/api/jyson/openjarvis/health', { cache: 'no-store' })
-        .then(r => r.json() as Promise<{ runtime?: OJHealth }>)
-        .then(d => d.runtime ?? null)
-        .catch(() => null),
-    ]).then(([ag, health]) => {
-      setAgents(ag)
-      setOjHealth(health)
-    }).finally(() => setLoading(false))
+    listAgents()
+      .catch(() => [] as Agent[])
+      .then(setAgents)
+      .finally(() => setLoadingAgents(false))
   }, [])
 
-  const active = agents.filter(a => a.status === 'active')
-  const inactive = agents.filter(a => a.status !== 'active' && a.status !== 'archived')
+  useEffect(() => {
+    if (searchParams.get('connect') === 'tools') {
+      setConnectOpen(true)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.location.hash !== '#execution') return
+    const el = document.getElementById('execution')
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [loading])
+
+  const active = agents.filter((a) => a.status === 'active')
+  const inactive = agents.filter((a) => a.status !== 'active' && a.status !== 'archived')
+
+  const executionConnected = connectedBadge
+  const localToolsPillLabel = fileToolsLive
+    ? localToolsLabel(true)
+    : localIntelligenceActive
+      ? localIntelligenceActiveLabel(true)
+      : localToolsLabel(false)
 
   return (
     <AccessAppLayout variant="default">
@@ -46,14 +85,26 @@ export default function AgentsPageClient() {
         <PageHeader
           title="Agents"
           description="Create specialized AI teammates for different parts of your work."
-          actions={<PrimaryButton href="/terminal">Register agent</PrimaryButton>}
+          actions={
+            <>
+              {!loading && showSetupCta ? (
+                <PrimaryButton type="button" onClick={() => setConnectOpen(true)}>
+                  Set up on this Mac
+                </PrimaryButton>
+              ) : !loading && executionConnected ? (
+                <span className="access-ds-badge access-ds-badge--operational" style={{ alignSelf: 'center' }}>
+                  {localIntelligenceActiveLabel(true)}
+                </span>
+              ) : null}
+              <PrimaryButton href="/terminal">Register agent</PrimaryButton>
+            </>
+          }
         />
 
         {loading ? (
           <div className="access-platform-loading">Loading agents…</div>
         ) : (
           <>
-            {/* JYSON — always shown first */}
             <SectionPanel title="JYSON" description="Your AI companion — cloud intelligence with optional local connector.">
               <div className="access-agent-card access-agent-card--jyson">
                 <div className="access-agent-card__header">
@@ -72,61 +123,145 @@ export default function AgentsPageClient() {
                   <div className="access-agent-cap">
                     <span className="access-agent-cap__label">Connector</span>
                     <StatusPill
-                      label={connectorLabel(!!ojHealth?.connectorOnline)}
-                      tone={ojHealth?.connectorOnline ? 'operational' : 'offline'}
+                      label={connectorLabel(!!runtime?.connectorOnline)}
+                      tone={runtime?.connectorOnline ? 'operational' : 'offline'}
                     />
                   </div>
                   <div className="access-agent-cap">
-                    <span className="access-agent-cap__label">Local tools</span>
+                    <span className="access-agent-cap__label">Local capabilities</span>
                     <StatusPill
-                      label={localToolsLabel(!!ojHealth?.localToolsAvailable)}
-                      tone={ojHealth?.localToolsAvailable ? 'operational' : 'offline'}
+                      label={localToolsPillLabel}
+                      tone={executionConnected ? 'operational' : 'offline'}
                     />
                   </div>
                 </div>
-                {!ojHealth?.localToolsAvailable && (
+                {runtime?.message && (
                   <p className="access-platform-meta" style={{ marginTop: 12 }}>
-                    {ojHealth?.message ?? 'Start OpenJarvis and the connector heartbeat to enable local tool execution.'}
+                    {runtime.message}
                   </p>
                 )}
               </div>
             </SectionPanel>
 
-            {/* OpenJarvis */}
-            <SectionPanel title="Execution layer">
+            <SectionPanel
+              id="execution"
+              title="JYSON local capabilities"
+              description="Optional intelligence on this Mac — file access, vault depth, and future local layers. Cloud chat works without this."
+            >
               <div className="access-agent-card">
                 <div className="access-agent-card__header">
                   <div className="access-agent-card__avatar">⚙</div>
                   <div>
-                    <p className="access-agent-card__name">OpenJarvis</p>
-                    <p className="access-agent-card__role">Local tool executor — files, vault, models, browser</p>
+                    <p className="access-agent-card__name">Local intelligence</p>
+                    <p className="access-agent-card__role">
+                      {fileToolsLive
+                        ? 'File intelligence is live on this Mac'
+                        : localIntelligenceActive
+                          ? 'Runtime reachable — finish connector for file intelligence'
+                          : 'Enable local capabilities when you develop on this Mac'}
+                    </p>
                   </div>
                   <StatusPill
-                    label={localToolsLabel(!!ojHealth?.localToolsAvailable)}
-                    tone={ojHealth?.localToolsAvailable ? 'operational' : 'offline'}
+                    label={
+                      fileToolsLive
+                        ? 'Connected'
+                        : localIntelligenceActive
+                          ? localIntelligenceActiveLabel(true)
+                          : 'Offline'
+                    }
+                    tone={executionConnected ? 'operational' : 'offline'}
                   />
                 </div>
                 <div className="access-agent-capabilities">
-                  {['read_file', 'list_files', 'read_vault_note', 'run_local_model', 'read_calendar'].map(tool => (
-                    <div key={tool} className="access-agent-cap">
-                      <span className="access-agent-cap__label" style={{ fontFamily: 'var(--mono)', fontSize: '0.72rem' }}>{tool}</span>
-                      <span className={`access-ds-badge access-ds-badge--${ojHealth?.localToolsAvailable ? 'operational' : 'neutral'}`}>
-                        {ojHealth?.localToolsAvailable ? 'Ready' : 'Offline'}
-                      </span>
-                    </div>
-                  ))}
+                  <div className="access-agent-cap">
+                    <span className="access-agent-cap__label">Private JYSON</span>
+                    <span
+                      className={`access-ds-badge access-ds-badge--${
+                        runtime?.privateLayerEnabled ? 'operational' : 'neutral'
+                      }`}
+                    >
+                      {runtime?.privateLayerEnabled ? 'On' : 'Off'}
+                    </span>
+                  </div>
+                  <div className="access-agent-cap">
+                    <span className="access-agent-cap__label">Local runtime</span>
+                    <span
+                      className={`access-ds-badge access-ds-badge--${
+                        runtime?.openJarvisOnline ? 'operational' : 'offline'
+                      }`}
+                    >
+                      {runtime?.openJarvisOnline ? 'Reachable' : 'Down'}
+                    </span>
+                  </div>
+                  <div className="access-agent-cap">
+                    <span className="access-agent-cap__label">Install</span>
+                    <span
+                      className={`access-ds-badge access-ds-badge--${
+                        runtime?.openJarvisInstalled ? 'operational' : 'offline'
+                      }`}
+                    >
+                      {runtime?.openJarvisInstalled ? 'Found' : 'Missing'}
+                    </span>
+                  </div>
                 </div>
+                <div className="access-jyson-cap-grid" role="list" aria-label="JYSON local capabilities">
+                  {JYSON_CAPABILITY_CARDS.map((cap) => {
+                    const status = resolveJysonCapabilityStatus(cap.id, runtime, capabilities)
+                    return (
+                      <article key={cap.id} className="access-jyson-cap-card" role="listitem">
+                        <div className="access-jyson-cap-card__head">
+                          <p className="access-jyson-cap-card__title">{cap.title}</p>
+                          <span className={`access-ds-badge access-ds-badge--${status.tone}`}>
+                            {status.label}
+                          </span>
+                        </div>
+                        <p className="access-jyson-cap-card__desc">{cap.description}</p>
+                      </article>
+                    )
+                  })}
+                </div>
+                {showSetupCta ? (
+                  <div style={{ marginTop: 12 }}>
+                    <p className="access-platform-meta">
+                      {runtime?.deploymentMode === 'cloud'
+                        ? 'You are on the cloud site. Turn on local capabilities from your Mac when you develop at home.'
+                        : runtime?.message ??
+                          'Copy one command, run it in Terminal on this Mac, and keep the setup window open — status updates automatically.'}
+                    </p>
+                    <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      <PrimaryButton type="button" onClick={() => setConnectOpen(true)}>
+                        Set up on this Mac
+                      </PrimaryButton>
+                      <SecondaryButton href="/companion#execute">Test in JYSON</SecondaryButton>
+                    </div>
+                    <p className="access-platform-meta" style={{ marginTop: 8 }}>
+                      Advanced install and runtime docs are in{' '}
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: '0.75rem' }}>
+                        docs/OPENJARVIS_FOUNDER_SETUP.md
+                      </span>{' '}
+                      (developers only).
+                    </p>
+                  </div>
+                ) : (
+                  <p className="access-platform-meta" style={{ marginTop: 12 }}>
+                    {fileToolsLive
+                      ? 'Local file intelligence is active on this Mac.'
+                      : 'Local runtime is reachable. Run connector heartbeat for file intelligence.'}{' '}
+                    <Link href="/companion#execute" style={{ color: 'var(--accent)' }}>
+                      Test capabilities in JYSON
+                    </Link>
+                  </p>
+                )}
               </div>
             </SectionPanel>
 
-            {/* Registered agents */}
             {agents.length > 0 ? (
               <SectionPanel
                 title={`Registered agents (${agents.length})`}
                 description="Custom agents you've registered in your workspace."
               >
                 <div className="access-offers-grid">
-                  {active.map(agent => (
+                  {active.map((agent) => (
                     <div key={agent.id} className="access-agent-card">
                       <div className="access-agent-card__header">
                         <div className="access-agent-card__avatar">◉</div>
@@ -134,17 +269,17 @@ export default function AgentsPageClient() {
                           <p className="access-agent-card__name">{agent.name}</p>
                           {agent.role && <p className="access-agent-card__role">{agent.role}</p>}
                         </div>
-                        <span className={`access-ds-badge access-ds-badge--${agent.status === 'active' ? 'operational' : 'neutral'}`}>
-                          {agent.status}
-                        </span>
+                        <span className="access-ds-badge access-ds-badge--operational">{agent.status}</span>
                       </div>
                       {agent.description && (
                         <p className="access-agent-card__desc">{agent.description}</p>
                       )}
-                      <p className="access-platform-meta" style={{ marginTop: 12 }}>Registered {fmtDate(agent.created_at)}</p>
+                      <p className="access-platform-meta" style={{ marginTop: 12 }}>
+                        Registered {fmtDate(agent.created_at)}
+                      </p>
                     </div>
                   ))}
-                  {inactive.map(agent => (
+                  {inactive.map((agent) => (
                     <div key={agent.id} className="access-agent-card access-agent-card--dim">
                       <div className="access-agent-card__header">
                         <div className="access-agent-card__avatar">◉</div>
@@ -171,6 +306,13 @@ export default function AgentsPageClient() {
           </>
         )}
       </div>
+
+      <ConnectLocalToolsModal
+        open={connectOpen}
+        onClose={() => setConnectOpen(false)}
+        runtime={runtime}
+        onRuntimeChange={() => void refresh()}
+      />
     </AccessAppLayout>
   )
 }

@@ -31,6 +31,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/internal/email(.*)',
   '/api/cron/email-daily-brief',
   '/api/cron/email-dispatch',
+  '/api/cron/email-weekly-digest',
   // Connector device JWT auth in route handlers — bypass Clerk session
   '/api/connector/v1(.*)',
 ])
@@ -38,16 +39,16 @@ const isPublicRoute = createRouteMatcher([
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
 
 export const proxy = clerkMiddleware(async (auth, request) => {
-  const { userId } = await auth()
+  const { userId, isAuthenticated, redirectToSignIn } = await auth()
 
   // Authenticated users hitting sign-in/sign-up → dashboard
   if (userId && isAuthRoute(request)) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // Unauthenticated users hitting protected routes → sign-in
-  if (!isPublicRoute(request)) {
-    await auth.protect()
+  // Unauthenticated users hitting protected routes → sign-in (not 404)
+  if (!isPublicRoute(request) && !isAuthenticated) {
+    return redirectToSignIn({ returnBackUrl: request.url })
   }
 })
 

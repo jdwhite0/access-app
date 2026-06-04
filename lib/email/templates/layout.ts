@@ -1,4 +1,4 @@
-import { getAppBaseUrl, COMPANY_MAILING_ADDRESS_PLACEHOLDER } from '@/lib/email/constants'
+import { getAppBaseUrl, getCompanyMailingAddress } from '@/lib/email/constants'
 import { buildUnsubscribeUrl, createUnsubscribeToken } from '@/lib/email/tokens'
 import type { MarketingEmailCategory } from '@/lib/email/constants'
 
@@ -49,7 +49,7 @@ function complianceFooter(marketing?: EmailTemplateOptions['marketing']): string
         <a href="${emailPrefsPublic}" style="color:${BRAND.link};text-decoration:underline;">Email preferences</a><br/>
         <a href="${privacy}" style="color:${BRAND.link};text-decoration:underline;">Privacy Policy</a> ·
         <a href="${terms}" style="color:${BRAND.link};text-decoration:underline;">Terms of Service</a><br/>
-        <span style="display:block;margin-top:12px;">${COMPANY_MAILING_ADDRESS_PLACEHOLDER}</span>
+        <span style="display:block;margin-top:12px;">${getCompanyMailingAddress()}</span>
         <span style="display:block;margin-top:8px;">© ${new Date().getFullYear()} JD AI Systems · ACCESS Intelligence</span>
       </td>
     </tr>

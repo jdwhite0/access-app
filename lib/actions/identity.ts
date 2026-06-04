@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 import type { AccessIdentity } from '@/types/db'
 import { provisionVaultConnectionsForIdentity } from '@/lib/vault/provision'
+import { ensureEmailPreferences } from '@/lib/email/preferences-db'
 
 export type IdentityResult = {
   identity: AccessIdentity | null
@@ -37,6 +38,7 @@ export async function getOrCreateIdentity(handle: string): Promise<IdentityResul
 
   if (existing) {
     await provisionVaultConnectionsForIdentity(supabase, existing)
+    await ensureEmailPreferences(existing.id)
     return { identity: existing as AccessIdentity }
   }
 
@@ -71,6 +73,7 @@ export async function getOrCreateIdentity(handle: string): Promise<IdentityResul
       .maybeSingle()
     if (fallback) {
       await provisionVaultConnectionsForIdentity(supabase, fallback)
+      await ensureEmailPreferences(fallback.id)
       return { identity: fallback as AccessIdentity }
     }
     return { identity: null, error: error.message }
@@ -78,6 +81,7 @@ export async function getOrCreateIdentity(handle: string): Promise<IdentityResul
 
   const created = data as AccessIdentity
   await provisionVaultConnectionsForIdentity(supabase, created)
+  await ensureEmailPreferences(created.id)
   return { identity: created }
 }
 

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import AgentsPageClient from '@/components/platform/AgentsPageClient'
@@ -10,5 +11,9 @@ export const metadata = {
 export default async function AgentsPage() {
   const { userId } = await auth()
   if (!userId) redirect('/?redirect=agents')
-  return <AgentsPageClient />
+  return (
+    <Suspense fallback={<div className="access-platform-loading">Loading agents…</div>}>
+      <AgentsPageClient />
+    </Suspense>
+  )
 }

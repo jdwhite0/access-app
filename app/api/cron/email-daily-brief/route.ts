@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyCronOrInternalAuth } from '@/lib/email/agents/cron-auth'
-import { buildDailyBriefIntakeFromLatest } from '@/lib/email/agents/dossier-intake'
+import { resolveDailyBriefIntake } from '@/lib/email/agents/dossier-intake'
 import { runEmailIntakePipeline } from '@/lib/email/agents/pipeline'
 
 /**
  * Cron / operator: queue daily brief from latest approved JDAI dossier.
+ * Vercel: reads Supabase snapshot when jdai-content-engine is not on disk.
  * GET /api/cron/email-daily-brief
  */
 export async function GET(request: NextRequest) {
@@ -12,12 +13,15 @@ export async function GET(request: NextRequest) {
   if (denied) return denied
 
   try {
-    const { intake, dossierPath } = buildDailyBriefIntakeFromLatest()
+    const { intake, dossierPath, source } = await resolveDailyBriefIntake({
+      publishSnapshot: false,
+    })
     const result = await runEmailIntakePipeline(intake, { sendImmediately: true })
 
     return NextResponse.json({
       ok: result.ok,
       dossierPath,
+      intakeSource: source,
       queued: result.queued,
       skipped: result.skipped,
       errors: result.errors,

@@ -150,10 +150,34 @@ vercel link --yes --project app --scope jd-white-s-projects
 | In-app UI | `components/jyson/`, `app/companion/page.tsx` |
 | Bridge / context | `lib/jyson-bridge/` |
 | External app repo | `jdwhite0/jyson-system` → https://jyson.vercel.app |
-| Env (ACCESS) | `NEXT_PUBLIC_JYSON_URL` (optional) |
-| Env (JYSON app) | `VITE_ACCESS_BASE_URL`, `VITE_ACCESS_INTERNAL_KEY` in **jyson** repo |
+| Env (ACCESS) | `NEXT_PUBLIC_JYSON_URL` (optional), `JYSON_INTERNAL_API_URL` (optional local proxy) |
+| Env (JYSON app) | `VITE_ACCESS_BASE_URL`, `VITE_ACCESS_INTERNAL_KEY`, `GOOGLE_API_KEY`, `GEMINI_MODEL` in **jyson** repo (`api/chat.ts`) |
 
 **Monorepo note:** When `access-app` lives inside `JD_Ai_System`, dispatch scripts load `../jyson-runtime/` and `../access-agent-runtime/` via filesystem paths (`lib/jyson-bridge/jyson-runtime-loader.ts`). Standalone clone on Vercel may not include those folders unless added to the deploy.
+
+---
+
+## OpenJarvis local setup
+
+OpenJarvis is **not** in this git repo. It installs to `~/.openjarvis` (Python venv + `jarvis` CLI). ACCESS talks to it at `OPENJARVIS_LOCAL_URL` (default `http://localhost:8000`).
+
+**Founder 3-terminal stack:** see **[docs/OPENJARVIS_FOUNDER_SETUP.md](./docs/OPENJARVIS_FOUNDER_SETUP.md)**.
+
+| Command | Purpose |
+|---------|---------|
+| `npm run openjarvis:serve` | Start real OpenJarvis (`jarvis serve`) |
+| `npm run openjarvis:stub` | Health-only stub when CLI missing |
+| `npm run connector:heartbeat` | Required for `localToolsAvailable` |
+| `npm run openjarvis:verify-phase8` | Gate + registry smoke test |
+
+Install (one-time):
+
+```bash
+curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh | bash
+# or clone https://github.com/open-jarvis/OpenJarvis and uv sync --extra server
+```
+
+Bridge code: `lib/openjarvis-bridge/` (keep in sync with `jyson/backend/openjarvis-bridge/`).
 
 ---
 
@@ -199,6 +223,63 @@ npm run preflight
 npm install
 npm run build    # optional sanity check
 npm run dev      # http://localhost:3000
+npm run dev:stable   # same port; skips restart if :3000 already listening (agent-friendly)
+```
+
+### Agent dev server policy (Cursor / Claude Code)
+
+- **Never kill** the process listening on port **3000** during code edits.
+- **Do not** `rm -rf .next` unless dev is stopped **and** the user reported HTTP 500 from a bad cache.
+- Prefer **hot reload**; restart dev only when the user asks or compile truly requires it.
+- `npm run build` while dev is running can **corrupt** `.next` — run builds in a **separate terminal**, or stop dev first.
+- For long agent sessions and live preview, run once in a **dedicated terminal** and leave it open:
+
+```bash
+npm run dev:stable   # next dev --webpack -p 3000; won't replace an existing listener
+```
+
+Agents must **not** stop `dev:stable` without explicit user request.
+
+
+**Private JYSON + vault intelligence (local only):** env vars must be **prefixed** on the command — not passed as npm args.
+
+```bash
+PRIVATE_JYSON_ENABLED=true npm run dev
+```
+
+Add `PRIVATE_JYSON_ENABLED=true` to `.env.local` so you do not need the prefix every time.
+
+**Orb chat (local, recommended):** With Private JYSON + vault intelligence, ACCESS streams **Claude directly** — no second server and no `jyson.vercel.app` hop for vault Q&A.
+
+```bash
+# access-app/.env.local
+PRIVATE_JYSON_ENABLED=true
+ANTHROPIC_API_KEY=sk-ant-...
+npm run dev
+```
+
+Optional: `npm run jyson:vault:index` after vault path is set.
+
+**JYSON cloud proxy (fallback):** Without `ANTHROPIC_API_KEY` in access-app, chat still proxies to `jyson.vercel.app`. If the cloud API returns a retired Gemini error, ACCESS auto-retries with local Claude when `ANTHROPIC_API_KEY` is set.
+
+Legacy local JYSON Core (only if you need the standalone jyson app):
+
+```bash
+# jyson Vercel → Environment Variables (production deploy)
+GOOGLE_API_KEY=...
+GEMINI_MODEL=gemini-2.5-flash
+
+# access-app/.env.local — optional; conflicts with access-app on port 3000
+# Run jyson on 3001: cd jyson && vercel dev --listen 3001
+JYSON_INTERNAL_API_URL=http://127.0.0.1:3001
+```
+
+Direct Claude in ACCESS (`lib/jyson/local-chat-stream.ts`) is preferred over `JYSON_INTERNAL_API_URL` for daily dev.
+
+**Vault index** (for grounded vault answers when `PRIVATE_JYSON_ENABLED=true`):
+
+```bash
+npm run jyson:vault:index
 ```
 
 ### Verify environment (no secrets printed)
@@ -222,6 +303,7 @@ npx tsx scripts/verify-local-env-once.ts
 | Script | Purpose |
 |--------|---------|
 | `npm run dev` | Development server |
+| `npm run dev:stable` | Stable dev on :3000; no-op if already listening (agent sessions) |
 | `npm run build` | Production build |
 | `npm run start` | Production server locally |
 | `npm run lint` | ESLint |

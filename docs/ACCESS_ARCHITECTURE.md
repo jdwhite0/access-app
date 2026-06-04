@@ -325,7 +325,8 @@ The runtime chain for **chat** remains `/api/jyson/chat` (context includes `conn
 |---------|------------|
 | `connectorOnline: false` | Run `connector:heartbeat`; check device registered to same Clerk user |
 | `openJarvisOnline: false` | Start OpenJarvis; check `OPENJARVIS_LOCAL_URL` |
-| `localToolsAvailable: false` | Set `PRIVATE_JYSON_ENABLED=true`; restart `next dev` |
+| `localToolsAvailable: false` | Set `PRIVATE_JYSON_ENABLED=true` in `.env.local`; run `PRIVATE_JYSON_ENABLED=true npm run dev` (env prefix, not npm arg) |
+| Gemini `404` / `gemini-1.5-flash is not found` | Update `GEMINI_MODEL=gemini-2.5-flash` on **jyson** Vercel (`jyson/api/chat.ts`); redeploy jyson.vercel.app |
 | 401 on APIs | Sign in via Clerk |
 | Permission denied | User type lacks `read_vault_seeds`; check `allowedActions` on companion panel |
 | OpenJarvis 404 on tool | Endpoint mismatch — align `TOOL_ENDPOINTS` in `lib/openjarvis-bridge/adapter.ts` with OpenJarvis routes |

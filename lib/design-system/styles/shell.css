@@ -50,9 +50,14 @@
 .access-ds-shell__rail {
   display: flex;
   flex-direction: column;
+  width: var(--os-rail-width);
+  min-width: var(--os-rail-width);
+  max-width: var(--os-rail-width);
+  flex-shrink: 0;
   border-right: 1px solid var(--border);
   background: var(--os-surface);
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
@@ -61,6 +66,7 @@
   min-width: 0;
   min-height: 0;
   max-height: 100%;
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
@@ -105,7 +111,6 @@
   html[data-theme='night'],
   html[data-theme='day'] {
     --os-context-width: 260px;
-    --os-rail-width: 56px;
   }
 }
 

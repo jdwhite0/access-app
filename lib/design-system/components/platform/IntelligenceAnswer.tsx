@@ -144,9 +144,17 @@ export function sectionsFromMessage(text: string): IntelligenceSection {
 
   if (Object.keys(sections).length > 0) return sections
 
-  return {
-    situation: trimmed,
-    recommendation: 'Continue the conversation or run a local command from the input above.',
-    nextAction: 'Refine your ask with a specific file, folder, or strategic goal.',
+  return { situation: trimmed }
+}
+
+/** Plain chat display — avoids appending template boilerplate for unstructured replies. */
+export function displayTextFromJysonReply(text: string): string {
+  const sections = sectionsFromMessage(text)
+  const filled = SECTIONS.map((s) => s.key).filter((k) => sections[k]?.trim())
+  if (filled.length <= 1 && sections.situation?.trim()) {
+    return sections.situation.trim()
   }
+  return SECTIONS.map((s) => sections[s.key]?.trim())
+    .filter(Boolean)
+    .join('\n\n')
 }

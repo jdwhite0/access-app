@@ -6,6 +6,8 @@ import { runRegister } from './register.js'
 import { runScan } from './scan.js'
 import { runSyncApply } from './sync-apply.js'
 import { runSyncPlan } from './sync-plan.js'
+import { runVaultMirror } from './vault-mirror.js'
+import { runVaultMirrorWatch } from './vault-mirror-watch.js'
 
 async function main() {
   const command = process.argv[2] ?? 'help'
@@ -21,10 +23,13 @@ Commands:
   compile           Compile summary → vault-compile-summary.json
   sync-plan         Plan → registry-sync-plan.json
   sync-apply        Apply plan via device JWT
+  vault-mirror      Mirror monorepo → vault system_mirror/
+  vault-mirror-watch  Debounced watch → re-mirror on change
 
 Environment:
   ACCESS_API_BASE_URL          Default http://localhost:3000
-  ACCESS_VAULT_ROOT            Required for scan
+  ACCESS_VAULT_ROOT            Obsidian vault path (scan + mirror target)
+  ACCESS_MONOREPO_ROOT         Monorepo root to mirror (optional)
   ACCESS_CONNECTOR_MACHINE_ID  Optional device id
 
 Config: config.local.json (see config.example.json)
@@ -74,6 +79,18 @@ Config: config.local.json (see config.example.json)
 
   if (command === 'sync-apply') {
     const result = await runSyncApply(config)
+    console.log(JSON.stringify(result, null, 2))
+    process.exit(result.ok ? 0 : 1)
+  }
+
+  if (command === 'vault-mirror') {
+    const result = await runVaultMirror(config)
+    console.log(JSON.stringify(result, null, 2))
+    process.exit(result.ok ? 0 : 1)
+  }
+
+  if (command === 'vault-mirror-watch') {
+    const result = await runVaultMirrorWatch(config)
     console.log(JSON.stringify(result, null, 2))
     process.exit(result.ok ? 0 : 1)
   }

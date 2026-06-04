@@ -4,7 +4,7 @@
  * Send immediately: npm run email:daily-brief:send
  */
 import { loadAccessEnv } from '../lib/email/agents/load-env'
-import { buildDailyBriefIntakeFromLatest } from '../lib/email/agents/dossier-intake'
+import { resolveDailyBriefIntake } from '../lib/email/agents/dossier-intake'
 import { runEmailIntakePipeline, dispatchDueQueuedEmails } from '../lib/email/agents/pipeline'
 
 async function main() {
@@ -14,11 +14,13 @@ async function main() {
   const sendNow = args.includes('--send')
   const dossierArg = args.find((a) => a.startsWith('--dossier='))?.split('=')[1]
 
-  const { intake, dossierPath } = buildDailyBriefIntakeFromLatest({
+  const { intake, dossierPath, source } = await resolveDailyBriefIntake({
     dossierPath: dossierArg,
+    publishSnapshot: true,
   })
 
   console.log('[email:daily-brief] dossier:', dossierPath)
+  console.log('[email:daily-brief] source:', source)
   console.log('[email:daily-brief] source_id:', intake.source_id)
 
   const result = await runEmailIntakePipeline(intake, { sendImmediately: sendNow })

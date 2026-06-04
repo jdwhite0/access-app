@@ -2,6 +2,10 @@ import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import type { EmailIntakePayload } from '@/lib/email/agents/types'
 import { jdaiContentEngineRoot } from '@/lib/email/agents/load-env'
+import {
+  fetchDailyBriefSnapshot,
+  publishDailyBriefSnapshot,
+} from '@/lib/email/agents/intake-snapshot'
 
 function extractSection(md: string, heading: string): string {
   const re = new RegExp(`## ${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?(?=\\n## |$)`, 'i')
@@ -15,7 +19,7 @@ function extractTableField(section: string, fieldLabel: string): string {
   return m?.[1]?.trim() ?? ''
 }
 
-function extractExecutiveRead(md: string): string {
+export function extractExecutiveRead(md: string): string {
   const block = extractSection(md, 'Executive Read')
   const lines = block
     .split('\n')
@@ -130,4 +134,54 @@ export function buildDailyBriefIntakeFromLatest(options?: {
     dossierPath: abs,
     intake: parseDossierToIntakePayload(abs, { handle: options?.handle }),
   }
+}
+
+export type DailyBriefIntakeSource = 'filesystem' | 'supabase_snapshot'
+
+/** Filesystem when available; Supabase snapshot for Vercel cron (no monorepo on server). */
+export async function resolveDailyBriefIntake(options?: {
+  dossierPath?: string
+  handle?: string
+  publishSnapshot?: boolean
+}): Promise<{
+  intake: EmailIntakePayload
+  dossierPath: string
+  source: DailyBriefIntakeSource
+}> {
+  if (options?.dossierPath) {
+    const built = buildDailyBriefIntakeFromLatest(options)
+    if (options.publishSnapshot !== false) {
+      await publishDailyBriefSnapshot({
+        intake: built.intake,
+        dossier_path: built.dossierPath,
+      })
+    }
+    return { ...built, source: 'filesystem' }
+  }
+
+  const root = jdaiContentEngineRoot()
+  const localPath = resolveLatestDossierPath(root)
+  if (localPath && existsSync(resolve(localPath))) {
+    const built = buildDailyBriefIntakeFromLatest({ ...options, dossierPath: localPath })
+    if (options?.publishSnapshot !== false) {
+      await publishDailyBriefSnapshot({
+        intake: built.intake,
+        dossier_path: built.dossierPath,
+      })
+    }
+    return { ...built, source: 'filesystem' }
+  }
+
+  const snapshot = await fetchDailyBriefSnapshot()
+  if (snapshot) {
+    return {
+      intake: snapshot.intake,
+      dossierPath: snapshot.dossier_path ?? snapshot.intake.source_path ?? 'supabase:snapshot',
+      source: 'supabase_snapshot',
+    }
+  }
+
+  throw new Error(
+    'No daily brief intake source: dossier missing locally and no Supabase snapshot. Run npm run email:publish-dossier from a machine with jdai-content-engine.'
+  )
 }

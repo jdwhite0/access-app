@@ -19,6 +19,8 @@
     "compile": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts compile",
     "sync:plan": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts sync-plan",
     "sync:apply": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts sync-apply",
+    "vault:mirror": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts vault-mirror",
+    "vault:mirror:watch": "node scripts/preflight-connector-root.mjs && tsx src/cli.ts vault-mirror-watch",
     "typecheck": "node scripts/preflight-connector-root.mjs && tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

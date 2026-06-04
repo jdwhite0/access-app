@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -13,7 +14,7 @@ import { usePathname, useParams, useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { routeCompanionCommand } from '@/lib/jyson-bridge/companion-command-router'
 import { pushRecentIntent } from '@/lib/design-system/components/platform/HomeCommandHero'
-import { sectionsFromMessage } from '@/lib/design-system/components/platform'
+import { displayTextFromJysonReply } from '@/lib/design-system/components/platform'
 import {
   buildContextLine,
   buildGreeting,
@@ -21,10 +22,22 @@ import {
 import { resolveAccessPageContext } from '@/lib/access/page-context'
 import { buildLayerOpener, recordLastPlace } from '@/lib/jyson-layer/contextual-awareness'
 import { answerFromWorld, resolveNavIntent } from '@/lib/jyson-layer/route-intents'
-import { readLayerOpen, writeLayerOpen } from '@/lib/jyson-layer/storage'
+import { readPanelCollapsed, writePanelCollapsed } from '@/lib/jyson-layer/storage'
 import { resolvePrimaryNavId, resolveSettingsContext } from '@/lib/navigation/resolve-nav'
 import { resolveCompanionContext } from '@/lib/navigation/resolve-nav'
 import { useRegistryData } from '@/components/os/useRegistryData'
+import {
+  formatJysonChatReply,
+  isJysonErrorReply,
+} from '@/lib/jyson-layer/format-chat-error'
+import {
+  classifyJysonChatError,
+  phaseHintFromHarnessHeader,
+  startPreStreamPhaseTimer,
+  type JysonProcessingError,
+  type JysonProcessingPhase,
+} from '@/lib/jyson-layer/processing-states'
+import type { OpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
 import type { JysonLayerContextValue, JysonLayerMessage, JysonRouteContext } from '@/lib/jyson-layer/types'
 
 const JysonLayerContext = createContext<JysonLayerContextValue | null>(null)
@@ -46,6 +59,17 @@ export function useJysonLayerOptional(): JysonLayerContextValue | null {
 
 type Props = { children: ReactNode }
 
+type SubmitOptions = {
+  skipUserMessage?: boolean
+  anchorMessageId?: string
+}
+
+type RunChatHandlers = {
+  stopPhaseTimer: () => void
+  onStreamStart: () => void
+  onPhase: (phase: JysonProcessingPhase) => void
+}
+
 export function JysonLayerProvider({ children }: Props) {
   const router = useRouter()
   const pathname = usePathname() ?? '/'
@@ -53,19 +77,56 @@ export function JysonLayerProvider({ children }: Props) {
   const { user, isLoaded } = useUser()
   const { summary, loading: summaryLoading } = useRegistryData(user, isLoaded)
 
-  const [open, setOpenState] = useState(false)
+  const [collapsed, setCollapsedState] = useState(true)
   const [messages, setMessages] = useState<JysonLayerMessage[]>([
     {
       id: nextMsgId(),
       role: 'jyson',
-      text: 'Ask anything — I know which page you are on, what is in your workspace, and your local tools when connected.',
+      text: 'Ask anything — general chat, vault priorities, or workspace navigation. I use your page context and vault excerpts when they apply.',
     },
   ])
   const [busy, setBusy] = useState(false)
   const [companionHash, setCompanionHash] = useState<string | null>(null)
+  const [processingAnchorId, setProcessingAnchorId] = useState<string | null>(null)
+  const [processingPhase, setProcessingPhase] = useState<JysonProcessingPhase>('idle')
+  const [processingError, setProcessingError] = useState<JysonProcessingError | null>(null)
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [lastRetryText, setLastRetryText] = useState<string | null>(null)
+
+  const streamStartedRef = useRef(false)
+  const phaseTimerStopRef = useRef<(() => void) | null>(null)
+  const lastUserAnchorIdRef = useRef<string | null>(null)
+
+  const clearProcessing = useCallback(() => {
+    phaseTimerStopRef.current?.()
+    phaseTimerStopRef.current = null
+    streamStartedRef.current = false
+    setProcessingPhase('idle')
+    setProcessingAnchorId(null)
+    setProcessingError(null)
+    setIsStreaming(false)
+  }, [])
+
+  const beginProcessing = useCallback(
+    (anchorId: string) => {
+      phaseTimerStopRef.current?.()
+      streamStartedRef.current = false
+      setProcessingError(null)
+      setProcessingAnchorId(anchorId)
+      setProcessingPhase('receiving')
+      setIsStreaming(false)
+      phaseTimerStopRef.current = startPreStreamPhaseTimer(
+        (phase) => {
+          if (!streamStartedRef.current) setProcessingPhase(phase)
+        },
+        () => streamStartedRef.current
+      )
+    },
+    []
+  )
 
   useEffect(() => {
-    setOpenState(readLayerOpen())
+    setCollapsedState(readPanelCollapsed())
   }, [])
 
   useEffect(() => {
@@ -79,12 +140,21 @@ export function JysonLayerProvider({ children }: Props) {
     return () => window.removeEventListener('hashchange', readHash)
   }, [pathname])
 
-  const setOpen = useCallback((next: boolean) => {
-    setOpenState(next)
-    writeLayerOpen(next)
+  const setCollapsed = useCallback((next: boolean) => {
+    setCollapsedState(next)
+    writePanelCollapsed(next)
   }, [])
 
-  const toggle = useCallback(() => setOpen(!open), [open, setOpen])
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setCollapsed(!next)
+    },
+    [setCollapsed]
+  )
+
+  const open = !collapsed
+
+  const toggle = useCallback(() => setCollapsed(!collapsed), [collapsed, setCollapsed])
 
   const displayName =
     user?.firstName ??
@@ -136,64 +206,107 @@ export function JysonLayerProvider({ children }: Props) {
     [pathname]
   )
 
-  const runChat = useCallback(async (text: string, prior: JysonLayerMessage[]) => {
-    const history = prior
-      .filter((m) => m.role === 'user' || m.role === 'jyson')
-      .map((m) => ({
-        role: m.role === 'user' ? ('user' as const) : ('assistant' as const),
-        content: m.text,
-      }))
-    history.push({ role: 'user', content: text })
+  const runChat = useCallback(
+    async (text: string, prior: JysonLayerMessage[], handlers: RunChatHandlers) => {
+      const history = prior
+        .filter((m) => m.role === 'user' || m.role === 'jyson')
+        .map((m) => ({
+          role: m.role === 'user' ? ('user' as const) : ('assistant' as const),
+          content: m.text,
+        }))
+      history.push({ role: 'user', content: text })
 
-    const res = await fetch('/api/jyson/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: history }),
-    })
-    if (!res.ok || !res.body) {
-      return 'JYSON cloud chat is unavailable right now.'
-    }
-    const reader = res.body.getReader()
-    const dec = new TextDecoder()
-    let accumulated = ''
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      for (const line of dec.decode(value).split('\n')) {
-        if (!line.startsWith('data: ')) continue
-        const data = line.slice(6).trim()
-        if (data === '[DONE]') continue
-        try {
-          const parsed = JSON.parse(data) as { text?: string }
-          if (parsed.text) accumulated += parsed.text
-        } catch {
-          /* partial */
+      const res = await fetch('/api/jyson/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      })
+
+      if (process.env.NODE_ENV === 'development') {
+        const hint = phaseHintFromHarnessHeader(res.headers.get('X-JYSON-Harness'))
+        if (hint && !streamStartedRef.current) handlers.onPhase(hint)
+      }
+
+      if (!res.ok || !res.body) {
+        const errBody = await res.text().catch(() => '')
+        const statusHint = errBody.trim()
+          ? `${res.status}: ${errBody.slice(0, 200)}`
+          : String(res.status)
+        throw new Error(`JYSON cloud chat is unavailable (${statusHint}).`)
+      }
+
+      handlers.stopPhaseTimer()
+      streamStartedRef.current = true
+      handlers.onStreamStart()
+
+      const reader = res.body.getReader()
+      const dec = new TextDecoder()
+      let accumulated = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        for (const line of dec.decode(value).split('\n')) {
+          if (!line.startsWith('data: ')) continue
+          const data = line.slice(6).trim()
+          if (data === '[DONE]') continue
+          try {
+            const parsed = JSON.parse(data) as { text?: string }
+            if (parsed.text) accumulated += parsed.text
+          } catch {
+            /* partial */
+          }
         }
       }
-    }
-    return accumulated || '…'
-  }, [])
+      const reply = accumulated || '…'
+      return formatJysonChatReply(reply)
+    },
+    []
+  )
 
-  const submit = useCallback(
-    async (text: string) => {
+  const submitInternal = useCallback(
+    async (text: string, options?: SubmitOptions) => {
       const trimmed = text.trim()
       if (!trimmed || busy) return
-      setOpen(true)
+      setCollapsed(false)
       pushRecentIntent(trimmed)
-      setMessages((prev) => [...prev, { id: nextMsgId(), role: 'user', text: trimmed }])
+      setLastRetryText(trimmed)
+
+      let anchorId: string =
+        options?.anchorMessageId ?? lastUserAnchorIdRef.current ?? nextMsgId()
+      if (!options?.skipUserMessage) {
+        anchorId = nextMsgId()
+        lastUserAnchorIdRef.current = anchorId
+        setMessages((prev) => [...prev, { id: anchorId, role: 'user', text: trimmed }])
+      } else {
+        lastUserAnchorIdRef.current = anchorId
+      }
+
+      beginProcessing(anchorId)
       setBusy(true)
+
+      const stopPhaseTimer = () => {
+        phaseTimerStopRef.current?.()
+        phaseTimerStopRef.current = null
+      }
+
+      const chatHandlers: RunChatHandlers = {
+        stopPhaseTimer,
+        onStreamStart: () => {
+          stopPhaseTimer()
+          streamStartedRef.current = true
+          setProcessingPhase('preparing')
+          setIsStreaming(true)
+        },
+        onPhase: setProcessingPhase,
+      }
+
+      let pendingError: JysonProcessingError | null = null
 
       try {
         const nav = resolveNavIntent(trimmed)
         if (nav) {
           setMessages((prev) => [...prev, { id: nextMsgId(), role: 'jyson', text: nav.ack }])
           router.push(nav.href)
-          return
-        }
-
-        const world = answerFromWorld(trimmed, summary)
-        if (world) {
-          setMessages((prev) => [...prev, { id: nextMsgId(), role: 'jyson', text: world }])
           return
         }
 
@@ -207,6 +320,27 @@ export function JysonLayerProvider({ children }: Props) {
         }
 
         if (routeResult.kind === 'execute') {
+          setProcessingPhase('reading_context')
+          const healthRes = await fetch('/api/jyson/openjarvis/health', { cache: 'no-store' })
+          const healthBody = (await healthRes.json().catch(() => ({}))) as OpenJarvisRuntimeState & {
+            runtime?: OpenJarvisRuntimeState
+          }
+          const runtime = healthBody.runtime ?? healthBody
+          if (!runtime.localToolsAvailable) {
+            const hint = [runtime.message, runtime.setupHint].filter(Boolean).join(' ')
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: nextMsgId(),
+                role: 'jyson',
+                text:
+                  hint ||
+                  'File tools on this Mac are not on yet. Open Agents → set up on this Mac, or keep chatting — vault excerpts still work without file tools.',
+              },
+            ])
+            return
+          }
+
           const res = await fetch('/api/jyson/openjarvis/execute', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -228,40 +362,83 @@ export function JysonLayerProvider({ children }: Props) {
           return
         }
 
+        const world = answerFromWorld(trimmed, summary)
+        if (world) {
+          setMessages((prev) => [...prev, { id: nextMsgId(), role: 'jyson', text: world }])
+          return
+        }
+
         const prior = [...messages, { id: nextMsgId(), role: 'user' as const, text: trimmed }]
-        const reply = await runChat(trimmed, prior)
-        const structured = sectionsFromMessage(reply)
-        const summaryText = [
-          structured.situation,
-          structured.recommendation,
-          structured.nextAction,
-        ]
-          .filter(Boolean)
-          .join('\n\n')
-        setMessages((prev) => [
-          ...prev,
-          { id: nextMsgId(), role: 'jyson', text: summaryText || reply },
-        ])
-      } catch {
+        const reply = await runChat(trimmed, prior, chatHandlers)
+        const summaryText = displayTextFromJysonReply(reply)
+
+        if (
+          isJysonErrorReply(reply) ||
+          /vault path unavailable|no jd command vault path was found/i.test(reply)
+        ) {
+          pendingError = classifyJysonChatError(reply)
+          setMessages((prev) => [
+            ...prev,
+            { id: nextMsgId(), role: 'jyson', text: summaryText || reply },
+          ])
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { id: nextMsgId(), role: 'jyson', text: summaryText || reply },
+          ])
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Connection failed.'
+        pendingError = classifyJysonChatError(msg, 0)
         setMessages((prev) => [
           ...prev,
           { id: nextMsgId(), role: 'jyson', text: 'Something went wrong. Try again.' },
         ])
       } finally {
+        stopPhaseTimer()
         setBusy(false)
+        setIsStreaming(false)
+        streamStartedRef.current = false
+        if (pendingError) {
+          setProcessingError(pendingError)
+          setProcessingPhase('idle')
+        } else {
+          clearProcessing()
+        }
       }
     },
-    [busy, messages, router, runChat, setOpen, summary]
+    [busy, messages, router, runChat, setCollapsed, summary, beginProcessing, clearProcessing]
   )
+
+  const submit = useCallback(
+    (text: string) => submitInternal(text),
+    [submitInternal]
+  )
+
+  const retryLastSubmit = useCallback(() => {
+    if (!lastRetryText || busy) return
+    setProcessingError(null)
+    void submitInternal(lastRetryText, { skipUserMessage: true })
+  }, [lastRetryText, busy, submitInternal])
+
+  const isProcessing = busy && processingAnchorId !== null
 
   const value: JysonLayerContextValue = useMemo(
     () => ({
       open,
+      collapsed,
       setOpen,
+      setCollapsed,
       toggle,
       messages,
       busy,
+      isProcessing,
+      processingAnchorId,
+      processingPhase,
+      processingError,
+      isStreaming,
       submit,
+      retryLastSubmit,
       contextLine,
       greeting,
       summary,
@@ -273,11 +450,19 @@ export function JysonLayerProvider({ children }: Props) {
     }),
     [
       open,
+      collapsed,
       setOpen,
+      setCollapsed,
       toggle,
       messages,
       busy,
+      isProcessing,
+      processingAnchorId,
+      processingPhase,
+      processingError,
+      isStreaming,
       submit,
+      retryLastSubmit,
       contextLine,
       greeting,
       summary,

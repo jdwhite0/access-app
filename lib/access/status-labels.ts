@@ -5,7 +5,18 @@ export function cloudStatusLabel(ready: boolean): string {
 }
 
 export function localToolsLabel(connected: boolean): string {
-  return connected ? 'Local tools connected' : 'Local tools not connected'
+  return connected
+    ? 'File tools on this Mac'
+    : 'Optional: enable file tools on this computer'
+}
+
+export function localIntelligenceActiveLabel(active: boolean): string {
+  return active ? 'Local intelligence active' : 'Local intelligence offline'
+}
+
+/** JYSON orb status line when file tools are fully available. */
+export function fileToolsActiveLabel(active: boolean): string {
+  return active ? 'File tools active' : 'File tools optional'
 }
 
 export function connectorLabel(online: boolean): string {
@@ -25,5 +36,5 @@ export function companionPackageLabel(cloudReady: boolean): string {
 }
 
 export function localSyncLabel(localConnected: boolean): string {
-  return localConnected ? 'Local tools connected' : 'Local tools not connected'
+  return localToolsLabel(localConnected)
 }

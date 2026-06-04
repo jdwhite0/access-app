@@ -42,7 +42,7 @@ When `EMAIL_TEST_MODE=true`:
 |---|---|
 | `CRON_SECRET` | Vercel cron auth (production) |
 | `JDAI_CONTENT_ENGINE_PATH` | Path to `jdai-content-engine` on server (default: `../jdai-content-engine` from access-app) |
-| `COMPANY_MAILING_ADDRESS` | Replace CAN-SPAM placeholder in templates (future) |
+| `COMPANY_MAILING_ADDRESS` | CAN-SPAM physical address in email footer (required before production batch) |
 
 ---
 
@@ -68,12 +68,26 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ## Production Checklist
 
-1. Apply `schema_v7_email_agents.sql` in Supabase
+1. Apply Supabase v6 + v7
 2. Set `EMAIL_TEST_MODE=true` — validate founder receives test daily brief
-3. Replace mailing address placeholder in `lib/email/constants.ts`
+3. Set `COMPANY_MAILING_ADDRESS` on Vercel (CAN-SPAM)
 4. Verify domain in Resend
-5. Set `INTERNAL_EMAIL_API_SECRET` on Vercel + cron job
-6. Set `EMAIL_TEST_MODE=false` only after founder sign-off
+5. Set `CRON_SECRET` + `INTERNAL_EMAIL_API_SECRET` on Vercel
+6. Run `npm run email:finish` — publishes dossier snapshot + verifies all agents
+7. Deploy access-app (cron reads Supabase snapshot on Vercel)
+8. Set `EMAIL_TEST_MODE=false` only after founder sign-off
+
+---
+
+## Operator Commands (minimal manual)
+
+| Command | Purpose |
+|---|---|
+| `npm run email:finish` | Publish latest dossier to Supabase + run full agent verify |
+| `npm run email:daily-brief:send` | Queue + send daily brief (auto-publishes snapshot) |
+| `npm run email:publish-dossier` | Snapshot only — run after intelligence cycle |
+| `npm run email:verify` | Automated MANUAL_TEST_PLAN checks |
+| `npm run email:weekly-digest:send` | Weekly digest test send |
 
 ---
 

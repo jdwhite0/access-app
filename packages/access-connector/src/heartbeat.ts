@@ -9,9 +9,22 @@ export async function runHeartbeat(): Promise<{ ok: boolean; error: string | nul
     token,
   })
 
-  if (!res.ok) {
-    const json = (await res.json()) as { error?: string }
+  const json = (await res.json().catch(() => ({}))) as {
+    ok?: boolean
+    error?: string
+    at?: string
+  }
+
+  if (!res.ok || json.ok === false) {
     return { ok: false, error: json.error ?? `Heartbeat failed (${res.status})` }
+  }
+
+  if (!json.at) {
+    return {
+      ok: false,
+      error:
+        'Invalid heartbeat response. Start access-app with `npm run dev` and set ACCESS_API_BASE_URL=http://localhost:3000.',
+    }
   }
 
   return { ok: true, error: null }

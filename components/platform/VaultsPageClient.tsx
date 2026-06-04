@@ -1,0 +1,512 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import {
+  PageHeader,
+  SectionPanel,
+  StatusPill,
+  PrimaryButton,
+  SecondaryButton,
+} from '@/lib/design-system/components/platform'
+import { useJysonLayerOptional } from '@/components/jyson/JysonLayerProvider'
+import {
+  listVaults,
+  registerVaultWithPath,
+  disconnectVault,
+  requestVaultSync,
+} from '@/lib/actions/vaults'
+import {
+  DEFAULT_JD_COMMAND_VAULT_PATH,
+  terminalVaultRegisterHref,
+} from '@/lib/vault/constants'
+import type { Vault, VaultType } from '@/types/db'
+
+const TERMINAL_VAULT_HREF = terminalVaultRegisterHref()
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const VAULT_TYPE_LABELS: Record<VaultType, string> = {
+  obsidian:     'Obsidian',
+  notion:       'Notion',
+  drive:        'Drive',
+  local:        'Local folder',
+  other:        'Other',
+  google_drive: 'Google Drive',
+  manual:       'Manual',
+}
+
+const VAULT_TYPE_OPTIONS: Array<{ value: VaultType; label: string }> = [
+  { value: 'obsidian',     label: 'Obsidian vault' },
+  { value: 'local',        label: 'Local folder' },
+  { value: 'manual',       label: 'Manual (no path)' },
+  { value: 'notion',       label: 'Notion' },
+  { value: 'google_drive', label: 'Google Drive' },
+  { value: 'other',        label: 'Other' },
+]
+
+function fmtDate(iso: string | null): string {
+  if (!iso) return 'Never'
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+}
+
+// ── Status pill ───────────────────────────────────────────────────────────────
+
+function VaultStatusPill({ vault }: { vault: Vault }) {
+  if (vault.status === 'connected' || vault.last_synced_at) {
+    return <StatusPill label="Connected" tone="operational" />
+  }
+  if (vault.status === 'pending_sync' || !vault.last_synced_at) {
+    return <StatusPill label="Pending sync" tone="neutral" />
+  }
+  return <StatusPill label={vault.status} tone="neutral" />
+}
+
+// ── Vault card ────────────────────────────────────────────────────────────────
+
+type CardState = 'idle' | 'syncing' | 'disconnecting'
+
+function VaultCard({
+  vault,
+  onDisconnect,
+  onSynced,
+}: {
+  vault: Vault
+  onDisconnect: (id: string) => void
+  onSynced: (id: string, updated: Vault, msg: string) => void
+}) {
+  const [cardVault, setCardVault] = useState(vault)
+  const [state, setState] = useState<CardState>('idle')
+  const [syncMsg, setSyncMsg] = useState<string | null>(null)
+
+  useEffect(() => {
+    setCardVault(vault)
+  }, [vault])
+
+  async function handleSync() {
+    setState('syncing')
+    setSyncMsg(null)
+    try {
+      const result = await requestVaultSync(cardVault.id)
+      setSyncMsg(result.message)
+      if (result.status === 'synced' && result.vault) {
+        setCardVault(result.vault)
+        onSynced(cardVault.id, result.vault, result.message)
+      }
+    } catch (err) {
+      setSyncMsg(err instanceof Error ? err.message : 'Sync failed unexpectedly')
+    } finally {
+      setState('idle')
+    }
+  }
+
+  async function handleDisconnect() {
+    if (!confirm(`Disconnect "${cardVault.name}"? This removes it from ACCESS but does not delete local files.`)) return
+    setState('disconnecting')
+    await disconnectVault(cardVault.id)
+    onDisconnect(cardVault.id)
+  }
+
+  return (
+    <div className="access-vault-card">
+      <div className="access-vault-card__header">
+        <div className="access-vault-card__title-row">
+          <div>
+            <p className="access-vault-card__name">{cardVault.name}</p>
+            {cardVault.local_path && (
+              <p className="access-vault-card__path">{cardVault.local_path}</p>
+            )}
+          </div>
+          <div className="access-vault-card__badges">
+            {cardVault.vault_type && (
+              <span className="access-ds-badge access-ds-badge--neutral">
+                {VAULT_TYPE_LABELS[cardVault.vault_type] ?? cardVault.vault_type}
+              </span>
+            )}
+            <VaultStatusPill vault={cardVault} />
+          </div>
+        </div>
+        {cardVault.description && (
+          <p className="access-vault-card__desc">{cardVault.description}</p>
+        )}
+      </div>
+
+      <div className="access-vault-card__meta">
+        <div className="access-vault-card__meta-row">
+          <span className="access-platform-meta">Files indexed</span>
+          <span className="access-vault-card__meta-value">{cardVault.file_count ?? 0}</span>
+        </div>
+        <div className="access-vault-card__meta-row">
+          <span className="access-platform-meta">Last synced</span>
+          <span className="access-vault-card__meta-value">{fmtDate(cardVault.last_synced_at)}</span>
+        </div>
+        <div className="access-vault-card__meta-row">
+          <span className="access-platform-meta">Registered</span>
+          <span className="access-vault-card__meta-value">{fmtDate(cardVault.created_at)}</span>
+        </div>
+      </div>
+
+      {syncMsg && (
+        <div className="access-vault-card__sync-msg">
+          {syncMsg}
+        </div>
+      )}
+
+      <div className="access-vault-card__actions">
+        <button
+          type="button"
+          className="access-platform-primary-btn"
+          onClick={handleSync}
+          disabled={state !== 'idle'}
+          style={{ minWidth: 96 }}
+        >
+          {state === 'syncing' ? 'Syncing…' : 'Sync now'}
+        </button>
+        <button
+          type="button"
+          className="access-platform-secondary-btn"
+          onClick={handleDisconnect}
+          disabled={state !== 'idle'}
+        >
+          {state === 'disconnecting' ? 'Removing…' : 'Disconnect'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Registration form ─────────────────────────────────────────────────────────
+
+type FormState = 'idle' | 'submitting' | 'success' | 'error'
+
+function VaultRegisterForm({ onRegistered }: { onRegistered: (vault: Vault) => void }) {
+  const [name, setName] = useState('')
+  const [vaultType, setVaultType] = useState<VaultType>('obsidian')
+  const [localPath, setLocalPath] = useState(DEFAULT_JD_COMMAND_VAULT_PATH)
+  const [description, setDescription] = useState('')
+  const [formState, setFormState] = useState<FormState>('idle')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setFormState('submitting')
+    setErrorMsg(null)
+
+    const { vault, error } = await registerVaultWithPath({
+      name,
+      vault_type: vaultType,
+      local_path: localPath,
+      description,
+    })
+
+    if (error || !vault) {
+      setFormState('error')
+      setErrorMsg(error ?? 'Registration failed')
+      return
+    }
+
+    setFormState('success')
+    onRegistered(vault)
+    setName('')
+    setVaultType('obsidian')
+    setLocalPath(DEFAULT_JD_COMMAND_VAULT_PATH)
+    setDescription('')
+    setTimeout(() => setFormState('idle'), 2000)
+  }
+
+  const needsPath = vaultType !== 'manual'
+
+  return (
+    <form onSubmit={handleSubmit} className="access-vault-form">
+      <div className="access-vault-form__header">
+        <p className="access-vault-form__title">Connect a vault</p>
+        <p className="access-vault-form__note">
+          ACCESS only reads folders you explicitly connect. Your files never leave your machine without the local connector.
+        </p>
+      </div>
+
+      <div className="access-vault-form__fields">
+        <div className="access-vault-form__field">
+          <label className="access-vault-form__label" htmlFor="vault-name">Vault name</label>
+          <input
+            id="vault-name"
+            className="access-vault-form__input"
+            type="text"
+            placeholder="JD Command Vault"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="access-vault-form__field">
+          <label className="access-vault-form__label" htmlFor="vault-type">Type</label>
+          <select
+            id="vault-type"
+            className="access-vault-form__input"
+            value={vaultType}
+            onChange={(e) => setVaultType(e.target.value as VaultType)}
+          >
+            {VAULT_TYPE_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {needsPath && (
+          <div className="access-vault-form__field">
+            <label className="access-vault-form__label" htmlFor="vault-path">
+              Local path
+              <span className="access-vault-form__label-note"> — absolute path on this Mac</span>
+            </label>
+            <input
+              id="vault-path"
+              className="access-vault-form__input access-vault-form__input--mono"
+              type="text"
+              placeholder={DEFAULT_JD_COMMAND_VAULT_PATH}
+              value={localPath}
+              onChange={(e) => setLocalPath(e.target.value)}
+              required={needsPath}
+              spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="none"
+            />
+            <p className="access-vault-form__hint">
+              The connector will scan this folder. It reads file names, modified dates, and .md content.
+              It never reads private keys, credentials, or files outside this path.
+            </p>
+          </div>
+        )}
+
+        <div className="access-vault-form__field">
+          <label className="access-vault-form__label" htmlFor="vault-desc">
+            Description
+            <span className="access-vault-form__label-note"> — optional. Shown to JYSON as context.</span>
+          </label>
+          <textarea
+            id="vault-desc"
+            className="access-vault-form__input access-vault-form__input--textarea"
+            placeholder="Primary second brain for JD AI Systems, ACCESS, JYSON, business systems, and founder context."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </div>
+      </div>
+
+      {errorMsg && (
+        <p className="access-vault-form__error">{errorMsg}</p>
+      )}
+
+      {formState === 'success' && (
+        <p className="access-vault-form__success">✓ Vault registered. Start the ACCESS connector to sync it.</p>
+      )}
+
+      <div className="access-vault-form__footer">
+        <PrimaryButton type="submit" disabled={formState === 'submitting'}>
+          {formState === 'submitting' ? 'Registering…' : 'Register vault'}
+        </PrimaryButton>
+        <SecondaryButton href={TERMINAL_VAULT_HREF}>Open terminal</SecondaryButton>
+      </div>
+    </form>
+  )
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
+export default function VaultsPageClient() {
+  const layer = useJysonLayerOptional()
+  const [vaults, setVaults] = useState<Vault[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null)
+
+  useEffect(() => {
+    listVaults()
+      .then(setVaults)
+      .catch(() => setVaults([]))
+      .finally(() => setLoading(false))
+  }, [])
+
+  function handleRegistered(vault: Vault) {
+    setVaults((prev) => [vault, ...prev])
+    setShowForm(false)
+  }
+
+  function handleDisconnected(id: string) {
+    setVaults((prev) => prev.filter((v) => v.id !== id))
+  }
+
+  function handleSynced(id: string, updated: Vault, msg: string) {
+    setVaults((prev) => prev.map((v) => (v.id === id ? updated : v)))
+    setSyncFeedback(msg)
+    setTimeout(() => setSyncFeedback(null), 6000)
+  }
+
+  return (
+    <AccessAppLayout variant="default">
+      <div className="access-platform access-platform-page access-shell-page">
+        <PageHeader
+          eyebrow="Assets"
+          title="Vaults"
+          description="Knowledge stores connected to JYSON. Register your Obsidian vault, local folders, or any knowledge source."
+          actions={
+            <PrimaryButton
+              type="button"
+              onClick={() => setShowForm((s) => !s)}
+            >
+              {showForm ? 'Cancel' : 'Connect vault'}
+            </PrimaryButton>
+          }
+          secondary={
+            layer ? (
+              <button
+                type="button"
+                className="access-platform-btn-secondary"
+                onClick={() => void layer.submit('What vaults do I have connected? Summarize my knowledge layer.')}
+              >
+                Ask JYSON about my vaults
+              </button>
+            ) : (
+              <Link href="/companion" className="access-platform-btn-secondary">
+                Ask JYSON about my vaults
+              </Link>
+            )
+          }
+        />
+
+        {/* Security notice */}
+        <div className="access-vault-security-notice">
+          <span className="access-vault-security-notice__icon">🔒</span>
+          <p>ACCESS only reads folders you connect. Files are scanned by the local connector on your Mac — nothing is uploaded to the cloud without your action.</p>
+        </div>
+
+        {/* Sync feedback */}
+        {syncFeedback && (
+          <div className="access-vault-sync-feedback">{syncFeedback}</div>
+        )}
+
+        {/* Registration form */}
+        {showForm && (
+          <SectionPanel title="Register new vault">
+            <VaultRegisterForm onRegistered={handleRegistered} />
+          </SectionPanel>
+        )}
+
+        {/* Vault list */}
+        {loading ? (
+          <div className="access-platform-loading">Loading vaults…</div>
+        ) : vaults.length === 0 && !showForm ? (
+          <div className="access-vault-empty">
+            <p className="access-vault-empty__title">No vaults connected yet.</p>
+            <p className="access-vault-empty__body">
+              Connect an Obsidian vault, local folder, or knowledge source so JYSON can understand your workspace.
+              The local connector will scan the path and index your files.
+            </p>
+            <div className="access-vault-empty__actions">
+              <button
+                type="button"
+                className="access-platform-primary-btn"
+                onClick={() => setShowForm(true)}
+              >
+                Connect local vault
+              </button>
+              <button
+                type="button"
+                className="access-platform-secondary-btn"
+                onClick={() => setShowForm(true)}
+              >
+                Register vault manually
+              </button>
+              <Link href={TERMINAL_VAULT_HREF} className="access-platform-secondary-btn">
+                Open terminal
+              </Link>
+            </div>
+          </div>
+        ) : vaults.length > 0 ? (
+          <SectionPanel
+            title={`Connected vaults (${vaults.length})`}
+            description="JYSON reads context from these sources when answering questions about your workspace."
+          >
+            <div className="access-vault-list">
+              {vaults.map((vault) => (
+                <VaultCard
+                  key={vault.id}
+                  vault={vault}
+                  onDisconnect={handleDisconnected}
+                  onSynced={handleSynced}
+                />
+              ))}
+            </div>
+
+            {/* JYSON prompt suggestions */}
+            <div className="access-vault-suggestions">
+              <p className="access-platform-meta" style={{ marginBottom: 8 }}>Ask JYSON</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {[
+                  'Summarize my vault.',
+                  'What am I building right now?',
+                  'Find my active ACCESS notes.',
+                  'What projects are repeated across my files?',
+                  'What ideas can become offers?',
+                  'What systems need to be built next?',
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    className="access-jyson-layer__chip"
+                    onClick={() => layer ? void layer.submit(prompt) : undefined}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </SectionPanel>
+        ) : null}
+
+        {/* Connector requirement notice */}
+        <SectionPanel
+          title="Local connector required"
+          description="The ACCESS connector runs on your Mac and bridges local vault files into ACCESS."
+        >
+          <div className="access-vault-connector-info">
+            <div className="access-vault-connector-info__step">
+              <span className="access-vault-connector-info__num">1</span>
+              <div>
+                <p className="access-platform-body" style={{ fontWeight: 600 }}>Register your vault path above</p>
+                <p className="access-platform-meta">Enter the absolute path on your Mac, e.g. <code>{DEFAULT_JD_COMMAND_VAULT_PATH}</code></p>
+              </div>
+            </div>
+            <div className="access-vault-connector-info__step">
+              <span className="access-vault-connector-info__num">2</span>
+              <div>
+                <p className="access-platform-body" style={{ fontWeight: 600 }}>Start the local connector</p>
+                <p className="access-platform-meta">Run <code>npm run connector:heartbeat</code> from the access-app directory, or pair a device from settings.</p>
+              </div>
+            </div>
+            <div className="access-vault-connector-info__step">
+              <span className="access-vault-connector-info__num">3</span>
+              <div>
+                <p className="access-platform-body" style={{ fontWeight: 600 }}>Sync your vault</p>
+                <p className="access-platform-meta">Click "Sync now" on the vault card. The connector scans .md, .txt, .json, and .csv files and sends metadata to JYSON.</p>
+              </div>
+            </div>
+            <div className="access-vault-connector-info__step">
+              <span className="access-vault-connector-info__num">4</span>
+              <div>
+                <p className="access-platform-body" style={{ fontWeight: 600 }}>Ask JYSON</p>
+                <p className="access-platform-meta">JYSON now has context from your vault. Ask "What am I building?" or "Summarize my vault."</p>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+            <SecondaryButton href="/companion#diagnostics">Check connector status</SecondaryButton>
+            <SecondaryButton href={TERMINAL_VAULT_HREF}>Open terminal</SecondaryButton>
+          </div>
+        </SectionPanel>
+      </div>
+    </AccessAppLayout>
+  )
+}

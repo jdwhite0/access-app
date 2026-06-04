@@ -13,9 +13,13 @@ import { getToolById } from './tool-registry'
 import { mapAccessToolToOpenJarvis } from './openjarvis-tool-map'
 import { assertToolInCatalog, invokeOpenJarvisNativeTool } from './native-tool-invoke'
 import { buildRuntimeCard, type OpenJarvisRuntimeCard } from './runtime-card'
+import { formatOpenJarvisHealthError } from '@/lib/openjarvis/format-health-error'
 
 const OPENJARVIS_URL = process.env.OPENJARVIS_LOCAL_URL ?? 'http://localhost:8000'
-const PRIVATE_ENABLED = process.env.PRIVATE_JYSON_ENABLED === 'true'
+
+function isPrivateLayerActive(): boolean {
+  return process.env.PRIVATE_JYSON_ENABLED === 'true' && process.env.VERCEL !== '1'
+}
 
 const NATIVE_MAPPED_TOOLS: ReadonlySet<ToolId> = new Set(['read_file', 'list_files'])
 
@@ -39,10 +43,12 @@ function buildAdapterContext(opts: {
   founderOsPath: string | null
   connectorOnline: boolean
 }): AdapterContext {
-  const cloudMode = process.env.VERCEL === '1' || !opts.connectorOnline
+  const cloudMode = process.env.VERCEL === '1'
+  const localExecution =
+    isPrivateLayerActive() && opts.connectorOnline
   return {
     allowedActions: opts.allowedActions,
-    connectorOnline: opts.connectorOnline && PRIVATE_ENABLED,
+    connectorOnline: localExecution,
     cloudMode,
     handle: opts.handle,
     founderOsPath: opts.founderOsPath,
@@ -164,20 +170,32 @@ export async function checkOpenJarvisHealth(): Promise<{
   version?: string
   error?: string
 }> {
-  if (!PRIVATE_ENABLED) {
+  if (!isPrivateLayerActive()) {
     return { online: false, error: 'PRIVATE_JYSON_ENABLED is not set. Local tools are disabled.' }
   }
   try {
     const res = await fetch(`${OPENJARVIS_URL}/health`, {
       signal: AbortSignal.timeout(3000),
     })
-    if (!res.ok) return { online: false, error: `Health check failed: ${res.status}` }
+    if (!res.ok) {
+      return {
+        online: false,
+        error: `GET ${OPENJARVIS_URL}/health returned ${res.status}. Run: npm run openjarvis:serve`,
+      }
+    }
     const data = (await res.json()) as { status?: string; version?: string }
-    return { online: data.status === 'ok', version: data.version }
+    if (data.status !== 'ok') {
+      return {
+        online: false,
+        error: `OpenJarvis health status is "${data.status ?? 'unknown'}", expected "ok".`,
+        version: data.version,
+      }
+    }
+    return { online: true, version: data.version }
   } catch (err) {
     return {
       online: false,
-      error: err instanceof Error ? err.message : 'Cannot reach OpenJarvis server.',
+      error: formatOpenJarvisHealthError(err),
     }
   }
 }

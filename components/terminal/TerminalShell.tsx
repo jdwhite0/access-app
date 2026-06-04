@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader } from '@/lib/design-system/components/platform'
 import { dispatchJysonCommand } from '@/lib/actions/jyson-dispatch'
@@ -28,6 +29,7 @@ function nextId() {
 
 export default function TerminalShell() {
   const { isLoaded, isSignedIn } = useAuth()
+  const params = useSearchParams()
   const [lines, setLines] = useState<OutputLine[]>(BOOT_LINES)
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
@@ -35,6 +37,37 @@ export default function TerminalShell() {
   const [historyIdx, setHistoryIdx] = useState(-1)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const didInitRef = useRef(false)
+
+  // Pre-fill from URL params: ?cmd=... or ?vault_name=&vault_type=&vault_path=
+  useEffect(() => {
+    if (didInitRef.current) return
+    didInitRef.current = true
+
+    const cmdParam = params?.get('cmd')
+    const vaultName = params?.get('vault_name')
+    const vaultType = params?.get('vault_type')
+    const vaultPath = params?.get('vault_path')
+
+    if (vaultName || vaultType || vaultPath) {
+      // Vault registration guided mode
+      const name = vaultName ?? 'My Vault'
+      const type = vaultType ?? 'obsidian'
+      const path = vaultPath ?? ''
+      const cmd = `/register-vault --name "${name}" --type ${type}${path ? ` --path "${path}"` : ''}`
+      setLines((prev) => [
+        ...prev,
+        { id: nextId(), type: 'system', text: '──────────────────────────────────────────────' },
+        { id: nextId(), type: 'system', text: 'Connect your local vault.' },
+        { id: nextId(), type: 'system', text: 'Run the command below to register it with ACCESS.' },
+        { id: nextId(), type: 'system', text: 'Tip: Edit --path to match your actual folder location.' },
+        { id: nextId(), type: 'system', text: '──────────────────────────────────────────────' },
+      ])
+      setInput(cmd)
+    } else if (cmdParam) {
+      setInput(cmdParam)
+    }
+  }, [params])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })

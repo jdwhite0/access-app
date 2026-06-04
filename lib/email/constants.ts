@@ -53,9 +53,15 @@ export type TransactionalEmailCategory = (typeof REQUIRED_TRANSACTIONAL_EMAILS)[
 export const SIGNUP_MARKETING_CONSENT_LABEL =
   'Send me ACCESS Intelligence emails, product updates, and educational content.'
 
-/** Replace before production — CAN-SPAM physical address requirement. */
+/** Fallback when COMPANY_MAILING_ADDRESS env is unset. */
 export const COMPANY_MAILING_ADDRESS_PLACEHOLDER =
   '[Insert company mailing address or registered PO Box]'
+
+/** CAN-SPAM physical address — set COMPANY_MAILING_ADDRESS in production. */
+export function getCompanyMailingAddress(): string {
+  const configured = process.env.COMPANY_MAILING_ADDRESS?.trim()
+  return configured || COMPANY_MAILING_ADDRESS_PLACEHOLDER
+}
 
 export function getAppBaseUrl(): string {
   const raw =

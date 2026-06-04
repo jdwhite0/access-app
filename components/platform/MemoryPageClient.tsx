@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import {
   PageHeader,
@@ -11,7 +12,9 @@ import {
 import { cloudStatusLabel, localSyncLabel } from '@/lib/access/status-labels'
 import { useJysonLayerOptional } from '@/components/jyson/JysonLayerProvider'
 import { fetchJysonCompanionContext } from '@/lib/actions/jyson-companion'
+import { listVaults } from '@/lib/actions/vaults'
 import type { JysonContext } from '@/lib/jyson-bridge/types'
+import type { Vault } from '@/types/db'
 
 function EntityList({ items, label }: { items: Array<{ id: string; name: string; type?: string }>, label: string }) {
   if (items.length === 0) return <p className="access-platform-meta">No {label.toLowerCase()} registered.</p>
@@ -27,16 +30,55 @@ function EntityList({ items, label }: { items: Array<{ id: string; name: string;
   )
 }
 
+function VaultSourceRow({ vault }: { vault: Vault }) {
+  const synced = vault.last_synced_at
+    ? new Date(vault.last_synced_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    : null
+
+  return (
+    <div className="access-settings-info-row" style={{ flexWrap: 'wrap', gap: '6px 12px', alignItems: 'flex-start', padding: '10px 0' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ margin: '0 0 2px', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>{vault.name}</p>
+        {vault.local_path && (
+          <p style={{ margin: 0, fontFamily: 'var(--mono)', fontSize: '0.72rem', color: 'var(--text-muted)', wordBreak: 'break-all' }}>
+            {vault.local_path}
+          </p>
+        )}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
+        {vault.vault_type && (
+          <span className="access-ds-badge access-ds-badge--neutral">{vault.vault_type}</span>
+        )}
+        <StatusPill
+          label={synced ? 'Synced' : 'Pending sync'}
+          tone={synced ? 'operational' : 'neutral'}
+        />
+        <span className="access-platform-meta">
+          {vault.file_count ?? 0} files
+        </span>
+        {synced && (
+          <span className="access-platform-meta">{synced}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function MemoryPageClient() {
   const layer = useJysonLayerOptional()
   const [ctx, setCtx] = useState<JysonContext | null>(null)
+  const [vaults, setVaults] = useState<Vault[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchJysonCompanionContext()
-      .then(({ context }) => setCtx(context))
-      .catch(e => setError(e instanceof Error ? e.message : 'Failed to load'))
+    Promise.all([
+      fetchJysonCompanionContext().then(({ context }) => context).catch(() => null),
+      listVaults().catch(() => [] as Vault[]),
+    ]).then(([context, vaultData]) => {
+      setCtx(context)
+      setVaults(vaultData)
+    }).catch(e => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -65,11 +107,26 @@ export default function MemoryPageClient() {
             </p>
           </div>
         ) : !ctx ? (
-          <div className="access-memory-error">
-            <p className="access-platform-body">Your workspace context isn&apos;t set up yet.</p>
-            <p className="access-platform-meta" style={{ marginTop: 8 }}>
-              Complete your <a href="/founder" style={{ color: 'var(--accent)' }}>Founder blueprint</a> so JYSON knows who you are and what you build.
-            </p>
+          <div>
+            <div className="access-memory-error" style={{ marginBottom: 16 }}>
+              <p className="access-platform-body">Your workspace context isn&apos;t set up yet.</p>
+              <p className="access-platform-meta" style={{ marginTop: 8 }}>
+                Complete your <a href="/founder" style={{ color: 'var(--accent)' }}>Founder blueprint</a> so JYSON knows who you are and what you build.
+              </p>
+            </div>
+            {vaults.length > 0 && (
+              <SectionPanel
+                title={`Connected vaults (${vaults.length})`}
+                description="These knowledge sources are available to JYSON."
+              >
+                <div className="access-settings-info-grid" style={{ gap: 0 }}>
+                  {vaults.map(vault => <VaultSourceRow key={vault.id} vault={vault} />)}
+                </div>
+                <Link href="/vaults" className="access-platform-secondary-btn" style={{ display: 'inline-flex', alignItems: 'center', marginTop: 12 }}>
+                  Manage vaults
+                </Link>
+              </SectionPanel>
+            )}
           </div>
         ) : (
           <>
@@ -123,6 +180,45 @@ export default function MemoryPageClient() {
 
             <SectionPanel title={`Experiences (${ctx.experiences.length})`}>
               <EntityList items={ctx.experiences.map(e => ({ id: e.id, name: e.name }))} label="Experiences" />
+            </SectionPanel>
+
+            {/* Vault sources */}
+            <SectionPanel
+              title={`Connected vaults (${vaults.length})`}
+              description="Knowledge sources JYSON reads when answering questions about your workspace."
+            >
+              {vaults.length === 0 ? (
+                <div>
+                  <p className="access-platform-meta" style={{ marginBottom: 12 }}>
+                    No vaults connected yet. Connect your Obsidian vault or local folders so JYSON can understand what you&apos;re building.
+                  </p>
+                  <Link href="/vaults" className="access-platform-secondary-btn" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    Connect a vault →
+                  </Link>
+                </div>
+              ) : (
+                <div>
+                  <div className="access-settings-info-grid" style={{ gap: 0 }}>
+                    {vaults.map(vault => (
+                      <VaultSourceRow key={vault.id} vault={vault} />
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                    <Link href="/vaults" className="access-platform-secondary-btn" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      Manage vaults
+                    </Link>
+                    {layer && (
+                      <button
+                        type="button"
+                        className="access-platform-secondary-btn"
+                        onClick={() => void layer.submit('Summarize my vault and tell me what you know about my workspace.')}
+                      >
+                        Ask JYSON about my vaults
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </SectionPanel>
 
             <SectionPanel title="Local file context" description="Available when OpenJarvis and the connector are connected.">

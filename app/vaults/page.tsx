@@ -1,9 +1,14 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import RegistryModuleClient from '@/components/platform/RegistryModuleClient'
+import VaultsPageClient from '@/components/platform/VaultsPageClient'
 
-export default async function Page() {
+export const metadata = {
+  title: 'Vaults — ACCESS',
+  description: 'Knowledge stores connected to JYSON. Register your Obsidian vault or local folders.',
+}
+
+export default async function VaultsPage() {
   const { userId } = await auth()
-  if (!userId) redirect('/')
-  return <RegistryModuleClient module="vaults" />
+  if (!userId) redirect('/sign-in')
+  return <VaultsPageClient />
 }

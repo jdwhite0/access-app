@@ -31,6 +31,10 @@ export async function logEmailDelivery(input: {
     .select('*')
     .single()
 
+  if (error?.message?.includes('email_delivery_logs_user_id_fkey') && input.user_id) {
+    return logEmailDelivery({ ...input, user_id: null })
+  }
+
   if (error) {
     console.warn('[delivery-log]', error.message)
     return null

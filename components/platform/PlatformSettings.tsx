@@ -116,7 +116,7 @@ const SECTIONS = [
     rows: [
       { title: 'Intelligence (JYSON)', description: 'Full AI view, diagnostics, and companion settings.', href: '/companion', actionLabel: 'Open Intelligence' },
       { title: 'AI personalization', description: 'Rename your AI, set its role, tone, and purpose.', href: '/settings/intelligence', actionLabel: 'Personalize AI' },
-      { title: 'Local tools', description: 'Connect OpenJarvis and the connector for files, vault, and models.', href: '/companion#diagnostics', actionLabel: 'Connect local tools' },
+      { title: 'Local capabilities', description: 'Enable JYSON local intelligence on this Mac — files, vault depth, and future local layers.', href: '/agents?connect=tools#execution', actionLabel: 'Set up on this Mac' },
     ],
   },
   {

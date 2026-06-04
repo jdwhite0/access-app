@@ -5,6 +5,7 @@
   "scripts": {
     "preflight": "node scripts/preflight-access-app-root.mjs",
     "dev": "node scripts/preflight-access-app-root.mjs && next dev",
+    "dev:founder": "node scripts/preflight-access-app-root.mjs && concurrently -k -n dev,openjarvis -c blue,green \"npm run dev\" \"npm run openjarvis:serve\"",
     "dev:stable": "bash scripts/keep-dev.sh",
     "build": "node scripts/preflight-access-app-root.mjs && next build",
     "start": "node scripts/preflight-access-app-root.mjs && next start",
@@ -13,6 +14,8 @@
     "e2e:founder": "tsx scripts/e2e-founder-pipeline.ts",
     "export-handle-context": "tsx scripts/export-handle-context-once.ts",
     "jyson:verify-p10": "tsx scripts/verify-jyson-command-p10.ts jdwhite.access",
+    "openjarvis:serve": "node scripts/preflight-access-app-root.mjs && bash scripts/start-openjarvis.sh",
+    "openjarvis:stub": "node scripts/preflight-access-app-root.mjs && python3 scripts/openjarvis-health-stub.py",
     "openjarvis:verify-phase8": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-openjarvis-phase8.ts",
     "openjarvis:verify-m9": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-milestone9-native-tool.ts",
     "openjarvis:verify-paths": "node scripts/preflight-access-app-root.mjs && tsx scripts/verify-list-files-paths.ts",
@@ -44,6 +47,12 @@
     "higgsfield:render-hero": "tsx scripts/generate-access-marketing-higgsfield-videos.ts",
     "email:daily-brief": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-daily-brief.ts",
     "email:daily-brief:send": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-daily-brief.ts --send --dispatch",
+    "email:weekly-digest": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-weekly-digest.ts",
+    "email:weekly-digest:send": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-run-weekly-digest.ts --send --dispatch",
+    "email:publish-dossier": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-publish-dossier.ts",
+    "email:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-verify-agents.ts",
+    "email:finish": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-finish.ts",
+    "email:founder-prod-test": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-founder-production-test.ts",
     "email:dispatch": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-dispatch-once.ts"
   },
   "dependencies": {
@@ -70,6 +79,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",

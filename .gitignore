@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# JYSON local vault content index (founder machine)
+.jyson-vault-index/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

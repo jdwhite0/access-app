@@ -1,5 +1,5 @@
 import type { ComplianceResult, EmailDraft, TransactionalOrMarketing } from '@/lib/email/agents/types'
-import { getAppBaseUrl, COMPANY_MAILING_ADDRESS_PLACEHOLDER } from '@/lib/email/constants'
+import { getAppBaseUrl, getCompanyMailingAddress } from '@/lib/email/constants'
 
 export function validateEmailCompliance(input: {
   draft: EmailDraft
@@ -23,7 +23,8 @@ export function validateEmailCompliance(input: {
     }
     if (!html.includes('/privacy')) violations.push('missing_privacy_link')
     if (!html.includes('/terms')) violations.push('missing_terms_link')
-    if (!html.includes(COMPANY_MAILING_ADDRESS_PLACEHOLDER) && !html.includes('mailing address')) {
+    const mailingAddress = getCompanyMailingAddress()
+    if (!html.includes(mailingAddress) && !html.includes('mailing address')) {
       violations.push('missing_mailing_address')
     }
     if (!draft.metadata?.category) violations.push('missing_category_metadata')
@@ -35,9 +36,7 @@ export function validateEmailCompliance(input: {
       html.includes(base)
     if (!supportOk) violations.push('missing_support_or_account_link')
 
-    const hasPromoCta =
-      html.includes('linear-gradient') ||
-      /buy now|limited time|discount|sale/i.test(html)
+    const hasPromoCta = /buy now|limited time|discount|sale/i.test(html)
     if (hasPromoCta && !input.promotional_cta_allowed) {
       violations.push('promotional_cta_not_allowed_on_transactional')
     }

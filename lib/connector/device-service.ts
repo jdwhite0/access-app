@@ -206,16 +206,28 @@ export async function recordConnectorHeartbeat(input: {
   deviceId: string
   identityId: string
   vaultConnectionId: string
-}): Promise<void> {
+}): Promise<{ ok: true; lastSeenAt: string } | { ok: false; error: string }> {
   const now = new Date().toISOString()
-  await input.supabase
+
+  const { data: device, error: deviceError } = await input.supabase
     .from('connector_devices')
     .update({ last_seen_at: now })
     .eq('id', input.deviceId)
+    .select('id, last_seen_at')
+    .maybeSingle()
+
+  if (deviceError) {
+    return { ok: false, error: deviceError.message }
+  }
+  if (!device?.id) {
+    return { ok: false, error: 'Device heartbeat not persisted (device row not found).' }
+  }
 
   await input.supabase
     .from('vault_connections')
     .update({ last_seen_at: now })
     .eq('id', input.vaultConnectionId)
     .eq('identity_id', input.identityId)
+
+  return { ok: true, lastSeenAt: (device.last_seen_at as string) ?? now }
 }

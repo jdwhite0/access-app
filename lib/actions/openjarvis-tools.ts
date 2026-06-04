@@ -56,6 +56,6 @@ export async function executeOpenJarvisTool(input: {
     handle: context.handle,
     founderOsPath: context.userSystemPackagePath,
     userConfirmed: input.userConfirmed,
-    connectorOnline: runtime.connectorOnline,
+    connectorOnline: runtime.localToolsAvailable,
   })
 }

@@ -1,22 +1,57 @@
-/* Persistent JYSON operating layer */
+/* Persistent JYSON operating layer — collapsed orb + desktop slide-over drawer */
 
-.access-jyson-layer {
+:root {
+  --jyson-drawer-width: min(380px, calc(100vw - var(--os-rail-width, 200px) - 48px));
+}
+
+/* Orb-only: never cover the workspace — only the orb receives clicks */
+.access-jyson-layer[data-open='false'] {
   position: fixed;
   z-index: 9000;
+  inset: auto;
   right: clamp(16px, 3vw, 28px);
   bottom: clamp(16px, 3vh, 28px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
+  width: auto;
+  height: auto;
   pointer-events: none;
 }
 
-.access-jyson-layer > * {
+.access-jyson-layer[data-open='false'] .access-jyson-layer__orb-btn {
   pointer-events: auto;
 }
 
+.access-jyson-layer[data-open='true'] {
+  position: fixed;
+  z-index: 9000;
+  inset: 0;
+  pointer-events: none;
+}
+
+.access-jyson-layer[data-open='true'] > * {
+  pointer-events: auto;
+}
+
+.access-jyson-layer__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(3, 6, 10, 0.42);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+html[data-theme='day'] .access-jyson-layer__backdrop {
+  background: rgba(15, 20, 28, 0.28);
+}
+
 .access-jyson-layer__orb-btn {
+  position: fixed;
+  z-index: 2;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vh, 28px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,13 +63,16 @@
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.45));
   transition: transform 0.2s ease;
 }
+
 .access-jyson-layer__orb-btn:hover {
   transform: scale(1.04);
 }
+
 .access-jyson-layer__orb {
   width: 72px !important;
   pointer-events: none;
 }
+
 .access-jyson-layer__orb-label {
   font-family: var(--font-sans);
   font-size: 0.625rem;
@@ -44,20 +82,80 @@
   color: var(--accent);
 }
 
+/* Desktop: fixed overlay drawer — zero document-flow width (not a grid column) */
+@media (min-width: 769px) {
+  .access-jyson-layer__panel,
+  .access-jyson-layer__backdrop {
+    position: fixed;
+  }
+}
+
 .access-jyson-layer__panel {
-  width: min(400px, calc(100vw - 32px));
-  max-height: min(480px, calc(100dvh - 120px));
+  position: fixed;
+  z-index: 1;
+  top: var(--os-topbar-height, 48px);
+  right: 0;
+  bottom: 0;
+  width: var(--jyson-drawer-width);
+  max-width: 380px;
+  max-height: none;
   display: flex;
   flex-direction: column;
-  border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
+  min-height: 0;
+  border-radius: 0;
+  border: none;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+  background: color-mix(in srgb, var(--surface-2) 88%, var(--surface-0));
   backdrop-filter: blur(24px) saturate(1.25);
   -webkit-backdrop-filter: blur(24px) saturate(1.25);
-  box-shadow:
-    0 1px 0 color-mix(in srgb, #fff 6%, transparent) inset,
-    0 28px 64px rgba(0, 0, 0, 0.5);
+  box-shadow: -12px 0 48px rgba(0, 0, 0, 0.35);
   overflow: hidden;
+}
+
+.access-jyson-layer__head,
+.access-jyson-layer__tools,
+.access-jyson-layer__links,
+.access-jyson-layer__suggestions,
+.access-jyson-layer__form,
+.access-jyson-layer__foot {
+  flex-shrink: 0;
+}
+
+.access-jyson-layer__tools {
+  margin: 0;
+  padding: 8px 16px 0;
+  font-size: var(--text-meta);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.access-jyson-layer__links,
+.access-jyson-layer__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 14px;
+}
+
+.access-jyson-layer__chip {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 90%, transparent);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.access-jyson-layer__chip:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  color: var(--text);
+}
+
+.access-jyson-layer__chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .access-jyson-layer__head {
@@ -67,24 +165,28 @@
   padding: 16px 16px 10px;
   border-bottom: 1px solid var(--border);
 }
+
 .access-jyson-layer__greeting {
   margin: 0;
   font-size: var(--text-card-title);
   font-weight: 600;
   color: var(--text);
 }
+
 .access-jyson-layer__insight {
   margin: 8px 0 0;
   font-size: var(--text-body);
   line-height: 1.5;
   color: var(--text-dim);
 }
+
 .access-jyson-layer__context {
   margin: 6px 0 0;
   font-size: var(--text-meta);
   line-height: 1.45;
   color: var(--text-muted);
 }
+
 .access-jyson-layer__close {
   flex-shrink: 0;
   width: 32px;
@@ -97,39 +199,245 @@
   line-height: 1;
   cursor: pointer;
 }
+
 .access-jyson-layer__close:hover {
   color: var(--text);
   border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
+.access-jyson-layer__conversation {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+
 .access-jyson-layer__messages {
   flex: 1;
   min-height: 120px;
-  max-height: 280px;
+  overflow-x: hidden;
   overflow-y: auto;
-  padding: 12px 16px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
+
 .access-jyson-layer__msg {
-  font-size: var(--text-body);
-  line-height: 1.5;
-  padding: 10px 12px;
-  border-radius: 10px;
-  max-width: 95%;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.65;
+  padding: 12px 14px;
+  border-radius: 12px;
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
+
 .access-jyson-layer__msg--user {
   align-self: flex-end;
+  max-width: 92%;
   background: color-mix(in srgb, var(--accent) 14%, var(--surface-3));
   color: var(--text);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
 }
+
 .access-jyson-layer__msg--jyson {
-  align-self: flex-start;
-  background: var(--surface-3);
-  color: var(--text-dim);
+  align-self: stretch;
+  background: color-mix(in srgb, var(--surface-3) 88%, var(--surface-1));
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--border));
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.access-jyson-layer__msg--error {
+  background: color-mix(in srgb, #ef4444 10%, var(--surface-3));
+  border-color: color-mix(in srgb, #ef4444 35%, var(--border));
+  color: color-mix(in srgb, #fecaca 85%, var(--text));
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.access-jyson-layer__msg-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.access-jyson-layer__msg-wrap:has(.access-jyson-layer__msg--user) {
+  align-items: flex-end;
+}
+
+.access-jyson-layer__msg-wrap:has(.access-jyson-layer__msg--user) .access-jyson-layer__activity {
+  align-self: stretch;
+  max-width: 100%;
+}
+
+/* Processing status strip — compact, under user message */
+.access-jyson-layer__activity {
+  align-self: stretch;
+  padding: 8px 10px;
+  border-radius: 10px;
   border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 94%, transparent);
+}
+
+html[data-theme='day'] .access-jyson-layer__activity {
+  background: var(--surface-2);
+}
+
+.access-jyson-layer__activity[data-streaming='true'] {
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border));
+}
+
+.access-jyson-layer__activity--error {
+  border-color: color-mix(in srgb, #ef4444 22%, var(--border));
+  background: color-mix(in srgb, #ef4444 6%, var(--surface-2));
+}
+
+.access-jyson-layer__activity-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.access-jyson-layer__activity-mark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  width: 18px;
+  padding-top: 3px;
+}
+
+.access-jyson-layer__activity-mark-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-dim) 72%, transparent);
+}
+
+.access-jyson-layer__activity-mark[data-streaming='true'] .access-jyson-layer__activity-mark-dot {
+  background: color-mix(in srgb, var(--accent) 55%, var(--text-dim));
+  animation: access-jyson-activity-breathe 1.4s ease-in-out infinite;
+}
+
+.access-jyson-layer__activity-mark[data-streaming='true']
+  .access-jyson-layer__activity-mark-dot:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.access-jyson-layer__activity-mark[data-streaming='true']
+  .access-jyson-layer__activity-mark-dot:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.access-jyson-layer__activity-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.access-jyson-layer__activity-body--error .access-jyson-layer__activity-name {
+  margin-bottom: 2px;
+}
+
+.access-jyson-layer__activity-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.access-jyson-layer__activity-name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.access-jyson-layer__activity-verb {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.access-jyson-layer__activity-status {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+  animation: access-jyson-activity-fade 0.32s ease-out;
+}
+
+.access-jyson-layer__activity-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.access-jyson-layer__activity-detail {
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+.access-jyson-layer__activity-retry {
+  margin-top: 8px;
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+
+@keyframes access-jyson-activity-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes access-jyson-activity-fade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .access-jyson-layer__activity-mark-dot,
+  .access-jyson-layer__activity-status {
+    animation: none !important;
+  }
+
+  .access-jyson-layer__activity-mark[data-streaming='true'] .access-jyson-layer__activity-mark-dot {
+    opacity: 0.85;
+    background: var(--text-dim);
+  }
 }
 
 .access-jyson-layer__form {
@@ -138,6 +446,7 @@
   padding: 12px 14px;
   border-top: 1px solid var(--border);
 }
+
 .access-jyson-layer__input {
   flex: 1;
   min-width: 0;
@@ -149,10 +458,12 @@
   border: 1px solid var(--border);
   border-radius: 10px;
 }
+
 .access-jyson-layer__input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
+
 .access-jyson-layer__send {
   padding: 10px 14px;
   font-family: var(--font-sans);
@@ -164,6 +475,7 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
 .access-jyson-layer__send:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -173,11 +485,13 @@
   padding: 8px 14px 12px;
   border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
 }
+
 .access-jyson-layer__foot-link {
   font-size: var(--text-meta);
   color: var(--text-muted);
   text-decoration: none;
 }
+
 .access-jyson-layer__foot-link:hover {
   color: var(--accent);
 }
@@ -193,9 +507,23 @@
   text-decoration: none;
 }
 
+/* Mobile: bottom sheet above orb — same collapse behavior */
 @media (max-width: 768px) {
   .access-jyson-layer__panel {
-    width: calc(100vw - 24px);
-    max-height: min(70dvh, 520px);
+    top: auto;
+    left: 12px;
+    right: 12px;
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-height: min(78dvh, 620px);
+    border-radius: 18px;
+    border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+    box-shadow:
+      0 1px 0 color-mix(in srgb, #fff 6%, transparent) inset,
+      0 28px 64px rgba(0, 0, 0, 0.5);
+  }
+
+  .access-jyson-layer__messages {
+    min-height: 160px;
   }
 }

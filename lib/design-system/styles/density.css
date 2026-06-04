@@ -69,6 +69,57 @@ html[data-density="larger-text"] {
   --app-radius-sm:        6px;
 }
 
+/* ── Global base font scaling — affects all content ──────────────────────── */
+/* Without this, density only affects class-named components, not inline styles. */
+
+html[data-density="comfortable"] body {
+  font-size: 14px;
+}
+
+html[data-density="more-space"] body {
+  font-size: 13px;
+  letter-spacing: 0.005em;
+}
+
+html[data-density="larger-text"] body {
+  font-size: 16px;
+}
+
+/* Shell-level padding override for more-space / larger-text */
+html[data-density="more-space"] .access-ds-shell__main,
+html[data-density="more-space"] .access-os-workspace {
+  padding: 16px 20px 40px !important;
+}
+
+html[data-density="larger-text"] .access-ds-shell__main,
+html[data-density="larger-text"] .access-os-workspace {
+  padding: 32px 36px 64px !important;
+}
+
+/* Topbar height */
+html[data-density="more-space"] .access-ds-shell__topbar,
+html[data-density="more-space"] .access-os-topbar {
+  min-height: 38px !important;
+}
+
+html[data-density="larger-text"] .access-ds-shell__topbar,
+html[data-density="larger-text"] .access-os-topbar {
+  min-height: 52px !important;
+}
+
+/* Nav link sizing */
+html[data-density="more-space"] .access-nav-link {
+  font-size: 12px;
+  min-height: 34px;
+  padding: 5px 10px;
+}
+
+html[data-density="larger-text"] .access-nav-link {
+  font-size: 15px;
+  min-height: 48px;
+  padding: 11px 12px;
+}
+
 /* ── Apply tokens to shell components ────────────────────────────────────── */
 
 .access-ds-shell__topbar,
