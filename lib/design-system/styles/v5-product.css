@@ -781,6 +781,95 @@ html[data-theme='day'] .access-vault-connector-info code {
     width: 100%;
     text-align: center;
   }
+
+  .access-device-connection__hero {
+    flex-direction: column;
+  }
+
+  .access-device-connection__hero-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .access-device-connection__hero-actions .access-platform-btn-primary {
+    width: 100%;
+  }
+
+  .access-device-connection__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .access-agents-page__header-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .access-agents-page__header-actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .access-agents-page__status-badge {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .access-agent-card__header {
+    flex-wrap: wrap;
+  }
+
+  .access-agent-capabilities {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .access-agent-cap {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .access-jyson-cap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .access-agents-page__setup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .access-agents-page__setup-actions > * {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.access-agents-page__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.access-agents-page__setup-block {
+  margin-top: 12px;
+}
+
+.access-agents-page__setup-actions {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.access-agents-page__mobile-note {
+  margin-top: 12px;
 }
 
 .access-workspace-snapshot {

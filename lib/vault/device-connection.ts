@@ -5,7 +5,7 @@ import { DEV_FOUNDER_CMD } from '@/lib/openjarvis/founder-setup'
 import { resolveIntelligenceCapabilities } from '@/lib/openjarvis/runtime-capabilities'
 import { resolveOpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
 import { createSupabaseAdmin } from '@/lib/supabase'
-import { countVaultChunksForVault } from '@/lib/vault/vault-chunks-store'
+import { getCloudVaultReadySnapshot } from '@/lib/vault/cloud-vault-ready'
 import {
   type DeviceClass,
   deviceLabelFromClass,
@@ -223,13 +223,9 @@ export async function resolveDeviceConnectionStatus(
   const hasSyncedLocalVault = vaults.some(
     (v) => !!v.last_synced_at && (v.file_count ?? 0) > 0,
   )
-  let vaultChunkCount = 0
-
-  if (supabase && resolved.vaultId) {
-    vaultChunkCount = await countVaultChunksForVault(supabase, resolved.vaultId, userId)
-  }
-
-  const cloudVaultReady = vaultChunkCount > 0
+  const vaultCloud = await getCloudVaultReadySnapshot(userId)
+  const vaultChunkCount = vaultCloud.chunkCount
+  const cloudVaultReady = vaultCloud.ready
   const scanPath = resolved.path?.trim() ?? ''
   const localDevSyncAllowed =
     !isMobile && isLocalDevVaultSyncAllowed(scanPath)

@@ -81,8 +81,9 @@ function panelActionsFor(status: CompanionDiagnosticStatus): CompanionPanelActio
     case 'companion_ready':
       return ['retry_loading', 'view_diagnostics']
     case 'sync_error':
+      return ['retry_loading', 'view_diagnostics']
     case 'connector_offline':
-      return ['generate_access_world', 'retry_loading', 'view_diagnostics']
+      return ['retry_loading', 'view_diagnostics']
     case 'auth_missing':
       return ['retry_loading']
     default:
@@ -168,16 +169,16 @@ export function diagnosticForStatus(
     case 'local_sync_pending':
       return {
         status,
-        title: 'Waiting for local connector',
-        body: 'Your Founder OS is ready in the cloud. Connect your local machine to sync the Founder OS folder.',
+        title: 'Cloud ready — local sync optional',
+        body: 'JYSON can chat from your cloud vault and blueprint. Local folder sync is optional and runs on a Mac or PC.',
         message: 'Cloud package ready — local sync pending.',
-        canRepair: true,
-        repairAction: 'repair_connection',
-        panelActions: ['generate_access_world', 'retry_loading', 'view_diagnostics'],
+        canRepair: false,
+        repairAction: 'refresh_jyson',
+        panelActions: ['retry_loading', 'view_diagnostics'],
         cloudReady: true,
         localReady: false,
         connectorOnline: false,
-        steps: ['Cloud package ready', 'Start local connector', 'Sync Founder OS folder'],
+        steps: [],
         handle,
         founderOsId,
         packagePath,

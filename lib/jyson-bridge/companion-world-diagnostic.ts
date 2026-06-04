@@ -28,6 +28,7 @@ import {
   type CompanionDiagnostic,
   type CompanionDiagnosticStatus,
 } from '@/lib/jyson-bridge/companion-diagnostic'
+import { getCloudVaultReadySnapshot } from '@/lib/vault/cloud-vault-ready'
 
 export type DiagnosticCheck = {
   id: string
@@ -254,20 +255,36 @@ export async function diagnoseCompanionWorld(options?: {
   }
 
   // ── 5. CLOUD GATE: blueprint export status ────────────────────────────────
-  // This is the primary readiness gate. Local filesystem is a secondary upgrade.
+  // Vault cloud context can unlock companion even when blueprint is still draft.
   const blueprintExported = spec.status === 'exported' || spec.status === 'materialized'
+  const vaultCloud =
+    userId != null ? await getCloudVaultReadySnapshot(userId) : { ready: false, vaultCount: 0, chunkCount: 0, hasSyncedVault: false }
+
+  push(
+    checks,
+    'vault_cloud',
+    'Vault cloud context',
+    vaultCloud.ready,
+    vaultCloud.ready
+      ? `${vaultCloud.vaultCount} vault(s) · ${vaultCloud.chunkCount} indexed chunk(s)`
+      : 'No synced vault context in cloud yet'
+  )
+
+  const cloudUnlocked = blueprintExported || vaultCloud.ready
+
   push(
     checks,
     'blueprint_status',
     'Blueprint cloud status',
-    blueprintExported,
+    cloudUnlocked,
     blueprintExported
       ? `${spec.status} — companion can load from cloud`
-      : 'Draft — export your blueprint to activate the companion'
+      : vaultCloud.ready
+        ? 'Draft blueprint — companion unlocked via synced vault'
+        : 'Draft — export blueprint or sync a vault to activate the companion'
   )
 
-  if (!blueprintExported) {
-    // Blueprint is saved but not exported. Companion cannot load yet.
+  if (!cloudUnlocked) {
     status = 'blueprint_draft'
     return await finalize(checks, status, statusDetail, userId)
   }

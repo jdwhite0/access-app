@@ -9,6 +9,7 @@ import { fetchOpenJarvisHealth } from '@/lib/openjarvis/fetch-health-client'
 import { markLocalToolsActivated } from '@/lib/openjarvis/local-tools-activation'
 import { isLocalIntelligenceActive } from '@/lib/openjarvis/runtime-capabilities'
 import { DEV_FOUNDER_CMD, PRIVATE_JYSON_ENV_HINT } from '@/lib/openjarvis/founder-setup'
+import { detectDeviceFromNavigator } from '@/lib/vault/device-detection'
 
 const POLL_MS = 3000
 const SETUP_CMD = DEV_FOUNDER_CMD
@@ -32,6 +33,7 @@ export function ConnectLocalToolsModal({
   const [showAdvanced, setShowAdvanced] = useState(false)
   const fileToolsLive = !!runtime?.localToolsAvailable
   const connected = runtime ? isLocalIntelligenceActive(runtime) : false
+  const deviceLabel = detectDeviceFromNavigator().deviceLabel
 
   const poll = useCallback(async () => {
     const next = await fetchOpenJarvisHealth()
@@ -113,11 +115,11 @@ export function ConnectLocalToolsModal({
             <header className="access-connect-tools__head">
               <div>
                 <h2 id="connect-local-tools-title" className="access-platform-section-title">
-                  Turn on local intelligence on this Mac
+                  Turn on local intelligence on this {deviceLabel}
                 </h2>
                 <p className="access-platform-meta">
                   ACCESS runs in your browser. It cannot start background services for you — copy one command,
-                  run it in Terminal on this computer, and keep this window open while we detect when you are
+                  run it in Terminal on this device, and keep this window open while we detect when you are
                   ready.
                 </p>
               </div>
@@ -132,7 +134,7 @@ export function ConnectLocalToolsModal({
                 role="status"
               >
                 <p className="access-connect-tools__hero-title">
-                  {fileToolsLive ? 'Connected' : connected ? 'Local intelligence active' : 'Waiting for your Mac'}
+                  {fileToolsLive ? 'Connected' : connected ? 'Local intelligence active' : `Waiting for ${deviceLabel}`}
                 </p>
                 <p className="access-platform-meta">
                   {fileToolsLive

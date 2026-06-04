@@ -378,6 +378,18 @@ html[data-theme='day'] {
   padding-top: 8px;
 }
 
+@media (max-width: 768px) {
+  .access-companion-console {
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .access-companion-console__status {
+    gap: 6px;
+  }
+}
+
 /* —— Intelligence answer —— */
 .access-intelligence-answer {
   width: 100%;

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
@@ -32,6 +32,16 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
     null
   )
   const [loading, setLoading] = useState(!devFixtureContext)
+  const autoRetriedRef = useRef(false)
+
+  const loadCompanion = useCallback(async () => {
+    const { context, diagnostic: diag, worldDiagnostics: world } =
+      await fetchJysonCompanionContext()
+    setCtx(context)
+    setDiagnostic(diag ?? null)
+    setWorldDiagnostics(world ?? null)
+    return { context, diagnostic: diag }
+  }, [])
 
   useEffect(() => {
     if (devFixtureContext) return
@@ -41,17 +51,13 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       return
     }
     setLoading(true)
-    fetchJysonCompanionContext()
-      .then(({ context, diagnostic: diag, worldDiagnostics: world }) => {
-        setCtx(context)
-        setDiagnostic(diag ?? null)
-        setWorldDiagnostics(world ?? null)
-      })
+    autoRetriedRef.current = false
+    loadCompanion()
       .catch((err) => {
         setCtx(null)
         setDiagnostic({
           status: 'unknown_error',
-          title: 'Your workspace is not ready yet.',
+          title: 'Your ACCESS world is not ready yet.',
           body: 'JYSON needs your Founder blueprint and ACCESS package before context can load.',
           message: err instanceof Error ? err.message : 'Load failed.',
           canRepair: true,
@@ -65,7 +71,24 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
         setWorldDiagnostics(null)
       })
       .finally(() => setLoading(false))
-  }, [isLoaded, isSignedIn, devFixtureContext])
+  }, [isLoaded, isSignedIn, devFixtureContext, loadCompanion])
+
+  /** Cloud-ready founders (vault synced) sometimes need one server retry after hydration. */
+  useEffect(() => {
+    if (devFixtureContext || loading || ctx || !diagnostic?.cloudReady) return
+    if (autoRetriedRef.current) return
+    const retryable =
+      diagnostic.status === 'cloud_package_ready' ||
+      diagnostic.status === 'local_sync_pending' ||
+      diagnostic.status === 'local_founder_os_ready' ||
+      diagnostic.status === 'companion_ready'
+    if (!retryable) return
+    autoRetriedRef.current = true
+    void loadCompanion().then(({ context }) => {
+      if (!context) return
+      setLoading(false)
+    })
+  }, [devFixtureContext, loading, ctx, diagnostic, loadCompanion])
 
   function handleRepaired(loaded: JysonContext, diag: CompanionDiagnostic) {
     setCtx(loaded)
@@ -122,13 +145,13 @@ export default function JysonCompanionPanel({ devFixtureContext = null }: JysonC
       <JysonCompanionRepairPanel
         diagnostic={{
           status: 'unknown_error',
-          title: 'Your workspace is not ready yet.',
+          title: 'Your ACCESS world is not ready yet.',
           body: 'JYSON needs your Founder blueprint and ACCESS package before context can load.',
           message: 'World not loaded.',
           canRepair: true,
           repairAction: 'repair_connection',
-          panelActions: ['generate_access_world', 'retry_loading', 'view_diagnostics'],
-          steps: ['Generate ACCESS world', 'Retry loading'],
+          panelActions: ['retry_loading', 'view_diagnostics'],
+          steps: ['Retry loading', 'View diagnostics'],
           cloudReady: false,
           localReady: false,
           connectorOnline: false,

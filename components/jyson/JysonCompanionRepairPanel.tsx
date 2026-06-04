@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
+import { detectDeviceFromNavigator } from '@/lib/vault/device-detection'
 import {
   generateAccessWorld,
   getCompanionDiagnostics,
@@ -75,9 +76,22 @@ export default function JysonCompanionRepairPanel({
     }
   }
 
+  const device = detectDeviceFromNavigator()
   const actions = diagnostic.panelActions?.length
     ? diagnostic.panelActions
-    : ['generate_access_world', 'retry_loading', 'view_diagnostics']
+    : ['retry_loading', 'view_diagnostics']
+
+  const showGenerateWorld =
+    actions.includes('generate_access_world') &&
+    diagnostic.canRepair &&
+    !diagnostic.cloudReady &&
+    device.isDesktop
+
+  const showCloudChatFirst =
+    diagnostic.cloudReady &&
+    (diagnostic.status === 'local_sync_pending' ||
+      diagnostic.status === 'cloud_package_ready' ||
+      diagnostic.status === 'local_founder_os_ready')
 
   return (
     <AccessAppLayout variant="companion" userLabel={diagnostic.handle ?? null}>
@@ -134,12 +148,22 @@ export default function JysonCompanionRepairPanel({
         {note && <p className="jyson-repair-note">{note}</p>}
 
         <div className="jyson-repair-actions">
+          {showCloudChatFirst && (
+            <button
+              type="button"
+              className="jyson-command-submit"
+              disabled={busy}
+              onClick={() => void runRefresh()}
+            >
+              {busy ? 'Loading…' : 'Open JYSON chat'}
+            </button>
+          )}
           {actions.includes('complete_blueprint') && (
             <Link href="/founder" className="jyson-repair-secondary jyson-repair-link-btn">
               Complete Blueprint
             </Link>
           )}
-          {actions.includes('generate_access_world') && diagnostic.canRepair && (
+          {showGenerateWorld && (
             <button
               type="button"
               className="jyson-command-submit"
@@ -149,14 +173,14 @@ export default function JysonCompanionRepairPanel({
               {busy ? 'Working…' : 'Generate ACCESS World'}
             </button>
           )}
-          {actions.includes('retry_loading') && (
+          {actions.includes('retry_loading') && !showCloudChatFirst && (
             <button
               type="button"
-              className="jyson-repair-secondary"
+              className={showGenerateWorld ? 'jyson-repair-secondary' : 'jyson-command-submit'}
               disabled={busy}
               onClick={() => void runRefresh()}
             >
-              Retry Loading
+              {busy ? 'Loading…' : 'Retry loading'}
             </button>
           )}
           {actions.includes('view_diagnostics') && (
@@ -184,6 +208,12 @@ export default function JysonCompanionRepairPanel({
               ))}
             </ul>
           </div>
+        )}
+
+        {device.isMobile && diagnostic.cloudReady && (
+          <p className="access-platform-meta jyson-repair-mobile-note">
+            On {device.deviceLabel}, JYSON uses your cloud vault — local folder sync is optional on a Mac or PC.
+          </p>
         )}
 
         {diagnostic.repairAction === 'sign_in' && (

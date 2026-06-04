@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { ConnectLocalToolsModal } from '@/components/platform/ConnectLocalToolsModal'
+import { DeviceIntelligenceBanner } from '@/components/platform/DeviceIntelligenceBanner'
+import { useDeviceConnectionStatus } from '@/components/platform/useDeviceConnectionStatus'
 import {
   PageHeader,
   SectionPanel,
@@ -37,6 +39,10 @@ export default function AgentsPageClient() {
   const [loadingAgents, setLoadingAgents] = useState(true)
   const [connectOpen, setConnectOpen] = useState(false)
 
+  const { device, status: connectionStatus } = useDeviceConnectionStatus()
+  const isMobile = connectionStatus?.capabilities.isMobile ?? device.isMobile
+  const deviceLabel = connectionStatus?.deviceLabel ?? device.deviceLabel
+
   const {
     runtime,
     capabilities,
@@ -48,6 +54,7 @@ export default function AgentsPageClient() {
     connectedBadge,
   } = useOpenJarvisHealth()
 
+  const showLocalSetup = showSetupCta && !isMobile
   const loading = loadingAgents || loadingHealth
 
   useEffect(() => {
@@ -86,20 +93,22 @@ export default function AgentsPageClient() {
           title="Agents"
           description="Create specialized AI teammates for different parts of your work."
           actions={
-            <>
-              {!loading && showSetupCta ? (
+            <div className="access-agents-page__header-actions">
+              {!loading && showLocalSetup ? (
                 <PrimaryButton type="button" onClick={() => setConnectOpen(true)}>
-                  Set up on this Mac
+                  Set up on this device
                 </PrimaryButton>
               ) : !loading && executionConnected ? (
-                <span className="access-ds-badge access-ds-badge--operational" style={{ alignSelf: 'center' }}>
+                <span className="access-ds-badge access-ds-badge--operational access-agents-page__status-badge">
                   {localIntelligenceActiveLabel(true)}
                 </span>
               ) : null}
               <PrimaryButton href="/terminal">Register agent</PrimaryButton>
-            </>
+            </div>
           }
         />
+
+        <DeviceIntelligenceBanner />
 
         {loading ? (
           <div className="access-platform-loading">Loading agents…</div>
@@ -220,17 +229,17 @@ export default function AgentsPageClient() {
                     )
                   })}
                 </div>
-                {showSetupCta ? (
-                  <div style={{ marginTop: 12 }}>
+                {showLocalSetup ? (
+                  <div className="access-agents-page__setup-block">
                     <p className="access-platform-meta">
                       {runtime?.deploymentMode === 'cloud'
-                        ? 'You are on the cloud site. Turn on local capabilities from your Mac when you develop at home.'
+                        ? 'You are on the cloud site. Turn on local capabilities from a Mac or PC when you develop at home.'
                         : runtime?.message ??
-                          'Copy one command, run it in Terminal on this Mac, and keep the setup window open — status updates automatically.'}
+                          `Copy one command, run it in Terminal on this ${deviceLabel}, and keep the setup window open — status updates automatically.`}
                     </p>
-                    <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    <div className="access-agents-page__setup-actions">
                       <PrimaryButton type="button" onClick={() => setConnectOpen(true)}>
-                        Set up on this Mac
+                        Set up on this device
                       </PrimaryButton>
                       <SecondaryButton href="/companion#execute">Test in JYSON</SecondaryButton>
                     </div>
@@ -242,10 +251,17 @@ export default function AgentsPageClient() {
                       (developers only).
                     </p>
                   </div>
+                ) : isMobile ? (
+                  <p className="access-platform-meta access-agents-page__mobile-note">
+                    On {deviceLabel}, JYSON uses your cloud vault in Companion. Local file tools run on a Mac or PC.{' '}
+                    <Link href="/companion" style={{ color: 'var(--accent)' }}>
+                      Talk to JYSON
+                    </Link>
+                  </p>
                 ) : (
-                  <p className="access-platform-meta" style={{ marginTop: 12 }}>
+                  <p className="access-platform-meta access-agents-page__setup-block">
                     {fileToolsLive
-                      ? 'Local file intelligence is active on this Mac.'
+                      ? `Local file intelligence is active on this ${deviceLabel}.`
                       : 'Local runtime is reachable. Run connector heartbeat for file intelligence.'}{' '}
                     <Link href="/companion#execute" style={{ color: 'var(--accent)' }}>
                       Test capabilities in JYSON
