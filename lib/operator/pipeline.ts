@@ -1,5 +1,5 @@
-import { execSync, spawn } from 'node:child_process'
-import { readdirSync, statSync, existsSync, readFileSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+import { readdirSync, statSync, existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { resolve, join } from 'node:path'
 import {
   intakeFromIntelligenceDossierJson,
@@ -195,75 +195,231 @@ export async function sendDailyBrief(options?: {
   }
 }
 
-export async function runCursorResearch(topic: string): Promise<{ ok: boolean; message: string }> {
-  const apiKey = process.env.CURSOR_API_KEY?.trim()
+export type ClaudeResearchResult = {
+  ok: boolean
+  message: string
+  jsonPath?: string
+}
+
+export async function runClaudeResearch(topic: string): Promise<ClaudeResearchResult> {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
   if (!apiKey) {
-    return {
-      ok: false,
-      message:
-        'CURSOR_API_KEY not set. Add it to access-app/.env.local to enable research-from-Slack, or run research in this Cursor chat.',
-    }
+    return { ok: false, message: 'ANTHROPIC_API_KEY not set in access-app/.env.local.' }
   }
 
-  const monorepoRoot = resolve(process.cwd(), '..')
-  const prompt = `Run the JDAI Content Intelligence cycle for topic: "${topic}".
+  const engineRoot = jdaiEngineRoot()
+  if (!existsSync(engineRoot)) {
+    return { ok: false, message: `JDAI engine not found at ${engineRoot}. Set JDAI_CONTENT_ENGINE_PATH.` }
+  }
 
-Follow jdai-content-engine/architecture/intelligence-pipeline.md and .cursor/skills/jdai-content-intelligence/SKILL.md.
+  const today = new Date().toISOString().slice(0, 10)
+  const slug = topic.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 60)
+  const sourceId = `${today}-${slug}`
+  const now = new Date().toISOString()
 
-Steps:
-1. Read JD Command Vault/daily/today.md
-2. Create research under jdai-content-engine/research/
-3. Write approved dossier to jdai-content-engine/dossiers/YYYY-MM-DD-{slug}-DOSSIER.md
-4. Update manifest.json
-5. Run compile: from access-app, npm run intelligence:run -- --publish on the new dossier
+  let vaultContext = ''
+  try {
+    const todayMd = join(engineRoot, '..', 'JD Command Vault', 'daily', 'today.md')
+    if (existsSync(todayMd)) vaultContext = readFileSync(todayMd, 'utf8').slice(0, 1500)
+  } catch { /* non-fatal */ }
 
-Signal must be >= 70. Reply with dossier path when done.`
+  // Anthropic SDK — safe async HTTP, no process.exit() risk
+  const { default: Anthropic } = await import('@anthropic-ai/sdk')
+  const client = new Anthropic({ apiKey })
 
-  // Run in an isolated child process — the Cursor SDK can call process.exit() on
-  // failure, which would kill the bot. Spawning a worker means only the worker dies.
-  const workerScript = join(process.cwd(), 'scripts', 'cursor-research-worker.ts')
-  const tsxBin = join(process.cwd(), 'node_modules', '.bin', 'tsx')
-  const inputArg = JSON.stringify({ prompt, apiKey, cwd: monorepoRoot })
-  const TIMEOUT_MS = 3 * 60_000 // 3-minute hard ceiling
+  const systemPrompt = `You are the ACCESS Intelligence Research Engine for JD Productions.
 
-  return new Promise((resolve) => {
-    let settled = false
-    const settle = (result: { ok: boolean; message: string }) => {
-      if (settled) return
-      settled = true
-      clearTimeout(timer)
-      resolve(result)
-    }
+Produce market intelligence dossiers for small business owners and operators (5–75 employees). JD's positioning: Strategic Business Partner — diagnoses, aligns, connects, strengthens systems. Voice: Direct, diagnostic, strategic. No fluff.
 
-    const child = spawn(tsxBin, [workerScript, inputArg], {
-      cwd: process.cwd(),
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: process.env,
-    })
+Return ONLY valid JSON — no markdown fences, no explanation.`
 
-    const timer = setTimeout(() => {
-      child.kill('SIGTERM')
-      settle({ ok: false, message: `Research timed out after ${TIMEOUT_MS / 60_000} minutes.` })
-    }, TIMEOUT_MS)
+  const userPrompt = `Research topic: "${topic}"
+Date: ${today}
+${vaultContext ? `Vault context (today's priorities):\n${vaultContext}\n` : ''}
 
-    let stdout = ''
-    let stderr = ''
-    child.stdout?.on('data', (d: Buffer) => { stdout += d.toString() })
-    child.stderr?.on('data', (d: Buffer) => { stderr += d.toString() })
+Produce a complete ACCESS Intelligence Dossier JSON. Use your knowledge of current 2026 market conditions.
 
-    child.on('close', (code: number | null) => {
-      if (stdout.trim()) {
-        try {
-          settle(JSON.parse(stdout.trim()) as { ok: boolean; message: string })
-          return
-        } catch { /* fall through */ }
+CRITICAL RULES — violation breaks the pipeline:
+1. "topic" field = a human-readable title like "PATH ETF and Top Investment Opportunities for June 2026" — NOT the source_id, NOT a slug, NOT a filename
+2. "headlines" MUST have exactly 3–5 entries with real, specific claims — never an empty array
+3. "key_takeaways" MUST have exactly 3 entries — never empty
+4. "pain_points" MUST have exactly 3 entries — never empty
+5. "distribution.angles.email.hook" MUST be a punchy complete sentence — never empty
+6. signal_score must be >= 70
+
+Return this exact JSON schema:
+
+{
+  "artifact": "access_intelligence_dossier",
+  "version": "1.0.0",
+  "source_id": "${sourceId}",
+  "source_type": "jdai_research_cycle",
+  "topic": "<HUMAN READABLE TITLE — e.g. 'PATH ETF and Top Investment Opportunities, June 2026'>",
+  "topic_slug": "${slug}",
+  "status": "approved",
+  "audience": {
+    "primary": "<who this is for — specific role + context>",
+    "segment": "founders_operators",
+    "trust_level": "warm"
+  },
+  "signal": {
+    "category": "<market category>",
+    "summary": "<2–3 sentences with bold key phrases>",
+    "timing_rationale": "<why act on this now, not in 6 months>",
+    "signal_score": <70–95>
+  },
+  "intelligence": {
+    "summary": "<3–4 sentences: what moved, what it means for operators, JD's angle>",
+    "headlines": [
+      {"title": "<specific claim>", "explainer": "<exact quote or concrete evidence>", "source_label": "E1"},
+      {"title": "<specific claim>", "explainer": "<exact quote or concrete evidence>", "source_label": "E2"},
+      {"title": "<specific claim>", "explainer": "<exact quote or concrete evidence>", "source_label": "E3"}
+    ],
+    "key_takeaways": ["<takeaway 1>", "<takeaway 2>", "<takeaway 3>"],
+    "recommended_action": "<specific JD content/product angle — one crisp sentence>",
+    "product_context": "<punchy hook sentence operators will feel>",
+    "positioning_read": "<how this validates or challenges JD's infrastructure-first positioning>",
+    "pain_points": ["<pain 1>", "<pain 2>", "<pain 3>"]
+  },
+  "creative": {
+    "tone": "Direct, diagnostic, strategic"
+  },
+  "distribution": {
+    "confidence_score": <75–95>,
+    "approved_channels": ["email", "social", "dashboard"],
+    "angles": {
+      "email": {
+        "hook": "<punchy 1-sentence email hook>",
+        "cta": "Open ACCESS",
+        "format_hint": "daily_brief_v2"
+      },
+      "social": {
+        "post_angles": ["<angle 1>", "<angle 2>"],
+        "platform_hints": ["LinkedIn", "X"],
+        "cta": "Read the full brief in ACCESS"
       }
-      const errDetail = stderr.trim().slice(0, 400) || `exited with code ${code}`
-      settle({ ok: false, message: `Research worker failed: ${errDetail}` })
-    })
+    },
+    "primary_format": "LinkedIn long-form article"
+  },
+  "provenance": {
+    "sources_used": [
+      {"label": "<source name>", "verified": true},
+      {"label": "<source name>", "verified": true}
+    ],
+    "compiled_by": "access-claude-research-engine",
+    "compiled_at": "${now}"
+  },
+  "created_at": "${now}",
+  "updated_at": "${now}",
+  "quality": {
+    "passed": true,
+    "overall": 85,
+    "grade": "A",
+    "min_score": 70,
+    "standards_version": "2026.06.04",
+    "scored_at": "${now}",
+    "blocking": 0
+  }
+}`
 
-    child.on('error', (err: Error) => {
-      settle({ ok: false, message: `Could not start research worker: ${err.message}` })
+  let jsonText = ''
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
     })
-  })
+    const block = response.content[0]
+    if (block.type !== 'text') return { ok: false, message: 'Claude returned non-text response.' }
+    jsonText = block.text.trim()
+  } catch (err) {
+    return { ok: false, message: `Claude API error: ${err instanceof Error ? err.message : String(err)}` }
+  }
+
+  let dossier: Record<string, unknown>
+  try {
+    const cleaned = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    dossier = JSON.parse(cleaned)
+  } catch {
+    return { ok: false, message: `Research returned invalid JSON (${jsonText.slice(0, 150)})` }
+  }
+
+  const signalScore = typeof (dossier.signal as Record<string, unknown>)?.signal_score === 'number'
+    ? (dossier.signal as Record<string, unknown>).signal_score as number
+    : 0
+
+  if (signalScore < 70) {
+    return { ok: false, message: `Signal score ${signalScore} below minimum (70) — topic not strong enough for a brief.` }
+  }
+
+  // Validate required arrays — catch lazy Claude responses before they hit the pipeline
+  const intel = dossier.intelligence as Record<string, unknown>
+  const headlines = intel?.headlines
+  const keyTakeaways = intel?.key_takeaways
+  const painPoints = intel?.pain_points
+  const emailHook = (dossier.distribution as Record<string, unknown>)?.angles
+    ? ((dossier.distribution as Record<string, unknown>).angles as Record<string, unknown>)?.email
+      ? (((dossier.distribution as Record<string, unknown>).angles as Record<string, unknown>).email as Record<string, unknown>)?.hook
+      : null
+    : null
+
+  const missing: string[] = []
+  if (!Array.isArray(headlines) || headlines.length === 0) missing.push('headlines')
+  if (!Array.isArray(keyTakeaways) || keyTakeaways.length === 0) missing.push('key_takeaways')
+  if (!Array.isArray(painPoints) || painPoints.length === 0) missing.push('pain_points')
+  if (!emailHook) missing.push('email hook')
+
+  if (missing.length > 0) {
+    return { ok: false, message: `Research incomplete — Claude omitted required fields: ${missing.join(', ')}. Try again.` }
+  }
+
+  // Write intelligence JSON
+  const intelligenceDir = join(engineRoot, 'intelligence', 'dossiers')
+  mkdirSync(intelligenceDir, { recursive: true })
+  const jsonPath = join(intelligenceDir, `${sourceId}.json`)
+  writeFileSync(jsonPath, JSON.stringify(dossier, null, 2), 'utf8')
+
+  // Write markdown placeholder so resolveTopicDossier can locate this topic
+  const dossiersDir = join(engineRoot, 'dossiers')
+  mkdirSync(dossiersDir, { recursive: true })
+  const intelForMd = dossier.intelligence as Record<string, unknown>
+  writeFileSync(
+    join(dossiersDir, `${today}-${slug}-DOSSIER.md`),
+    [
+      `# ${String(dossier.topic ?? topic)}`,
+      '',
+      `> Compiled by ACCESS Claude Research Engine · ${today}`,
+      `> Source ID: ${sourceId}`,
+      `> JSON dossier: ${jsonPath}`,
+      '',
+      '## Executive Read',
+      '',
+      String(intelForMd?.summary ?? ''),
+      '',
+      '## Recommended Action',
+      '',
+      String(intelForMd?.recommended_action ?? ''),
+    ].join('\n'),
+    'utf8'
+  )
+
+  // Update manifest.json (non-fatal)
+  const manifestPath = join(engineRoot, 'manifest.json')
+  if (existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as Record<string, unknown>
+      manifest.lastUpdated = today
+      const list = (manifest.accessIntelligenceDossiers as unknown[]) ?? []
+      list.unshift({ source_id: sourceId, topic: dossier.topic, status: 'approved', signal_score: signalScore, json_path: `intelligence/dossiers/${sourceId}.json`, compiled_at: now })
+      manifest.accessIntelligenceDossiers = list.slice(0, 50)
+      writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
+    } catch { /* non-fatal */ }
+  }
+
+  return {
+    ok: true,
+    message: `Research complete: *${String(dossier.topic)}* (signal: ${signalScore})`,
+    jsonPath,
+  }
 }

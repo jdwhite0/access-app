@@ -1,7 +1,7 @@
 import { parseOperatorIntent, helpText } from '@/lib/operator/parse-intent'
 import {
   sendDailyBrief,
-  runCursorResearch,
+  runClaudeResearch,
   listAvailableTopics,
   resolveTopicDossier,
   jdaiEngineRoot,
@@ -67,7 +67,7 @@ async function postReviewToSlack(
 }
 
 export async function executeOperatorIntent(
-  intent: ReturnType<typeof parseOperatorIntent>,
+  intent: Awaited<ReturnType<typeof parseOperatorIntent>>,
   ctx?: OperatorContext
 ): Promise<OperatorReply> {
   const needsCtx = ['review', 'approve_send', 'research', 'send_now', 'clarify'].includes(intent.type)
@@ -76,6 +76,9 @@ export async function executeOperatorIntent(
   }
 
   switch (intent.type) {
+    case 'ignore':
+      return { messages: [] }
+
     case 'help':
       return reply(helpText())
 
@@ -174,37 +177,47 @@ export async function executeOperatorIntent(
         return postReviewToSlack(ctx!, intent.topic)
       }
 
-      const cursor = await runCursorResearch(intent.topic)
-      if (!cursor.ok) {
+      const research = await runClaudeResearch(intent.topic)
+      if (!research.ok) {
         return reply(
           [
-            `*Can't research "${intent.topic}" yet*`,
-            cursor.message,
+            `*Research failed for "${intent.topic}"*`,
+            research.message,
             '',
             'Options:',
-            '• Run research in Cursor chat, then `brief on [topic]` here',
-            '• Set `CURSOR_API_KEY` for research-from-Slack',
-            '• `list topics` for what\'s ready now',
+            '• Try a different topic with `research [topic]`',
+            '• `list topics` for existing briefs',
+            '• `status` to check system health',
           ].join('\n')
         )
       }
 
-      const afterResearch = await loadBriefForReview({ topic: intent.topic })
-      if (afterResearch.ok) {
-        return postReviewToSlack(ctx!, intent.topic)
+      // Load the Claude-written JSON directly — never use topic lookup here, which
+      // would trigger the markdown compile step and overwrite Claude's output.
+      const afterResearch = await loadBriefForReview({ dossierPath: research.jsonPath })
+      if (!afterResearch.ok) {
+        return reply(
+          [
+            '✓ *Research complete*',
+            research.message.slice(0, 2000),
+            '',
+            `Preview unavailable: ${(afterResearch as { error: string }).error}`,
+            `Say \`brief on ${intent.topic}\` to retry preview.`,
+          ].join('\n')
+        )
       }
 
-      return reply(
-        [
-          '✓ *Research complete*',
-          cursor.message.slice(0, 2000),
-          '',
-          afterResearch.ok ? '' : `Preview: ${afterResearch.error}`,
-          'Say `brief on ' + intent.topic + '` when dossier is ready.',
-        ]
-          .filter(Boolean)
-          .join('\n')
-      )
+      // Use the pre-loaded preview directly — skip postReviewToSlack which re-loads by topic
+      const { preview } = afterResearch
+      await savePendingReview({
+        slack_user_id: ctx!.slackUserId,
+        channel_id: ctx!.channelId,
+        thread_ts: ctx!.threadTs,
+        source_id: preview.source_id,
+        json_path: preview.jsonPath,
+        topic: preview.topic,
+      })
+      return reply(formatSlackBriefPreview(preview))
     }
 
     case 'clarify': {
@@ -223,12 +236,15 @@ export async function executeOperatorIntent(
       }
       return reply(
         [
-          `I didn't catch a command in "${intent.raw}".`,
+          `Not sure what you're after with: _"${intent.raw}"_`,
           '',
-          `Did you want to research it? Reply:`,
-          `\`research ${intent.raw}\``,
+          'Just talk to me — some examples:',
+          '• "what ETFs should I buy this week?"',
+          '• "research the creator economy"',
+          '• "show me the openai brief"',
+          '• "send it" — to email a pending brief',
           '',
-          'Or: `list topics` · `status` · `help`',
+          '`list topics` to see what\'s ready · `help` for the full menu',
         ].join('\n')
       )
     }
@@ -242,7 +258,7 @@ export async function handleOperatorMessage(
   text: string,
   ctx?: OperatorContext
 ): Promise<OperatorReply> {
-  const intent = parseOperatorIntent(text)
+  const intent = await parseOperatorIntent(text)
   return executeOperatorIntent(intent, ctx)
 }
 
