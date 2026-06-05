@@ -66,7 +66,6 @@ async function runOperator(input: {
   }
 
   await web.reactions.add({ channel: channelId, timestamp: threadTs, name: 'hourglass_flowing_sand' }).catch(() => {})
-  await web.chat.postMessage({ channel: channelId, thread_ts: threadTs, text: '_On it…_' }).catch(() => {})
 
   // Progress heartbeat — only fires for slow ops (research). Fast replies finish first.
   const HEARTBEAT_FIRST_MS = 20_000
