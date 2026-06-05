@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
+import {
+  renderJDWEmailHtml,
+  jdwLede,
+  jdwParagraph,
+  jdwStep,
+  jdwBlock,
+  jdwDivider,
+  jdwCTA,
+  jdwSignature,
+} from '@/lib/email/templates/layout-jdw'
 
 const ALLOWED_ORIGINS = [
   'https://jdwhite.world',
@@ -55,14 +65,23 @@ export async function POST(req: NextRequest) {
   }
 
   // Store in Supabase
+  let leadId: string | null = null
   const supabase = createSupabaseAdmin()
   if (supabase) {
-    const { error } = await supabase.from('sales_leads').insert(lead)
+    const { data, error } = await supabase
+      .from('sales_leads')
+      .insert(lead)
+      .select('id')
+      .single()
     if (error) console.error('[concierge/lead] Supabase error:', error.message)
+    leadId = data?.id ?? null
   }
 
-  // Notify Jerry via email
-  await notifyFounder(lead)
+  // Notify Jerry + confirm to lead in parallel
+  await Promise.all([
+    notifyFounder(lead),
+    confirmLead(lead, leadId),
+  ])
 
   return NextResponse.json({ ok: true }, { headers })
 }
@@ -211,5 +230,99 @@ async function notifyFounder(lead: {
     })
   } catch (e) {
     console.error('[concierge/lead] Email notification failed:', e)
+  }
+}
+
+async function confirmLead(
+  lead: { name: string; email: string; company: string | null; recommendation: string; answers: Record<string, string> },
+  leadId: string | null,
+) {
+  const apiKey = process.env.RESEND_API_KEY?.trim()
+  if (!apiKey) return
+
+  const firstName = lead.name.split(' ')[0]
+
+  const tierNextSteps: Record<string, string[]> = {
+    launch: [
+      'Review the <strong>LAUNCH package</strong> — starting at $297.',
+      'I\'ll be in touch within 24 hours to schedule a short discovery call.',
+      'We\'ll scope the project and get you a clear deliverable.',
+    ],
+    grow: [
+      'Review the <strong>GROW package</strong> — starting at $997.',
+      'I\'ll reach out within 24 hours to discuss your current systems.',
+      'We\'ll identify the gap and map the build together.',
+    ],
+    scale: [
+      'You\'re in the <strong>SCALE tier</strong> — starting at $5,000.',
+      'This is a strategic engagement. Expect a reply within 12 hours.',
+      'We\'ll schedule a dedicated architecture session to map what we\'re building.',
+    ],
+  }
+
+  const steps = tierNextSteps[lead.recommendation] ?? tierNextSteps.launch
+
+  const tierLabels: Record<string, string> = {
+    launch: 'LAUNCH',
+    grow: 'GROW',
+    scale: 'SCALE',
+  }
+
+  const bodyHtml = [
+    jdwLede(`${firstName}, your inquiry is in.`),
+    jdwParagraph('I read every one of these. Here\'s exactly what happens next.'),
+    jdwDivider(),
+    ...steps.map((s, i) => jdwStep(`0${i + 1}`, s)),
+    jdwDivider(),
+    jdwBlock(`You were matched to the <strong>${tierLabels[lead.recommendation] ?? lead.recommendation.toUpperCase()}</strong> path based on your answers.${lead.company ? ` Project: <strong>${lead.company}</strong>.` : ''} If anything has changed or you have more context to add, just reply to this email.`),
+    jdwCTA('Back to jdwhite.world →', 'https://jdwhite.world'),
+    jdwSignature(),
+  ].join('')
+
+  const html = renderJDWEmailHtml({
+    track: 'business_dev',
+    label: 'SALES CONCIERGE · DEPT 01',
+    subject: 'Your inquiry is in.',
+    preheader: `${firstName}, I got it. Here's what happens next.`,
+    bodyHtml,
+    recipientEmail: lead.email,
+  })
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.JDW_EMAIL_FROM || process.env.EMAIL_FROM || 'Jerry Devin <hello@jdwhite.world>',
+        to: [lead.email],
+        subject: 'Your inquiry is in.',
+        html,
+      }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      console.error('[concierge/lead] Confirmation email failed:', err)
+      return
+    }
+
+    // Log the send
+    const supabase = createSupabaseAdmin()
+    if (supabase) {
+      await supabase.from('jdw_email_log').insert({
+        recipient_email: lead.email,
+        email_type: 'concierge_confirmation',
+        track: 'business_dev',
+        lead_id: leadId,
+        subject: 'Your inquiry is in.',
+        status: 'sent',
+        automation_stage: 1,
+      })
+    }
+  } catch (e) {
+    console.error('[concierge/lead] Confirmation email exception:', e)
   }
 }

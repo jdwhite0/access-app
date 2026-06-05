@@ -36,6 +36,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/connector/v1(.*)',
   // Sales Concierge — public lead capture from jdwhite.world
   '/api/concierge/(.*)',
+  // JDWhite.world public endpoints (subscribe, ecosystem)
+  '/api/jdw/(.*)',
 ])
 
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
