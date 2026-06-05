@@ -386,7 +386,7 @@ async function notifyFounder(lead: {
   }
 }
 
-// ─── EMAIL 2: External Signal — Portal Entry (first contact, dark void) ────────
+// ─── EMAIL 2: External Confirmation — light layout, readable for all ages ────────
 
 async function confirmLead(
   lead: { name: string; email: string; company: string | null; recommendation: string; answers: Record<string, string> },
@@ -396,79 +396,71 @@ async function confirmLead(
   if (!apiKey) return
 
   const tier = TIER[lead.recommendation as Tier] ?? TIER.launch
-  const firstName = lead.name.split(' ')[0]
 
-  // Progress tracker — pure HTML, no images
+  // Progress tracker — light mode
   const progressHtml = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 24px;">
       <tr>
-        <!-- Active step — filled dot in signal blue -->
+        <!-- Active step -->
         <td align="center" style="width:25%;">
           <div style="width:12px;height:12px;border-radius:50%;
             background:#7B9CFF;margin:0 auto 8px;"></div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
-            color:rgba(255,255,255,0.70);">Received</p>
+            color:#0D0D14;">Received</p>
         </td>
         <td style="padding-bottom:18px;">
-          <div style="height:1px;background:rgba(255,255,255,0.12);"></div>
+          <div style="height:1px;background:#E4E2EE;"></div>
         </td>
         <td align="center" style="width:25%;">
           <div style="width:10px;height:10px;border-radius:50%;
-            border:1px solid rgba(255,255,255,0.22);margin:0 auto 8px;"></div>
+            border:1px solid #D0CEDC;margin:0 auto 8px;"></div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
-            color:rgba(255,255,255,0.28);">Reviewed</p>
+            color:#9A9AAA;">Reviewed</p>
         </td>
         <td style="padding-bottom:18px;">
-          <div style="height:1px;background:rgba(255,255,255,0.12);"></div>
+          <div style="height:1px;background:#E4E2EE;"></div>
         </td>
         <td align="center" style="width:25%;">
           <div style="width:10px;height:10px;border-radius:50%;
-            border:1px solid rgba(255,255,255,0.22);margin:0 auto 8px;"></div>
+            border:1px solid #D0CEDC;margin:0 auto 8px;"></div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
-            color:rgba(255,255,255,0.28);">In Touch</p>
+            color:#9A9AAA;">In Touch</p>
         </td>
         <td style="padding-bottom:18px;">
-          <div style="height:1px;background:rgba(255,255,255,0.12);"></div>
+          <div style="height:1px;background:#E4E2EE;"></div>
         </td>
         <td align="center" style="width:25%;">
           <div style="width:10px;height:10px;border-radius:50%;
-            border:1px solid rgba(255,255,255,0.22);margin:0 auto 8px;"></div>
+            border:1px solid #D0CEDC;margin:0 auto 8px;"></div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
-            color:rgba(255,255,255,0.28);">Building</p>
+            color:#9A9AAA;">Building</p>
         </td>
       </tr>
     </table>`
 
   const html = `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#06070D;">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="color-scheme" content="light"/>
+</head>
+<body style="margin:0;padding:0;background:#EDEBF7;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-  style="background:#06070D;padding:28px 12px;">
+  style="background:linear-gradient(160deg,#EDEBF7 0%,#F5F3FC 22%,#FAFAF8 100%);padding:28px 12px;">
 <tr><td align="center">
 <table role="presentation" width="100%"
-  style="max-width:560px;background:#0B0D1A;border-radius:10px;overflow:hidden;
-    border:1px solid rgba(255,255,255,0.07);">
+  style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
+    border:1px solid #E4E2EE;box-shadow:0 1px 4px rgba(60,40,120,0.06);">
 
   <!-- Signal line -->
   <tr>
     <td style="padding:0;">
       <div style="height:2px;background:linear-gradient(90deg,#7B9CFF 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
-    </td>
-  </tr>
-
-  <!-- Portal header — animated GIF (fallback: dark void on image-blocked clients) -->
-  <tr>
-    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
-      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry.gif"
-           alt=""
-           width="560"
-           height="200"
-           style="display:block;max-width:100%;width:100%;border:0;" />
     </td>
   </tr>
 
@@ -479,15 +471,13 @@ async function confirmLead(
         <tr>
           <td>
             <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:12px;font-weight:700;letter-spacing:0.20em;
-              color:rgba(255,255,255,0.90);">JDWHITE.WORLD</p>
+              font-size:12px;font-weight:700;letter-spacing:0.20em;color:#0D0D14;">JDWHITE.WORLD</p>
             <p style="margin:4px 0 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:10px;letter-spacing:0.14em;
-              color:rgba(255,255,255,0.22);">WORK WITH ME</p>
+              font-size:10px;letter-spacing:0.14em;color:#9A9AAA;">WORK WITH ME</p>
           </td>
           <td align="right" style="vertical-align:top;">
             <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:10px;letter-spacing:0.08em;color:rgba(255,255,255,0.22);">
+              font-size:10px;letter-spacing:0.08em;color:#9A9AAA;">
               ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </p>
           </td>
@@ -498,10 +488,10 @@ async function confirmLead(
 
   <!-- Headline + divider -->
   <tr>
-    <td style="padding:16px 28px 22px;border-bottom:1px solid rgba(255,255,255,0.07);">
+    <td style="padding:16px 28px 22px;border-bottom:1px solid #E4E2EE;">
       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
-        font-size:26px;font-weight:700;letter-spacing:-0.02em;line-height:1.2;
-        color:rgba(255,255,255,0.92);">Here's what happens next.</p>
+        font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1.2;
+        color:#0D0D14;">Here's what happens next.</p>
     </td>
   </tr>
 
@@ -511,23 +501,21 @@ async function confirmLead(
 
       <!-- Path block -->
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-        style="margin:0 0 22px;background:rgba(255,255,255,0.03);
-          border:1px solid rgba(255,255,255,0.07);border-radius:8px;">
+        style="margin:0 0 22px;background:#F4F2FA;border:1px solid #E0DDEF;border-radius:8px;">
         <tr><td style="padding:4px 18px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="padding:9px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
+              <td style="padding:10px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
                 font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
-                color:rgba(255,255,255,0.25);width:130px;
-                border-bottom:1px solid rgba(255,255,255,0.05);">WHERE YOU ARE</td>
-              <td style="padding:9px 0;font-size:14px;color:rgba(255,255,255,0.80);
-                border-bottom:1px solid rgba(255,255,255,0.05);">Under review</td>
+                color:#9A9AAA;width:130px;border-bottom:1px solid #E4E2EE;">WHERE YOU ARE</td>
+              <td style="padding:10px 0;font-size:16px;color:#0D0D14;
+                border-bottom:1px solid #E4E2EE;">Under review</td>
             </tr>
             <tr>
-              <td style="padding:9px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
+              <td style="padding:10px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
                 font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
-                color:rgba(255,255,255,0.25);">WHAT'S NEXT</td>
-              <td style="padding:9px 0;font-size:14px;color:rgba(255,255,255,0.80);">
+                color:#9A9AAA;">WHAT'S NEXT</td>
+              <td style="padding:10px 0;font-size:16px;color:#0D0D14;">
                 I'll reach out within ${tier.replyHours} hours
               </td>
             </tr>
@@ -541,49 +529,48 @@ async function confirmLead(
           <td align="center">
             <div style="display:inline-block;padding:14px 24px;
               border:1px solid ${tier.color}40;border-radius:8px;
-              background:${tier.color}0D;text-align:center;">
+              background:${tier.color}0F;text-align:center;">
               <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
                 font-size:11px;font-weight:700;letter-spacing:0.16em;
                 color:${tier.color};">${tier.label} PACKAGE</p>
               <p style="margin:5px 0 0;font-family:system-ui,-apple-system,sans-serif;
-                font-size:13px;color:rgba(255,255,255,0.48);">${tier.desc}</p>
+                font-size:15px;color:#5A5A68;">${tier.desc}</p>
             </div>
           </td>
         </tr>
       </table>
 
       <!-- Divider -->
-      <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 22px;"></div>
+      <div style="height:1px;background:#E4E2EE;margin:0 0 22px;"></div>
 
       <!-- Progress tracker -->
       <p style="margin:0 0 14px;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-        font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
-        color:rgba(255,255,255,0.22);">PROGRESS</p>
+        font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#9A9AAA;">PROGRESS</p>
       ${progressHtml}
 
       <!-- Divider -->
-      <div style="height:1px;background:rgba(255,255,255,0.07);margin:0 0 22px;"></div>
+      <div style="height:1px;background:#E4E2EE;margin:0 0 22px;"></div>
 
       <!-- Founder block -->
-      <p style="margin:0 0 14px;font-size:15px;line-height:1.70;
-        color:rgba(255,255,255,0.78);font-family:system-ui,-apple-system,sans-serif;">
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.72;
+        color:#0D0D14;font-family:system-ui,-apple-system,sans-serif;">
         I read every one of these. Not a team, not an assistant&nbsp;—&nbsp;me.
       </p>
-      <p style="margin:0 0 14px;font-size:15px;line-height:1.70;
-        color:rgba(255,255,255,0.78);font-family:system-ui,-apple-system,sans-serif;">
+      <p style="margin:0 0 16px;font-size:16px;line-height:1.72;
+        color:#0D0D14;font-family:system-ui,-apple-system,sans-serif;">
         The goal isn't to pitch you something. It's to find out if what you're
         building is something I should be a part of.
       </p>
-      <p style="margin:0 0 24px;font-size:15px;line-height:1.70;
-        color:rgba(255,255,255,0.78);font-family:system-ui,-apple-system,sans-serif;">
+      <p style="margin:0 0 24px;font-size:16px;line-height:1.72;
+        color:#0D0D14;font-family:system-ui,-apple-system,sans-serif;">
         You'll hear from me within ${tier.replyHours} hours.
       </p>
 
       <!-- Signature -->
       <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;
-        font-size:15px;font-style:italic;color:rgba(255,255,255,0.42);">— JD White</p>
-      <p style="margin:0 0 24px;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-        font-size:10px;letter-spacing:0.10em;color:rgba(255,255,255,0.20);">
+        font-size:16px;font-style:italic;color:#5A5A68;">— JD White</p>
+      <p style="margin:0 0 28px;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
+        font-size:10px;letter-spacing:0.10em;color:#9A9AAA;">
         FOUNDER, JD PRODUCTIONS
       </p>
 
@@ -592,9 +579,9 @@ async function confirmLead(
         <tr>
           <td style="border-radius:7px;background:#7B9CFF;">
             <a href="https://jdwhite.world"
-              style="display:inline-block;padding:13px 24px;
+              style="display:inline-block;padding:14px 26px;
                 font-family:system-ui,-apple-system,sans-serif;
-                font-size:14px;font-weight:600;color:#06070D;
+                font-size:15px;font-weight:600;color:#FFFFFF;
                 text-decoration:none;letter-spacing:-0.01em;">
               Explore the ecosystem →
             </a>
@@ -607,10 +594,10 @@ async function confirmLead(
 
   <!-- Footer -->
   <tr>
-    <td style="padding:20px 28px 24px;border-top:1px solid rgba(255,255,255,0.06);">
+    <td style="padding:20px 28px 24px;border-top:1px solid #E4E2EE;">
       <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-        font-size:10px;letter-spacing:0.08em;color:rgba(255,255,255,0.16);text-align:center;">
-        TRANSMISSION FROM THE ECOSYSTEM · JDWHITE.WORLD
+        font-size:10px;letter-spacing:0.08em;color:#9A9AAA;text-align:center;">
+        JDWHITE.WORLD · <a href="https://jdwhite.world" style="color:#9A9AAA;text-decoration:none;">jdwhite.world</a>
       </p>
     </td>
   </tr>
