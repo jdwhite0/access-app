@@ -461,20 +461,14 @@ async function confirmLead(
     </td>
   </tr>
 
-  <!-- Portal header — diamond mark floating in void -->
-  <!-- GIF slot: swap this block for <tr><td align="center" bgcolor="#06070D" style="padding:0;">
-       <img src="https://jdwhite.world/assets/email/portal-entry.gif" alt="" width="560"
-            style="display:block;max-width:100%;border:0;"/></td></tr> when asset exists -->
+  <!-- Portal header — animated GIF (fallback: dark void on image-blocked clients) -->
   <tr>
-    <td align="center" bgcolor="#06070D" style="
-      padding:48px 28px 38px;
-      background:
-        radial-gradient(ellipse at 50% 60%, rgba(123,156,255,0.13) 0%, rgba(123,156,255,0.02) 50%, transparent 72%),
-        radial-gradient(ellipse at 20% 100%, rgba(40,10,120,0.08) 0%, transparent 45%),
-        #06070D;">
-      <!-- ◆ portal diamond — the visual language of jdwhite.world -->
-      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
-        font-size:30px;line-height:1;color:#7B9CFF;">&#9670;</p>
+    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
+      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry.gif"
+           alt=""
+           width="560"
+           height="200"
+           style="display:block;max-width:100%;width:100%;border:0;" />
     </td>
   </tr>
 
