@@ -210,13 +210,16 @@ export async function runClaudeResearch(topic: string): Promise<ClaudeResearchRe
     return { ok: false, message: 'ANTHROPIC_API_KEY not set in access-app/.env.local.' }
   }
 
-  // On Railway (or any environment without the engine mounted), use /tmp as a
-  // writable scratch space. The research→send flow is ephemeral — the JSON only
-  // needs to survive long enough for sendDailyBrief() to read it in the same run.
+  // Resolve engine root — verify it's actually writable, not just present.
+  // /data exists on Railway even without a volume but is not writable.
+  // If the configured path fails to mkdir, fall back to /tmp scratch space.
   let engineRoot = jdaiEngineRoot()
-  if (!existsSync(engineRoot)) {
+  const testDir = join(engineRoot, 'intelligence', 'dossiers')
+  try {
+    mkdirSync(testDir, { recursive: true })
+  } catch {
     engineRoot = resolve('/tmp/jdai-engine')
-    mkdirSync(engineRoot, { recursive: true })
+    mkdirSync(join(engineRoot, 'intelligence', 'dossiers'), { recursive: true })
   }
 
   const today = new Date().toISOString().slice(0, 10)

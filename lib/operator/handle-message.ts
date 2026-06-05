@@ -179,17 +179,16 @@ export async function executeOperatorIntent(
 
       const research = await runClaudeResearch(intent.topic)
       if (!research.ok) {
-        return reply(
-          [
-            `*Research failed for "${intent.topic}"*`,
-            research.message,
-            '',
-            'Options:',
-            '• Try a different topic with `research [topic]`',
-            '• `list topics` for existing briefs',
-            '• `status` to check system health',
-          ].join('\n')
-        )
+        // Always reply in the thread so Jerry sees the failure reason clearly
+        const errLines = [
+          `✗ *Research failed* — ${intent.topic}`,
+          `_Reason: ${research.message.slice(0, 300)}_`,
+          '',
+          'Try:',
+          '• `research [topic]` with a different phrasing',
+          '• `status` to check system health',
+        ]
+        return reply(errLines.join('\n'))
       }
 
       // Load the Claude-written JSON directly — never use topic lookup here, which
