@@ -763,17 +763,41 @@ The copy and component precision needs to match this spec.
 
 ## Appendix: Quick Reference
 
+### Dark vs Light — The Rule
+
+```
+DARK VOID (layout-jdw.ts)
+  → First-contact portal-entry emails only.
+  → Work With Me confirmation (first email to a new lead)
+  → Newsletter welcome (first email to a new subscriber)
+  → The moment someone enters the ecosystem for the first time
+  → Gives the portal / transmission / entering-a-world feeling
+
+LIGHT (layout-jdw-light.ts)
+  → All subsequent jdwhite.world emails after first contact
+  → Follow-ups, dispatches, proposals, announcements
+  → Warm off-white (#FAFAF8) + faint indigo gradient header
+  → #7B9CFF signal line is the connecting thread to the dark version
+  → Ecosystem feels present without every email looking like outer space
+
+INTERNAL SIGNALS
+  → Always dark (#030407) — Jerry's command center never changes
+  → Urgency signal line color = tier (red/amber/blue)
+```
+
 ### Which layout to use
 
-| Venture | Layout file | Visual mode |
+| Context | Layout file | Visual mode |
 |---|---|---|
-| jdwhite.world | layout-jdw.ts | Dark void, portal signal blue |
-| JD Productions | layout-jdp.ts | Cream, editorial, navy accent |
-| ACCESS platform | layout-finimize.ts | White, data-driven, teal accent |
-| White Lane | layout-jdp.ts (variant) | Cream, gold accent |
-| Bridge Video | layout-jdp.ts (variant) | Cream, near-white accent |
-| Lil Dev | layout-jdp.ts (variant) | Cream, purple accent |
-| LINC | layout-jdp.ts (variant) | Cream, gold accent |
+| **First contact** (lead or subscriber) | `layout-jdw.ts` | Dark void, portal entry |
+| **All subsequent jdwhite.world** | `layout-jdw-light.ts` | Light, faint galaxy, signal blue thread |
+| **Internal (Jerry)** | Inline in route | Dark void, urgency color system |
+| JD Productions | `layout-jdp.ts` | Cream, editorial, navy accent |
+| ACCESS platform | `layout-finimize.ts` | White, data-driven, teal accent |
+| White Lane | `layout-jdp.ts` (variant) | Cream, gold accent |
+| Bridge Video | `layout-jdp.ts` (variant) | Cream, near-white accent |
+| Lil Dev | `layout-jdp.ts` (variant) | Cream, purple accent |
+| LINC | `layout-jdp.ts` (variant) | Cream, gold accent |
 
 ### Internal vs External — Quick Decision
 
