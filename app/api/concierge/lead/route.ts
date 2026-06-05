@@ -402,14 +402,10 @@ async function confirmLead(
   const progressHtml = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 24px;">
       <tr>
-        <!-- Active step — orbital ring marks current position -->
+        <!-- Active step — filled dot in signal blue -->
         <td align="center" style="width:25%;">
-          <div style="display:inline-block;
-            padding:4px;
-            border:1px solid rgba(123,156,255,0.38);
-            border-radius:50%;margin:0 auto 8px;">
-            <div style="width:10px;height:10px;border-radius:50%;background:#7B9CFF;"></div>
-          </div>
+          <div style="width:12px;height:12px;border-radius:50%;
+            background:#7B9CFF;margin:0 auto 8px;"></div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
             color:rgba(255,255,255,0.70);">Received</p>
@@ -465,36 +461,20 @@ async function confirmLead(
     </td>
   </tr>
 
-  <!-- Visual header — CSS orbital rings + nebula glow (portal entry mark) -->
-  <!-- To swap in a GIF: replace this entire block with:
-       <tr><td align="center" bgcolor="#06070D" style="padding:0;">
-         <img src="https://jdwhite.world/assets/email/portal-entry.gif" alt="" width="560"
-              style="display:block;max-width:100%;border:0;"/>
-       </td></tr> -->
+  <!-- Portal header — diamond mark floating in void -->
+  <!-- GIF slot: swap this block for <tr><td align="center" bgcolor="#06070D" style="padding:0;">
+       <img src="https://jdwhite.world/assets/email/portal-entry.gif" alt="" width="560"
+            style="display:block;max-width:100%;border:0;"/></td></tr> when asset exists -->
   <tr>
     <td align="center" bgcolor="#06070D" style="
-      padding:36px 28px 28px;
+      padding:48px 28px 38px;
       background:
-        radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.20) 0%, rgba(123,156,255,0.04) 52%, transparent 72%),
-        radial-gradient(ellipse at 18% 92%, rgba(60,20,160,0.10) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 70%, rgba(20,40,200,0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 60%, rgba(123,156,255,0.13) 0%, rgba(123,156,255,0.02) 50%, transparent 72%),
+        radial-gradient(ellipse at 20% 100%, rgba(40,10,120,0.08) 0%, transparent 45%),
         #06070D;">
-      <div style="display:inline-block;
-        padding:20px;
-        border:1px solid rgba(123,156,255,0.09);
-        border-radius:50%;">
-        <div style="padding:14px;
-          border:1px solid rgba(123,156,255,0.18);
-          border-radius:50%;">
-          <div style="padding:10px;
-            border:1px solid rgba(123,156,255,0.38);
-            border-radius:50%;">
-            <div style="width:10px;height:10px;
-              background:#7B9CFF;
-              border-radius:50%;"></div>
-          </div>
-        </div>
-      </div>
+      <!-- ◆ portal diamond — the visual language of jdwhite.world -->
+      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
+        font-size:30px;line-height:1;color:#7B9CFF;">&#9670;</p>
     </td>
   </tr>
 

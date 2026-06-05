@@ -119,32 +119,17 @@ export function renderJDWEmailHtml(options: JDWEmailOptions): string {
         </td>
       </tr>`
     : `
-      <!-- Visual header — CSS orbital rings + nebula glow -->
-      <!-- To swap in a GIF later: replace this block with an img row (see JDWHeroImage type) -->
+      <!-- Portal header — diamond mark floating in void -->
+      <!-- GIF slot: swap this block with an img row when asset is ready (see JDWHeroImage type) -->
       <tr>
         <td align="center" bgcolor="${JDW.bg}" style="
-          padding:36px 28px 28px;
+          padding:48px 28px 38px;
           background:
-            radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.20) 0%, rgba(123,156,255,0.04) 52%, transparent 72%),
-            radial-gradient(ellipse at 15% 95%, rgba(60,20,160,0.10) 0%, transparent 50%),
-            radial-gradient(ellipse at 88% 72%, rgba(20,40,200,0.06) 0%, transparent 40%),
+            radial-gradient(ellipse at 50% 60%, rgba(123,156,255,0.13) 0%, rgba(123,156,255,0.02) 50%, transparent 72%),
+            radial-gradient(ellipse at 20% 100%, rgba(40,10,120,0.08) 0%, transparent 45%),
             ${JDW.bg};">
-          <div style="display:inline-block;
-            padding:20px;
-            border:1px solid rgba(123,156,255,0.09);
-            border-radius:50%;">
-            <div style="padding:14px;
-              border:1px solid rgba(123,156,255,0.18);
-              border-radius:50%;">
-              <div style="padding:10px;
-                border:1px solid rgba(123,156,255,0.38);
-                border-radius:50%;">
-                <div style="width:10px;height:10px;
-                  background:${JDW.signal};
-                  border-radius:50%;"></div>
-              </div>
-            </div>
-          </div>
+          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
+            font-size:30px;line-height:1;color:${JDW.signal};">&#9670;</p>
         </td>
       </tr>`
 
