@@ -1,1 +1,1 @@
-worker: npm run slack:bot
+worker: ./node_modules/.bin/tsx scripts/slack-operator-bot.ts
