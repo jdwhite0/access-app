@@ -9,6 +9,7 @@ import { WebClient } from '@slack/web-api'
 import { loadAccessEnv } from '../lib/email/agents/load-env'
 import { handleOperatorMessage } from '../lib/operator/handle-message'
 import { isAllowedSlackUser } from '../lib/slack/verify'
+import { startAutonomousScheduler } from './autonomous-scheduler'
 
 const PROCESSED = new Set<string>()
 const POLL_MS = 6000
@@ -167,8 +168,26 @@ async function main() {
     }
   }
 
+  // Bootstrap DM channels and capture founder's channel for scheduler notifications
+  let founderDmChannel: string | null = null
   for (const userId of allowedUsers) {
-    await bootstrapPollChannel(userId)
+    const ch = await bootstrapPollChannel(userId)
+    if (!founderDmChannel && ch) founderDmChannel = ch
+  }
+
+  // THE MODE — autonomous daily brief at 7 AM ET, no manual trigger needed
+  if (founderDmChannel) {
+    const dmChannel = founderDmChannel
+    startAutonomousScheduler({
+      sendToSlack: async (message: string) => {
+        await web.chat.postMessage({ channel: dmChannel, text: message }).catch((err) => {
+          console.error('[scheduler] Slack notify failed:', err)
+        })
+      },
+    })
+  } else {
+    console.warn('[scheduler] No founder DM channel — autonomous scheduler will not send Slack updates')
+    startAutonomousScheduler({ sendToSlack: async (msg) => console.log('[scheduler→stdout]', msg) })
   }
 
   setInterval(async () => {
