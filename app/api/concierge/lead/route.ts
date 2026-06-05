@@ -158,9 +158,13 @@ async function notifyFounder(lead: {
     </td>
   </tr>
 
-  <!-- Header -->
+  <!-- Header with urgency atmosphere -->
   <tr>
-    <td style="padding:20px 24px 0;">
+    <td bgcolor="#030407" style="
+      padding:20px 24px 16px;
+      background:
+        radial-gradient(ellipse at 50% 0%, ${tier.color}18 0%, transparent 55%),
+        #030407;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
@@ -181,7 +185,7 @@ async function notifyFounder(lead: {
   </tr>
 
   <!-- Divider -->
-  <tr><td style="padding:16px 24px 0;">
+  <tr><td style="padding:0 24px;">
     <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
   </td></tr>
 
@@ -190,8 +194,16 @@ async function notifyFounder(lead: {
     <td style="padding:16px 24px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="padding-right:10px;vertical-align:middle;">
-            <div style="width:8px;height:8px;border-radius:50%;background:${tier.color};"></div>
+          <td style="padding-right:12px;vertical-align:middle;">
+            <!-- Urgency glow ring -->
+            <div style="display:inline-block;
+              padding:5px;
+              border:1px solid ${tier.color}28;
+              border-radius:50%;">
+              <div style="width:8px;height:8px;
+                background:${tier.color};
+                border-radius:50%;"></div>
+            </div>
           </td>
           <td>
             <span style="font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
@@ -390,8 +402,14 @@ async function confirmLead(
   const progressHtml = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 24px;">
       <tr>
+        <!-- Active step — orbital ring marks current position -->
         <td align="center" style="width:25%;">
-          <div style="width:10px;height:10px;border-radius:50%;background:#7B9CFF;margin:0 auto 8px;"></div>
+          <div style="display:inline-block;
+            padding:4px;
+            border:1px solid rgba(123,156,255,0.38);
+            border-radius:50%;margin:0 auto 8px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#7B9CFF;"></div>
+          </div>
           <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
             font-size:9px;letter-spacing:0.10em;text-transform:uppercase;
             color:rgba(255,255,255,0.70);">Received</p>
@@ -442,12 +460,45 @@ async function confirmLead(
 
   <!-- Signal line -->
   <tr>
-    <td>
+    <td style="padding:0;">
       <div style="height:2px;background:linear-gradient(90deg,#7B9CFF 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
     </td>
   </tr>
 
-  <!-- Header -->
+  <!-- Visual header — CSS orbital rings + nebula glow (portal entry mark) -->
+  <!-- To swap in a GIF: replace this entire block with:
+       <tr><td align="center" bgcolor="#06070D" style="padding:0;">
+         <img src="https://jdwhite.world/assets/email/portal-entry.gif" alt="" width="560"
+              style="display:block;max-width:100%;border:0;"/>
+       </td></tr> -->
+  <tr>
+    <td align="center" bgcolor="#06070D" style="
+      padding:36px 28px 28px;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.20) 0%, rgba(123,156,255,0.04) 52%, transparent 72%),
+        radial-gradient(ellipse at 18% 92%, rgba(60,20,160,0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 70%, rgba(20,40,200,0.06) 0%, transparent 40%),
+        #06070D;">
+      <div style="display:inline-block;
+        padding:20px;
+        border:1px solid rgba(123,156,255,0.09);
+        border-radius:50%;">
+        <div style="padding:14px;
+          border:1px solid rgba(123,156,255,0.18);
+          border-radius:50%;">
+          <div style="padding:10px;
+            border:1px solid rgba(123,156,255,0.38);
+            border-radius:50%;">
+            <div style="width:10px;height:10px;
+              background:#7B9CFF;
+              border-radius:50%;"></div>
+          </div>
+        </div>
+      </div>
+    </td>
+  </tr>
+
+  <!-- Wordmark row -->
   <tr>
     <td style="padding:22px 28px 0;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

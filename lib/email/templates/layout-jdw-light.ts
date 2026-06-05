@@ -68,6 +68,18 @@ function footer(email?: string): string {
     </tr>`
 }
 
+// ─── Hero image slot (light) ───────────────────────────────────────────────────
+// Recommended dimensions: 560×160 (2× for retina = 1120×320)
+// Hosting: jdwhite.world/assets/email/<track>-header-light.gif or .png
+// When not provided, the editorial layout opens directly with the wordmark row.
+
+export type JDWLHeroImage = {
+  src: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
 // ─── Options ───────────────────────────────────────────────────────────────────
 
 export type JDWLEmailOptions = {
@@ -78,6 +90,7 @@ export type JDWLEmailOptions = {
   issue?: string
   bodyHtml: string
   recipientEmail?: string
+  heroImage?: JDWLHeroImage
 }
 
 // ─── Main render ───────────────────────────────────────────────────────────────
@@ -91,6 +104,18 @@ export function renderJDWLEmailHtml(options: JDWLEmailOptions): string {
   const preheader = options.preheader
     ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${options.preheader}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>`
     : ''
+
+  const heroSection = options.heroImage ? `
+      <!-- Hero image slot — swap src for animated GIF when asset is ready -->
+      <tr>
+        <td align="center" bgcolor="${JDWL.card}" style="padding:0;background:${JDWL.card};">
+          <img src="${options.heroImage.src}"
+               alt="${options.heroImage.alt ?? ''}"
+               width="${options.heroImage.width ?? 560}"
+               ${options.heroImage.height ? `height="${options.heroImage.height}"` : ''}
+               style="display:block;max-width:100%;width:100%;border:0;" />
+        </td>
+      </tr>` : ''
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -113,6 +138,8 @@ ${preheader}
           <div style="height:2px;background:linear-gradient(90deg,${JDWL.signal} 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
         </td>
       </tr>
+
+      ${heroSection}
 
       <!-- Wordmark + label row -->
       <tr>

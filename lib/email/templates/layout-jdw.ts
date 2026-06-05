@@ -67,6 +67,19 @@ function footer(email?: string): string {
     </tr>`
 }
 
+// ─── Hero image slot ───────────────────────────────────────────────────────────
+// When src is set, the image renders in place of the CSS orbital ring header.
+// Swap a static PNG for an animated GIF at any point — just update src.
+// Recommended dimensions: 560×200 (2× for retina = 1120×400)
+// Recommended hosting: jdwhite.world/assets/email/<track>-header.gif
+
+export type JDWHeroImage = {
+  src: string
+  alt?: string
+  width?: number     // default 560
+  height?: number    // optional, set for above-the-fold CLS prevention
+}
+
 // ─── Options ───────────────────────────────────────────────────────────────────
 
 export type JDWEmailOptions = {
@@ -77,6 +90,7 @@ export type JDWEmailOptions = {
   issue?: string          // e.g. "No. 001" or "June 5, 2026"
   bodyHtml: string
   recipientEmail?: string // for unsubscribe link
+  heroImage?: JDWHeroImage
 }
 
 // ─── Main render ───────────────────────────────────────────────────────────────
@@ -91,6 +105,49 @@ export function renderJDWEmailHtml(options: JDWEmailOptions): string {
     ? `<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${options.preheader}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>`
     : ''
 
+  // Visual header — image when provided, CSS orbital rings as fallback
+  const visualHeader = options.heroImage
+    ? `
+      <!-- Hero image slot — swap PNG for animated GIF when asset is ready -->
+      <tr>
+        <td align="center" bgcolor="${JDW.bg}" style="padding:0;background:${JDW.bg};">
+          <img src="${options.heroImage.src}"
+               alt="${options.heroImage.alt ?? ''}"
+               width="${options.heroImage.width ?? 560}"
+               ${options.heroImage.height ? `height="${options.heroImage.height}"` : ''}
+               style="display:block;max-width:100%;width:100%;border:0;" />
+        </td>
+      </tr>`
+    : `
+      <!-- Visual header — CSS orbital rings + nebula glow -->
+      <!-- To swap in a GIF later: replace this block with an img row (see JDWHeroImage type) -->
+      <tr>
+        <td align="center" bgcolor="${JDW.bg}" style="
+          padding:36px 28px 28px;
+          background:
+            radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.20) 0%, rgba(123,156,255,0.04) 52%, transparent 72%),
+            radial-gradient(ellipse at 15% 95%, rgba(60,20,160,0.10) 0%, transparent 50%),
+            radial-gradient(ellipse at 88% 72%, rgba(20,40,200,0.06) 0%, transparent 40%),
+            ${JDW.bg};">
+          <div style="display:inline-block;
+            padding:20px;
+            border:1px solid rgba(123,156,255,0.09);
+            border-radius:50%;">
+            <div style="padding:14px;
+              border:1px solid rgba(123,156,255,0.18);
+              border-radius:50%;">
+              <div style="padding:10px;
+                border:1px solid rgba(123,156,255,0.38);
+                border-radius:50%;">
+                <div style="width:10px;height:10px;
+                  background:${JDW.signal};
+                  border-radius:50%;"></div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>`
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,7 +158,11 @@ export function renderJDWEmailHtml(options: JDWEmailOptions): string {
 <body style="margin:0;padding:0;background:${JDW.bg};">
 ${preheader}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${JDW.bg};padding:28px 12px;">
-  <tr><td align="center">
+  <tr><td align="center" style="
+    background:
+      radial-gradient(ellipse at 50% 15%, rgba(123,156,255,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 85%, rgba(60,20,180,0.04) 0%, transparent 45%),
+      ${JDW.bg};">
     <table role="presentation" width="100%" style="max-width:560px;background:${JDW.card};border-radius:10px;overflow:hidden;border:1px solid ${JDW.border};">
 
       <!-- Signal line -->
@@ -110,6 +171,8 @@ ${preheader}
           <div style="height:2px;background:linear-gradient(90deg,${JDW.signal} 0%,rgba(123,156,255,0.3) 60%,transparent 100%);"></div>
         </td>
       </tr>
+
+      ${visualHeader}
 
       <!-- Wordmark + label row -->
       <tr>
