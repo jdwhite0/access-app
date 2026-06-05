@@ -455,9 +455,20 @@ async function confirmLead(
 <tr><td align="center">
 <table role="presentation" width="100%"
   style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
-    border:1px solid #E4E2EE;box-shadow:0 1px 4px rgba(60,40,120,0.06);">
+    border:1px solid #E4E2EE;box-shadow:0 2px 8px rgba(60,40,120,0.10);">
 
-  <!-- Signal line -->
+  <!-- Galaxy header — animated portal GIF on dark void -->
+  <tr>
+    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
+      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry.gif"
+           alt=""
+           width="560"
+           height="160"
+           style="display:block;max-width:100%;width:100%;border:0;" />
+    </td>
+  </tr>
+
+  <!-- Signal line — transition from dark header to white body -->
   <tr>
     <td style="padding:0;">
       <div style="height:2px;background:linear-gradient(90deg,#7B9CFF 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
@@ -466,7 +477,7 @@ async function confirmLead(
 
   <!-- Wordmark row -->
   <tr>
-    <td style="padding:22px 28px 0;">
+    <td style="padding:22px 28px 0;background:#FFFFFF;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
