@@ -11,7 +11,7 @@ import { handleOperatorMessage } from '../lib/operator/handle-message'
 import { isAllowedSlackUser } from '../lib/slack/verify'
 
 const PROCESSED = new Set<string>()
-const POLL_MS = 2500
+const POLL_MS = 6000
 
 function markProcessed(key: string): boolean {
   if (PROCESSED.has(key)) return false
