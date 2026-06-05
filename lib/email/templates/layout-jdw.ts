@@ -208,7 +208,7 @@ export function jdwDivider(): string {
   return `<div style="height:1px;background:${JDW.border};margin:22px 0;"></div>`
 }
 
-export function jdwSignature(name = 'Jerry', title = 'Founder, JD Productions'): string {
+export function jdwSignature(name = 'JD White', title = 'Founder, JD Productions'): string {
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 8px;">
       <tr>
