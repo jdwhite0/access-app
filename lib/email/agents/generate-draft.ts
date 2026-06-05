@@ -1,6 +1,7 @@
 import type { EmailDraft, EmailIntakePayload, IntakeRouteResult } from '@/lib/email/agents/types'
 import { renderDailyBriefEmail } from '@/lib/email/templates/daily-brief'
 import { renderDailyBriefFinimizeEmail } from '@/lib/email/templates/daily-brief-finimize'
+import { renderDailyBriefTheModeEmail } from '@/lib/email/templates/daily-brief-the-mode'
 import { renderWeeklyDigestEmail } from '@/lib/email/templates/weekly-digest'
 import { renderProductUpdateEmail } from '@/lib/email/templates/product-update'
 import { renderFounderNoteEmail } from '@/lib/email/templates/founder-note'
@@ -32,12 +33,64 @@ export function generateEmailDraft(
   switch (route.email_type) {
     case 'daily_brief': {
       const template = String(p.template ?? '')
-      const useFinimize =
-        template === 'daily_brief_finimize' ||
-        template === 'daily_brief_v2' ||
-        intake.source_type === 'access_intelligence_dossier'
+      const useTheMode =
+        template === 'the_mode' ||
+        template === 'daily_brief_the_mode' ||
+        intake.source_type === 'the_mode_dossier' ||
+        (p.subscriber_source as string | undefined) === 'the_mode_podcast'
 
-      if (useFinimize) {
+      const useFinimize =
+        !useTheMode &&
+        (template === 'daily_brief_finimize' ||
+          template === 'daily_brief_v2' ||
+          intake.source_type === 'access_intelligence_dossier')
+
+      if (useTheMode) {
+        const r = renderDailyBriefTheModeEmail({
+          email,
+          handle,
+          subject_line: typeof p.subject_line === 'string' ? p.subject_line : undefined,
+          dossier_id: String(p.access_intelligence_dossier_id ?? intake.source_id ?? 'dossier'),
+          topic: typeof p.topic === 'string' ? p.topic : undefined,
+          market_signal: p.market_signal as { category?: string; summary?: string } | undefined,
+          hook: typeof p.hook === 'string' ? p.hook : undefined,
+          signal_score: typeof p.signal_score === 'number' ? p.signal_score : undefined,
+          confidence_score: typeof p.confidence_score === 'number' ? p.confidence_score : undefined,
+          timing_rationale: typeof p.timing_rationale === 'string' ? p.timing_rationale : undefined,
+          verified_sources_count:
+            typeof p.verified_sources_count === 'number' ? p.verified_sources_count : undefined,
+          sources_count: typeof p.sources_count === 'number' ? p.sources_count : undefined,
+          sources: Array.isArray(p.sources)
+            ? (p.sources as { label?: string; url?: string; verified?: boolean }[])
+            : [],
+          pain_points: Array.isArray(p.pain_points) ? (p.pain_points as string[]) : [],
+          intelligence: String(p.intelligence ?? p.intelligence_summary ?? p.executive_read ?? ''),
+          headlines: Array.isArray(p.headlines)
+            ? (p.headlines as { title: string; explainer?: string; source_url?: string; source_label?: string }[])
+            : [],
+          key_takeaways: Array.isArray(p.key_takeaways) ? (p.key_takeaways as string[]) : [],
+          recommendedAction: String(p.recommended_action ?? p.recommendedAction ?? ''),
+          productTip: String(p.product_tip ?? p.productTip ?? ''),
+          positioning_read: typeof p.positioning_read === 'string' ? p.positioning_read : undefined,
+          visual_ideas: Array.isArray(p.visual_ideas)
+            ? (p.visual_ideas as { slot?: string; description?: string; format?: string }[])
+            : [],
+          charts: Array.isArray(p.charts)
+            ? (p.charts as {
+                title?: string
+                type?: 'bar' | 'line'
+                labels: string[]
+                series: { label?: string; data: number[]; color?: string }[]
+                unit?: string
+                caption?: string
+              }[])
+            : [],
+          feedback_enabled: p.feedback_enabled !== false,
+        })
+        subject = r.subject
+        html = r.html
+        preview = String(p.preheader ?? p.recommended_action ?? '').slice(0, 120)
+      } else if (useFinimize) {
         const r = renderDailyBriefFinimizeEmail({
           email,
           handle,

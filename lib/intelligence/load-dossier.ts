@@ -57,7 +57,7 @@ export function mapDossierJsonToIntake(
     source_path: typeof provenance.content_dossier_path === 'string' ? provenance.content_dossier_path : abs,
     payload: {
       email_type: 'daily_brief',
-      template: 'daily_brief_finimize',
+      template: 'the_mode',
       access_intelligence_dossier_id: source_id,
       subject_line,
       preheader: typeof intelligence.recommended_action === 'string'

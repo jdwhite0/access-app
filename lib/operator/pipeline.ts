@@ -30,9 +30,12 @@ export type SendBriefResult = {
 }
 
 export function jdaiEngineRoot(): string {
-  return process.env.JDAI_CONTENT_ENGINE_PATH?.trim()
-    ? resolve(process.env.JDAI_CONTENT_ENGINE_PATH.trim())
-    : resolve(process.cwd(), '../jdai-content-engine')
+  if (process.env.JDAI_CONTENT_ENGINE_PATH?.trim()) {
+    return resolve(process.env.JDAI_CONTENT_ENGINE_PATH.trim())
+  }
+  const local = resolve(process.cwd(), '../jdai-content-engine')
+  if (existsSync(local)) return local
+  return resolve('/tmp/jdai-engine')
 }
 
 export function listAvailableTopics(): { slug: string; markdown: string; json?: string }[] {
@@ -207,9 +210,13 @@ export async function runClaudeResearch(topic: string): Promise<ClaudeResearchRe
     return { ok: false, message: 'ANTHROPIC_API_KEY not set in access-app/.env.local.' }
   }
 
-  const engineRoot = jdaiEngineRoot()
+  // On Railway (or any environment without the engine mounted), use /tmp as a
+  // writable scratch space. The research→send flow is ephemeral — the JSON only
+  // needs to survive long enough for sendDailyBrief() to read it in the same run.
+  let engineRoot = jdaiEngineRoot()
   if (!existsSync(engineRoot)) {
-    return { ok: false, message: `JDAI engine not found at ${engineRoot}. Set JDAI_CONTENT_ENGINE_PATH.` }
+    engineRoot = resolve('/tmp/jdai-engine')
+    mkdirSync(engineRoot, { recursive: true })
   }
 
   const today = new Date().toISOString().slice(0, 10)

@@ -19,5 +19,9 @@ export function jdaiContentEngineRoot(): string {
   if (process.env.JDAI_CONTENT_ENGINE_PATH?.trim()) {
     return resolve(process.env.JDAI_CONTENT_ENGINE_PATH.trim())
   }
-  return resolve(process.cwd(), '../jdai-content-engine')
+  // On Railway (or any cloud env), fall back to /tmp scratch dir.
+  // The research→send flow is ephemeral — files only need to survive the current run.
+  const localPath = resolve(process.cwd(), '../jdai-content-engine')
+  if (existsSync(localPath)) return localPath
+  return resolve('/tmp/jdai-engine')
 }

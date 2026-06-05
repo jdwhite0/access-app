@@ -32,6 +32,7 @@ export type EmailDeliveryStatus =
 
 export type EmailIntakeSourceType =
   | 'access_intelligence_dossier'
+  | 'the_mode_dossier'
   | 'jdai_dossier'
   | 'jdai_claude_packet'
   | 'product_release'
