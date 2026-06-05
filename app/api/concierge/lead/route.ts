@@ -457,33 +457,6 @@ async function confirmLead(
   style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
     border:1px solid #E4E2EE;box-shadow:0 2px 8px rgba(60,40,120,0.10);">
 
-  <!-- ─── MASTHEAD MOTION GRAPHIC: branded GIF (JDWHITE.WORLD · WORK WITH ME) ─── -->
-  <tr>
-    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
-      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/work-with-me-header.gif"
-           alt="JDWHITE.WORLD · WORK WITH ME"
-           width="560"
-           height="200"
-           style="display:block;max-width:100%;width:100%;border:0;" />
-    </td>
-  </tr>
-
-  <!-- ─── COLLABORATION BLOCK: "Together with [Venture]" ─── -->
-  <!-- Architecture: intake source → parent venture
-       jdwhite.world → JD White
-       bridgevideo.co → JD Productions
-       whitelanegrp.com → White Lane Group
-       regal → REGAL
-  -->
-  <tr>
-    <td align="center" bgcolor="#FFFFFF" style="padding:22px 28px 18px;background:#FFFFFF;">
-      <p style="margin:0 0 5px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
-        font-size:13px;color:#9A9AAA;letter-spacing:0.01em;">In collaboration with</p>
-      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
-        font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#0D0D14;">JD White</p>
-    </td>
-  </tr>
-
   <!-- ─── SIGNAL DIVIDER ─── -->
   <tr>
     <td style="padding:0;">
