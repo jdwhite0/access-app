@@ -457,10 +457,10 @@ async function confirmLead(
   style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
     border:1px solid #E4E2EE;box-shadow:0 2px 8px rgba(60,40,120,0.10);">
 
-  <!-- Galaxy header — animated portal GIF on dark void -->
+  <!-- Galaxy header — white void nebula GIF, sits on white card naturally -->
   <tr>
-    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
-      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry.gif"
+    <td align="center" bgcolor="#FAFAF8" style="padding:0;background:#FAFAF8;line-height:0;">
+      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry-light.gif"
            alt=""
            width="560"
            height="160"
@@ -468,7 +468,7 @@ async function confirmLead(
     </td>
   </tr>
 
-  <!-- Signal line — transition from dark header to white body -->
+  <!-- Signal line -->
   <tr>
     <td style="padding:0;">
       <div style="height:2px;background:linear-gradient(90deg,#7B9CFF 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
