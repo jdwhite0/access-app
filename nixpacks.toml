@@ -1,8 +1,11 @@
+[phases.setup]
+nixPkgs = ['nodejs_20']
+
 [phases.install]
-cmds = ['npm ci']
+cmds = ['npm ci --ignore-scripts']
 
 [phases.build]
 cmds = []
 
 [start]
-cmd = 'npm run slack:bot'
+cmd = './node_modules/.bin/tsx scripts/slack-operator-bot.ts'
