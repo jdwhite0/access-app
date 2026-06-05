@@ -72,7 +72,7 @@ export async function executeOperatorIntent(
 ): Promise<OperatorReply> {
   const needsCtx = ['review', 'approve_send', 'research', 'send_now', 'clarify'].includes(intent.type)
   if (needsCtx && !ctx) {
-    return reply('Internal error: missing Slack context.')
+    return reply("Something went wrong on my end — I lost the conversation context. Try sending that again.")
   }
 
   switch (intent.type) {
@@ -86,30 +86,31 @@ export async function executeOperatorIntent(
       const snapshot = await fetchDailyBriefSnapshot()
       const pending = ctx ? await loadPendingReview(ctx.slackUserId) : null
       const engine = jdaiEngineRoot()
+      const engineOk = existsSync(engine) || engine.includes('/tmp')
       return reply(
         [
-          '*ACCESS Operator Status*',
-          `• JDAI engine: ${existsSync(engine) ? '✓' : '✗'}`,
-          `• Test mode: ${process.env.EMAIL_TEST_MODE !== 'false' ? 'founder only' : 'PRODUCTION'}`,
-          `• Published snapshot: ${snapshot?.intake.source_id ?? 'none'}`,
-          pending ? `• Pending review: \`${pending.topic}\` — reply *send it*` : '• Pending review: none',
+          '*System check*',
+          `• Research engine: ${engineOk ? '✓ ready' : '✗ not connected — tell Jerry'}`,
+          `• Email mode: ${process.env.EMAIL_TEST_MODE !== 'false' ? 'sending to you only (test mode)' : 'live — goes to all subscribers'}`,
+          `• Last brief: ${snapshot?.intake.source_id ?? 'none yet'}`,
+          pending ? `• Waiting to send: *${pending.topic}* — say *send it* when ready` : '• Nothing waiting to send',
         ].join('\n')
       )
     }
 
     case 'list_topics': {
       const topics = listAvailableTopics()
-      if (!topics.length) return reply('No topics yet. Say `research [topic]` to create one.')
+      if (!topics.length) return reply("No briefs on file yet. Say something like *research AI tools for operators* and I'll get started.")
       return reply(
-        '*Available topics:*\n' +
-          topics.map((t) => `• \`${t.slug}\`${t.json ? ' ✓' : ''}`).join('\n') +
-          '\n\nSay `brief on [slug]` to preview in Slack.'
+        "*Here's what I have ready:*\n" +
+          topics.map((t) => `• ${t.slug}${t.json ? ' ✓' : ''}`).join('\n') +
+          '\n\nSay *brief on [topic]* to pull up a preview.'
       )
     }
 
     case 'cancel': {
       if (ctx) await clearPendingReview(ctx.slackUserId)
-      return reply('Cancelled. Pending brief cleared.')
+      return reply("Got it — cleared. Nothing waiting to send anymore.")
     }
 
     case 'review':
@@ -120,55 +121,58 @@ export async function executeOperatorIntent(
       if (!pending) {
         return reply(
           [
-            'Nothing is waiting to send.',
+            "Nothing is queued up to send right now.",
             '',
-            'Start with: `research [topic]` or `brief on [existing topic]`',
-            'I\'ll post a preview here — then *send it*.',
+            "Start by saying *research [topic]* — I'll pull the intel, show you a preview, and then you say *send it*.",
           ].join('\n')
         )
       }
       const result = await sendDailyBrief({ dossierPath: pending.json_path })
       await clearPendingReview(ctx!.slackUserId)
-      if (!result.ok) return reply(`✗ Send failed: ${result.error}`)
+      if (!result.ok) {
+        return reply(
+          [
+            `Couldn't send the brief — something went wrong on the email side.`,
+            result.error ? `_${result.error}_` : '',
+            '',
+            'Try saying *send it* again, or *research [topic]* to start fresh.',
+          ].filter(Boolean).join('\n')
+        )
+      }
       return reply(
         [
-          '✓ *Brief sent to your inbox* (founder test mode)',
-          `• Topic: ${pending.topic}`,
-          `• ID: \`${result.source_id}\``,
-          `• Delivered: ${result.sent ?? 0}`,
-          '',
-          '_Finimize-style layout · check your email_',
+          `✓ *THE MODE brief is in your inbox.*`,
+          `Topic: ${pending.topic}`,
+          `Delivered to: ${result.sent ?? 0} recipient${(result.sent ?? 0) === 1 ? '' : 's'}`,
         ].join('\n')
       )
     }
 
     case 'send_now': {
-      // Named topic must resolve to a real dossier — never silently send the wrong one.
       if (intent.topic) {
         const dossierPath = resolveTopicDossier(intent.topic)
         if (!dossierPath) {
           return reply(
             [
-              `*No brief on "${intent.topic}" exists yet.*`,
+              `I don't have a brief on *${intent.topic}* yet.`,
               '',
-              `Reply \`research ${intent.topic}\` to create one, then *send it*.`,
-              'Or `list topics` to see what\'s ready.',
+              `Say *research ${intent.topic}* and I'll build one. Then say *send it*.`,
+              'Or say *list topics* to see what I already have.',
             ].join('\n')
           )
         }
         const result = await sendDailyBrief({ dossierPath })
-        if (!result.ok) return reply(`✗ ${result.error}`)
-        return reply(
-          `✓ Sent *${result.source_id}* to your inbox (${result.sent ?? 0} delivered).`
-        )
+        if (!result.ok) {
+          return reply(`Couldn't send that one — ${result.error ?? 'something went wrong on the email side'}. Try again in a moment.`)
+        }
+        return reply(`✓ Sent to your inbox. (${result.sent ?? 0} delivered)`)
       }
 
-      // No topic = send the most recent dossier (the one "you just made")
       const result = await sendDailyBrief({})
-      if (!result.ok) return reply(`✗ ${result.error}`)
-      return reply(
-        `✓ Sent the latest brief *${result.source_id}* to your inbox (${result.sent ?? 0} delivered).`
-      )
+      if (!result.ok) {
+        return reply(`Couldn't send the latest brief — ${result.error ?? 'something went wrong'}. Try again in a moment.`)
+      }
+      return reply(`✓ Latest brief sent to your inbox. (${result.sent ?? 0} delivered)`)
     }
 
     case 'research': {
@@ -179,34 +183,27 @@ export async function executeOperatorIntent(
 
       const research = await runClaudeResearch(intent.topic)
       if (!research.ok) {
-        // Always reply in the thread so Jerry sees the failure reason clearly
-        const errLines = [
-          `✗ *Research failed* — ${intent.topic}`,
-          `_Reason: ${research.message.slice(0, 300)}_`,
-          '',
-          'Try:',
-          '• `research [topic]` with a different phrasing',
-          '• `status` to check system health',
-        ]
-        return reply(errLines.join('\n'))
-      }
-
-      // Load the Claude-written JSON directly — never use topic lookup here, which
-      // would trigger the markdown compile step and overwrite Claude's output.
-      const afterResearch = await loadBriefForReview({ dossierPath: research.jsonPath })
-      if (!afterResearch.ok) {
         return reply(
           [
-            '✓ *Research complete*',
-            research.message.slice(0, 2000),
+            `Couldn't pull that research together.`,
             '',
-            `Preview unavailable: ${(afterResearch as { error: string }).error}`,
-            `Say \`brief on ${intent.topic}\` to retry preview.`,
+            research.message,
+            '',
+            'Want to try again? You can rephrase it or pick a different angle.',
           ].join('\n')
         )
       }
 
-      // Use the pre-loaded preview directly — skip postReviewToSlack which re-loads by topic
+      const afterResearch = await loadBriefForReview({ dossierPath: research.jsonPath })
+      if (!afterResearch.ok) {
+        return reply(
+          [
+            '✓ Research finished, but I had trouble loading the preview.',
+            `Say *brief on ${intent.topic}* to try pulling it up again.`,
+          ].join('\n')
+        )
+      }
+
       const { preview } = afterResearch
       await savePendingReview({
         slack_user_id: ctx!.slackUserId,
@@ -220,30 +217,24 @@ export async function executeOperatorIntent(
     }
 
     case 'clarify': {
-      // Ambiguous text — never auto-launch a multi-minute research run.
-      // If a brief is waiting, nudge toward send/cancel. Otherwise confirm research.
       const pending = ctx ? await loadPendingReview(ctx.slackUserId) : null
       if (pending) {
         return reply(
           [
-            `I have a brief on *${pending.topic}* waiting.`,
-            '',
-            `Reply *send it* to email it, or *cancel* to discard.`,
-            `(I didn't recognize "${intent.raw}" as a command.)`,
+            `I have a brief on *${pending.topic}* ready to go.`,
+            `Say *send it* to email it, or *cancel* if you want to start over.`,
           ].join('\n')
         )
       }
       return reply(
         [
-          `Not sure what you're after with: _"${intent.raw}"_`,
+          `Not sure what you mean by: _"${intent.raw}"_`,
           '',
-          'Just talk to me — some examples:',
-          '• "what ETFs should I buy this week?"',
-          '• "research the creator economy"',
-          '• "show me the openai brief"',
-          '• "send it" — to email a pending brief',
-          '',
-          '`list topics` to see what\'s ready · `help` for the full menu',
+          "Just talk to me like normal — here's what I can do:",
+          '• *research [anything]* — I\'ll pull intel and build a brief',
+          '• *send it* — emails the brief you just approved',
+          '• *list topics* — see what I already have on file',
+          '• *status* — check if everything is running',
         ].join('\n')
       )
     }

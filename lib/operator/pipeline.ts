@@ -207,7 +207,7 @@ export type ClaudeResearchResult = {
 export async function runClaudeResearch(topic: string): Promise<ClaudeResearchResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
   if (!apiKey) {
-    return { ok: false, message: 'ANTHROPIC_API_KEY not set in access-app/.env.local.' }
+    return { ok: false, message: "I can't reach my research engine right now — the AI key isn't configured on the server. Let Jerry know so he can get it fixed." }
   }
 
   // Resolve engine root — verify it's actually writable, not just present.
@@ -341,10 +341,15 @@ Return this exact JSON schema:
       messages: [{ role: 'user', content: userPrompt }],
     })
     const block = response.content[0]
-    if (block.type !== 'text') return { ok: false, message: 'Claude returned non-text response.' }
+    if (block.type !== 'text') return { ok: false, message: "Got a weird response from my research engine — not the format I expected. Try sending the request again." }
     jsonText = block.text.trim()
   } catch (err) {
-    return { ok: false, message: `Claude API error: ${err instanceof Error ? err.message : String(err)}` }
+    const detail = err instanceof Error ? err.message : String(err)
+    const isRate = detail.toLowerCase().includes('rate') || detail.toLowerCase().includes('429')
+    const isTimeout = detail.toLowerCase().includes('timeout') || detail.toLowerCase().includes('timed out')
+    if (isRate) return { ok: false, message: "The research engine is handling too many requests right now. Give it 30 seconds and try again." }
+    if (isTimeout) return { ok: false, message: "Research timed out — the topic might be too broad. Try narrowing it down a bit and send again." }
+    return { ok: false, message: "Something went wrong connecting to the research engine. Try again in a moment." }
   }
 
   let dossier: Record<string, unknown>
@@ -352,7 +357,7 @@ Return this exact JSON schema:
     const cleaned = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
     dossier = JSON.parse(cleaned)
   } catch {
-    return { ok: false, message: `Research returned invalid JSON (${jsonText.slice(0, 150)})` }
+    return { ok: false, message: "Research ran but the output came back in the wrong format. Try the same topic again — it usually works on the second attempt." }
   }
 
   const signalScore = typeof (dossier.signal as Record<string, unknown>)?.signal_score === 'number'
@@ -360,10 +365,9 @@ Return this exact JSON schema:
     : 0
 
   if (signalScore < 70) {
-    return { ok: false, message: `Signal score ${signalScore} below minimum (70) — topic not strong enough for a brief.` }
+    return { ok: false, message: `Not enough signal on that topic to build a solid brief (score: ${signalScore}/100). Try making it more specific — for example, add a timeframe or a specific market angle.` }
   }
 
-  // Validate required arrays — catch lazy Claude responses before they hit the pipeline
   const intel = dossier.intelligence as Record<string, unknown>
   const headlines = intel?.headlines
   const keyTakeaways = intel?.key_takeaways
@@ -381,7 +385,7 @@ Return this exact JSON schema:
   if (!emailHook) missing.push('email hook')
 
   if (missing.length > 0) {
-    return { ok: false, message: `Research incomplete — Claude omitted required fields: ${missing.join(', ')}. Try again.` }
+    return { ok: false, message: "Research came back but it's missing some sections I need to build the brief. Send it again — it usually fills in on the retry." }
   }
 
   // Write intelligence JSON
