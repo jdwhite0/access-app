@@ -34,6 +34,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/cron/email-weekly-digest',
   // Connector device JWT auth in route handlers — bypass Clerk session
   '/api/connector/v1(.*)',
+  // Sales Concierge — public lead capture from jdwhite.world
+  '/api/concierge/(.*)',
 ])
 
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
