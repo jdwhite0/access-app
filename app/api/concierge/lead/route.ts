@@ -90,25 +90,110 @@ async function notifyFounder(lead: {
     .map(([k, v]) => `  ${k}: ${v}`)
     .join('\n')
 
-  const html = `
-<div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#f9fafb;border-radius:8px;">
-  <div style="background:#0A2540;color:#fff;padding:16px 20px;border-radius:6px 6px 0 0;">
-    <p style="margin:0;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.6;">JD Productions — Sales Concierge</p>
-    <h2 style="margin:6px 0 0;font-size:20px;font-weight:700;">New Lead — ${tierLabels[lead.recommendation] ?? lead.recommendation.toUpperCase()}</h2>
-  </div>
-  <div style="background:#fff;padding:20px;border-radius:0 0 6px 6px;border:1px solid #e5e7eb;border-top:none;">
-    <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;width:110px;">Name</td><td style="padding:8px 0;font-weight:600;">${lead.name}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${lead.email}" style="color:#0A2540;">${lead.email}</a></td></tr>
-      ${lead.company ? `<tr><td style="padding:8px 0;color:#6b7280;">Company</td><td style="padding:8px 0;">${lead.company}</td></tr>` : ''}
-      <tr><td style="padding:8px 0;color:#6b7280;">Package</td><td style="padding:8px 0;font-weight:600;color:#169B48;">${tierLabels[lead.recommendation] ?? lead.recommendation}</td></tr>
+  const tierColors: Record<string, string> = {
+    launch: '#169B48',
+    grow: '#1A8FA0',
+    scale: '#C9A46A',
+  }
+  const tierColor = tierColors[lead.recommendation] ?? '#169B48'
+
+  const answerRows = Object.entries(lead.answers)
+    .map(([k, v]) => `
+      <tr>
+        <td style="padding:7px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.30);width:100px;vertical-align:top;">${k}</td>
+        <td style="padding:7px 0;font-size:13px;color:rgba(255,255,255,0.70);">${v}</td>
+      </tr>`)
+    .join('')
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#07080F;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#07080F;padding:32px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" style="max-width:560px;">
+
+      <!-- Header -->
+      <tr>
+        <td style="padding:0 0 24px;">
+          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.90);">JD Productions</p>
+          <p style="margin:4px 0 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.28);">Sales Concierge · Department 01</p>
+        </td>
+      </tr>
+
+      <!-- Rule -->
+      <tr><td style="padding:0 0 24px;"><div style="height:1px;background:rgba(255,255,255,0.08);"></div></td></tr>
+
+      <!-- Tier badge -->
+      <tr>
+        <td style="padding:0 0 20px;">
+          <span style="display:inline-block;padding:5px 14px;border-radius:100px;background:${tierColor}18;border:1px solid ${tierColor}40;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${tierColor};">${tierLabels[lead.recommendation] ?? lead.recommendation.toUpperCase()}</span>
+        </td>
+      </tr>
+
+      <!-- Headline -->
+      <tr>
+        <td style="padding:0 0 28px;">
+          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1.15;color:rgba(255,255,255,0.92);">New lead — ${lead.name}${lead.company ? `<br/><span style="font-size:18px;font-weight:400;font-style:italic;color:rgba(255,255,255,0.45);">${lead.company}</span>` : ''}</p>
+        </td>
+      </tr>
+
+      <!-- Lead details card -->
+      <tr>
+        <td style="padding:0 0 20px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0D1018;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;">
+            <tr>
+              <td style="padding:16px 20px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="padding:7px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.30);width:100px;vertical-align:top;">Name</td>
+                    <td style="padding:7px 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.88);">${lead.name}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:7px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.30);width:100px;">Email</td>
+                    <td style="padding:7px 0;font-size:14px;"><a href="mailto:${lead.email}" style="color:${tierColor};text-decoration:none;">${lead.email}</a></td>
+                  </tr>
+                  ${lead.company ? `<tr><td style="padding:7px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.30);width:100px;">Company</td><td style="padding:7px 0;font-size:14px;color:rgba(255,255,255,0.70);">${lead.company}</td></tr>` : ''}
+                  <tr>
+                    <td style="padding:7px 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.30);width:100px;">Package</td>
+                    <td style="padding:7px 0;font-size:14px;font-weight:700;color:${tierColor};">${tierLabels[lead.recommendation] ?? lead.recommendation}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Answers card -->
+      ${answerRows ? `
+      <tr>
+        <td style="padding:0 0 24px;">
+          <p style="margin:0 0 10px;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.28);">Their answers</p>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0D1018;border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
+            <tr><td style="padding:14px 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${answerRows}</table></td></tr>
+          </table>
+        </td>
+      </tr>` : ''}
+
+      <!-- CTA -->
+      <tr>
+        <td style="padding:0 0 40px;">
+          <a href="mailto:${lead.email}?subject=Your%20JD%20Productions%20Project%20—%20Let%27s%20Talk" style="display:inline-block;padding:13px 24px;background:${tierColor};color:#ffffff;text-decoration:none;border-radius:7px;font-family:system-ui,-apple-system,sans-serif;font-size:14px;font-weight:600;letter-spacing:-0.01em;">Reply to ${lead.name} →</a>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding:20px 0 0;border-top:1px solid rgba(255,255,255,0.06);">
+          <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.08em;color:rgba(255,255,255,0.18);">JD Productions · jdwhite.world · Sales Concierge · Department 01</p>
+        </td>
+      </tr>
+
     </table>
-    ${answerLines ? `<div style="margin-top:16px;padding:12px;background:#f9fafb;border-radius:6px;font-size:13px;"><p style="margin:0 0 8px;font-weight:600;color:#374151;">Their answers:</p><pre style="margin:0;white-space:pre-wrap;color:#4b5563;">${answerLines}</pre></div>` : ''}
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;">
-      <a href="mailto:${lead.email}?subject=Your%20JD%20Productions%20Project" style="display:inline-block;background:#0A2540;color:#fff;text-decoration:none;padding:10px 20px;border-radius:6px;font-size:14px;font-weight:600;">Reply to ${lead.name} →</a>
-    </div>
-  </div>
-</div>`
+  </td></tr>
+</table>
+</body></html>`
 
   try {
     await fetch('https://api.resend.com/emails', {
