@@ -457,52 +457,30 @@ async function confirmLead(
   style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
     border:1px solid #E4E2EE;box-shadow:0 2px 8px rgba(60,40,120,0.10);">
 
-  <!-- ─── MASTHEAD: dark void · portal mark · publication banner ─── -->
+  <!-- ─── MASTHEAD MOTION GRAPHIC: branded GIF (JDWHITE.WORLD · WORK WITH ME) ─── -->
   <tr>
-    <td align="center" bgcolor="#06070D" style="
-      padding:40px 28px 32px;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.18) 0%, transparent 62%),
-        #06070D;">
-
-      <!-- Portal mark — 3 concentric rings (globe equivalent) -->
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 22px;">
-        <tr>
-          <td width="80" height="80" align="center" valign="middle"
-            style="border:1px solid rgba(123,156,255,0.18);border-radius:40px;">
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-              <tr>
-                <td width="54" height="54" align="center" valign="middle"
-                  style="border:1px solid rgba(123,156,255,0.32);border-radius:27px;">
-                  <div style="width:10px;height:10px;background:#7B9CFF;border-radius:5px;margin:0 auto;"></div>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-
-      <!-- Publication banner — "THE DAILY BRIEF" equivalent -->
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-        <tr>
-          <td style="background:#7B9CFF;padding:10px 30px;">
-            <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:14px;font-weight:700;letter-spacing:0.22em;color:#FFFFFF;
-              text-align:center;">WORK WITH ME</p>
-          </td>
-        </tr>
-      </table>
-
+    <td align="center" bgcolor="#06070D" style="padding:0;background:#06070D;line-height:0;">
+      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/work-with-me-header.gif"
+           alt="JDWHITE.WORLD · WORK WITH ME"
+           width="560"
+           height="200"
+           style="display:block;max-width:100%;width:100%;border:0;" />
     </td>
   </tr>
 
-  <!-- ─── COLLABORATION BLOCK: "Together with Founder Office" ─── -->
+  <!-- ─── COLLABORATION BLOCK: "Together with [Venture]" ─── -->
+  <!-- Architecture: intake source → parent venture
+       jdwhite.world → JD White
+       bridgevideo.co → JD Productions
+       whitelanegrp.com → White Lane Group
+       regal → REGAL
+  -->
   <tr>
-    <td align="center" bgcolor="#FFFFFF" style="padding:24px 28px 20px;background:#FFFFFF;">
-      <p style="margin:0 0 6px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+    <td align="center" bgcolor="#FFFFFF" style="padding:22px 28px 18px;background:#FFFFFF;">
+      <p style="margin:0 0 5px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
         font-size:13px;color:#9A9AAA;letter-spacing:0.01em;">In collaboration with</p>
       <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
-        font-size:24px;font-weight:700;letter-spacing:-0.02em;color:#0D0D14;">Founder Office</p>
+        font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#0D0D14;">JD White</p>
     </td>
   </tr>
 
@@ -515,7 +493,7 @@ async function confirmLead(
 
   <!-- Wordmark + date -->
   <tr>
-    <td style="padding:20px 28px 0;background:#FFFFFF;">
+    <td style="padding:18px 28px 0;background:#FFFFFF;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
