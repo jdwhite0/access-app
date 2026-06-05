@@ -457,34 +457,70 @@ async function confirmLead(
   style="max-width:560px;background:#FFFFFF;border-radius:10px;overflow:hidden;
     border:1px solid #E4E2EE;box-shadow:0 2px 8px rgba(60,40,120,0.10);">
 
-  <!-- Galaxy header — white void nebula GIF, sits on white card naturally -->
+  <!-- ─── MASTHEAD: dark void · portal mark · publication banner ─── -->
   <tr>
-    <td align="center" bgcolor="#FAFAF8" style="padding:0;background:#FAFAF8;line-height:0;">
-      <img src="${process.env.NEXT_PUBLIC_APP_URL || 'https://app-iota-inky-62.vercel.app'}/email/portal-entry-light.gif"
-           alt=""
-           width="560"
-           height="160"
-           style="display:block;max-width:100%;width:100%;border:0;" />
+    <td align="center" bgcolor="#06070D" style="
+      padding:40px 28px 32px;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(123,156,255,0.18) 0%, transparent 62%),
+        #06070D;">
+
+      <!-- Portal mark — 3 concentric rings (globe equivalent) -->
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 22px;">
+        <tr>
+          <td width="80" height="80" align="center" valign="middle"
+            style="border:1px solid rgba(123,156,255,0.18);border-radius:40px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+              <tr>
+                <td width="54" height="54" align="center" valign="middle"
+                  style="border:1px solid rgba(123,156,255,0.32);border-radius:27px;">
+                  <div style="width:10px;height:10px;background:#7B9CFF;border-radius:5px;margin:0 auto;"></div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Publication banner — "THE DAILY BRIEF" equivalent -->
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+        <tr>
+          <td style="background:#7B9CFF;padding:10px 30px;">
+            <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
+              font-size:14px;font-weight:700;letter-spacing:0.22em;color:#FFFFFF;
+              text-align:center;">WORK WITH ME</p>
+          </td>
+        </tr>
+      </table>
+
     </td>
   </tr>
 
-  <!-- Signal line -->
+  <!-- ─── COLLABORATION BLOCK: "Together with Founder Office" ─── -->
+  <tr>
+    <td align="center" bgcolor="#FFFFFF" style="padding:24px 28px 20px;background:#FFFFFF;">
+      <p style="margin:0 0 6px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+        font-size:13px;color:#9A9AAA;letter-spacing:0.01em;">In collaboration with</p>
+      <p style="margin:0;font-family:Georgia,'Times New Roman',serif;
+        font-size:24px;font-weight:700;letter-spacing:-0.02em;color:#0D0D14;">Founder Office</p>
+    </td>
+  </tr>
+
+  <!-- ─── SIGNAL DIVIDER ─── -->
   <tr>
     <td style="padding:0;">
       <div style="height:2px;background:linear-gradient(90deg,#7B9CFF 0%,rgba(123,156,255,0.25) 65%,transparent 100%);"></div>
     </td>
   </tr>
 
-  <!-- Wordmark row -->
+  <!-- Wordmark + date -->
   <tr>
-    <td style="padding:22px 28px 0;background:#FFFFFF;">
+    <td style="padding:20px 28px 0;background:#FFFFFF;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
             <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:12px;font-weight:700;letter-spacing:0.20em;color:#0D0D14;">JDWHITE.WORLD</p>
-            <p style="margin:4px 0 0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
-              font-size:10px;letter-spacing:0.14em;color:#9A9AAA;">WORK WITH ME</p>
+              font-size:11px;font-weight:700;letter-spacing:0.20em;color:#0D0D14;">JDWHITE.WORLD</p>
           </td>
           <td align="right" style="vertical-align:top;">
             <p style="margin:0;font-family:'SFMono-Regular',ui-monospace,Menlo,monospace;
