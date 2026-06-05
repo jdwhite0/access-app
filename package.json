@@ -55,7 +55,7 @@
   "intelligence:run": "node scripts/preflight-access-app-root.mjs && tsx scripts/intelligence-run.ts",
   "intelligence:publish": "node scripts/preflight-access-app-root.mjs && tsx scripts/intelligence-publish.ts",
   "intelligence:morning": "node scripts/preflight-access-app-root.mjs && tsx scripts/intelligence-morning.ts",
-    "slack:bot": "node scripts/preflight-access-app-root.mjs && tsx scripts/slack-operator-bot.ts",
+    "slack:bot": "node scripts/preflight-access-app-root.mjs && ./node_modules/.bin/tsx scripts/slack-operator-bot.ts",
     "slack:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/slack-verify-setup.ts",
     "slack:ping": "node scripts/preflight-access-app-root.mjs && tsx scripts/slack-ping.ts",
     "email:verify": "node scripts/preflight-access-app-root.mjs && tsx scripts/email-verify-agents.ts",
