@@ -1,0 +1,32 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> app@0.1.0 dev:stable
+> bash scripts/keep-dev.sh
+
+Starting stable dev on http://127.0.0.1:3000/ (webpack). Leave this terminal open.
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.108:3000
+- Environments: .env.local
+✓ Ready in 493ms
+- Experiments (use with caution):
+  · cpus: 1
+
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> app@0.1.0 dev:stable
+> bash scripts/keep-dev.sh
+
+Starting stable dev on http://127.0.0.1:3000/ (webpack). Leave this terminal open.
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+▲ Next.js 16.2.6 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.108:3000
+- Environments: .env.local
+✓ Ready in 421ms
+- Experiments (use with caution):
+  · cpus: 1
+
+○ Compiling / ...
+ GET / 200 in 5.3s (next.js: 4.5s, proxy.ts: 251ms, application-code: 597ms)

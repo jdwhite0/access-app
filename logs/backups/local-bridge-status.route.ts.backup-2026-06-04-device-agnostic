@@ -1,0 +1,68 @@
+import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { isConnectorOnlineForClerkUser } from '@/lib/connector/connector-online'
+import { DEV_FOUNDER_CMD } from '@/lib/openjarvis/founder-setup'
+import { createSupabaseAdmin } from '@/lib/supabase'
+import { isAccessLocalDevRuntime } from '@/lib/vault/local-dev-sync'
+
+export const runtime = 'nodejs'
+
+/**
+ * GET /api/vault/local-bridge-status
+ * Clerk session — human-readable local bridge status for Vaults UI (not device JWT).
+ */
+export async function GET() {
+  const { userId } = await auth()
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const localDev = isAccessLocalDevRuntime()
+  const supabase = createSupabaseAdmin()
+  let bridgeOnline = false
+  let lastSeenAt: string | null = null
+  let devicePaired = false
+
+  if (supabase) {
+    const connector = await isConnectorOnlineForClerkUser(supabase, userId)
+    bridgeOnline = connector.online
+    lastSeenAt = connector.lastSeenAt
+    devicePaired = !!connector.deviceId
+  }
+
+  const startCommand = DEV_FOUNDER_CMD
+  let statusLabel: string
+  let userMessage: string
+  let canSyncWithoutBridge = localDev
+
+  if (bridgeOnline) {
+    statusLabel = 'online'
+    userMessage = 'Local bridge is connected. Your Mac is talking to ACCESS.'
+  } else if (localDev) {
+    statusLabel = 'offline_dev'
+    userMessage = devicePaired
+      ? 'Bridge is resting. Run the founder stack on this Mac, or use Sync now — local dev can read your vault folder directly.'
+      : 'Pair this Mac once, then start ACCESS with the founder stack. Until then, Sync now still works in local dev if your vault path exists on this machine.'
+    canSyncWithoutBridge = true
+  } else {
+    statusLabel = 'offline'
+    userMessage =
+      'Keep ACCESS running on this Mac with the local bridge active so vault files can sync securely.'
+    canSyncWithoutBridge = false
+  }
+
+  return NextResponse.json(
+    {
+      bridgeOnline,
+      lastSeenAt,
+      devicePaired,
+      localDev,
+      canSyncWithoutBridge,
+      statusLabel,
+      userMessage,
+      startCommand,
+      setupDocPath: 'access-app/docs/VAULT_LOCAL_BRAIN.md',
+    },
+    { headers: { 'Cache-Control': 'private, no-store' } },
+  )
+}

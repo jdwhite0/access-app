@@ -1,0 +1,26 @@
+import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { resolveOpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
+
+export const runtime = 'nodejs'
+
+/**
+ * GET /api/jyson/openjarvis/health
+ * Private JYSON + OpenJarvis GET /health (+ connector status for sync, not for gating tools).
+ */
+export async function GET() {
+  const { userId } = await auth()
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const runtime = await resolveOpenJarvisRuntimeState()
+  return NextResponse.json(
+    {
+      ...runtime,
+      runtime,
+      localToolsAvailable: runtime.localToolsAvailable,
+    },
+    { headers: { 'Cache-Control': 'private, no-store' } },
+  )
+}

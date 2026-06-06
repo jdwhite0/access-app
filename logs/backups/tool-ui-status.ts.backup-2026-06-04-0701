@@ -1,0 +1,25 @@
+import type { OpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
+
+/** Tools wired to OpenJarvis native ToolRegistry today. */
+export const OPENJARVIS_MAPPED_TOOL_IDS = ['read_file', 'list_files'] as const
+
+export const OPENJARVIS_DISPLAY_TOOL_IDS = [
+  'read_file',
+  'list_files',
+  'read_vault_note',
+  'run_local_model',
+  'read_calendar',
+] as const
+
+export function openJarvisToolUiStatus(
+  toolId: string,
+  runtime: OpenJarvisRuntimeState | null
+): { label: string; tone: 'operational' | 'neutral' } {
+  if (!runtime?.localToolsAvailable) {
+    return { label: 'Offline', tone: 'neutral' }
+  }
+  if ((OPENJARVIS_MAPPED_TOOL_IDS as readonly string[]).includes(toolId)) {
+    return { label: 'Ready', tone: 'operational' }
+  }
+  return { label: 'Planned', tone: 'neutral' }
+}

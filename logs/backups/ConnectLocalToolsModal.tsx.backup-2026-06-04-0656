@@ -1,0 +1,227 @@
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
+import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
+import type { OpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
+import { fetchOpenJarvisHealth } from '@/lib/openjarvis/fetch-health-client'
+import { DEV_FOUNDER_CMD, PRIVATE_JYSON_ENV_HINT } from '@/lib/openjarvis/founder-setup'
+
+const POLL_MS = 3000
+const SETUP_CMD = DEV_FOUNDER_CMD
+
+type ConnectLocalToolsModalProps = {
+  open: boolean
+  onClose: () => void
+  runtime: OpenJarvisRuntimeState | null
+  onRuntimeChange: (runtime: OpenJarvisRuntimeState | null) => void
+}
+
+export function ConnectLocalToolsModal({
+  open,
+  onClose,
+  runtime,
+  onRuntimeChange,
+}: ConnectLocalToolsModalProps) {
+  const [mounted, setMounted] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const connected = !!runtime?.localToolsAvailable
+
+  const poll = useCallback(async () => {
+    const next = await fetchOpenJarvisHealth()
+    if (next) onRuntimeChange(next)
+  }, [onRuntimeChange])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    void poll()
+    const id = window.setInterval(() => void poll(), POLL_MS)
+    return () => window.clearInterval(id)
+  }, [open, poll])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  useEffect(() => {
+    if (!open || !mounted) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open, mounted])
+
+  async function copySetupCommand() {
+    try {
+      await navigator.clipboard.writeText(SETUP_CMD)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  if (!mounted) return null
+
+  return createPortal(
+    <AnimatePresence>
+      {open ? (
+        <div className="access-connect-tools__overlay" role="presentation">
+          <motion.button
+            type="button"
+            className="access-connect-tools__backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            aria-label="Close setup"
+            onClick={onClose}
+          />
+          <motion.div
+            className="access-connect-tools__panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="connect-local-tools-title"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.2 }}
+          >
+            <header className="access-connect-tools__head">
+              <div>
+                <h2 id="connect-local-tools-title" className="access-platform-section-title">
+                  Turn on local intelligence on this Mac
+                </h2>
+                <p className="access-platform-meta">
+                  ACCESS runs in your browser. It cannot start background services for you — copy one command,
+                  run it in Terminal on this computer, and keep this window open while we detect when you are
+                  ready.
+                </p>
+              </div>
+              <button type="button" className="access-connect-tools__close" onClick={onClose} aria-label="Close">
+                ×
+              </button>
+            </header>
+
+            <div className="access-connect-tools__body">
+              <div
+                className={`access-connect-tools__hero ${connected ? 'access-connect-tools__hero--connected' : ''}`}
+                role="status"
+              >
+                <p className="access-connect-tools__hero-title">
+                  {connected ? 'Connected' : 'Waiting for your Mac'}
+                </p>
+                <p className="access-platform-meta">
+                  {connected
+                    ? 'File tools are live. Close this panel and ask JYSON to work with files on your machine.'
+                    : `Checking every ${POLL_MS / 1000} seconds — status turns green when your stack is up.`}
+                </p>
+                {!connected && runtime?.message ? (
+                  <p className="access-platform-meta access-connect-tools__hero-detail">{runtime.message}</p>
+                ) : null}
+              </div>
+
+              {connected ? null : (
+                <>
+                  <div className="access-connect-tools__primary">
+                    <p className="access-connect-tools__step-label">1. Copy and run in Terminal</p>
+                    <code className="access-connect-tools__cmd access-connect-tools__cmd--primary">{SETUP_CMD}</code>
+                    <button
+                      type="button"
+                      className="access-platform-btn-primary access-connect-tools__primary-btn"
+                      onClick={copySetupCommand}
+                    >
+                      {copied ? 'Copied — paste in Terminal' : 'Copy setup command'}
+                    </button>
+                    <p className="access-platform-meta">
+                      Run from your <strong>access-app</strong> folder. This starts ACCESS and the local intelligence
+                      server together.
+                    </p>
+                  </div>
+
+                  <ol className="access-connect-tools__checklist">
+                    <li>
+                      <span className="access-connect-tools__check-label">Private layer</span>
+                      <span className="access-connect-tools__check-value">
+                        {runtime?.privateLayerEnabled ? 'On' : 'Add to .env.local'}
+                      </span>
+                      {!runtime?.privateLayerEnabled ? (
+                        <p className="access-platform-meta">{PRIVATE_JYSON_ENV_HINT}</p>
+                      ) : null}
+                    </li>
+                    <li>
+                      <span className="access-connect-tools__check-label">Restart</span>
+                      <span className="access-connect-tools__check-value">
+                        After changing .env.local, stop Terminal (Ctrl+C) and run the command again.
+                      </span>
+                    </li>
+                    <li>
+                      <span className="access-connect-tools__check-label">Keep this open</span>
+                      <span className="access-connect-tools__check-value">
+                        We update automatically — no refresh needed.
+                      </span>
+                    </li>
+                  </ol>
+
+                  <button
+                    type="button"
+                    className="access-connect-tools__advanced-toggle"
+                    aria-expanded={showAdvanced}
+                    onClick={() => setShowAdvanced((v) => !v)}
+                  >
+                    {showAdvanced ? 'Hide advanced setup' : 'Advanced setup (developers)'}
+                  </button>
+
+                  {showAdvanced ? (
+                    <div className="access-connect-tools__advanced">
+                      <p className="access-platform-meta">
+                        Canonical 3-terminal flow, connector heartbeat, and install paths:{' '}
+                        <Link href="/agents" className="access-connect-tools__link" onClick={onClose}>
+                          Agents
+                        </Link>{' '}
+                        ·{' '}
+                        <a
+                          href="https://github.com/openjarvis/openjarvis"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="access-connect-tools__link"
+                        >
+                          OpenJarvis docs
+                        </a>
+                      </p>
+                      <p className="access-platform-meta" style={{ fontFamily: 'var(--mono)', fontSize: '0.75rem' }}>
+                        See docs/OPENJARVIS_FOUNDER_SETUP.md in the repo for npm run dev, connector:heartbeat, and
+                        openjarvis:serve.
+                      </p>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </div>
+
+            <footer className="access-connect-tools__foot">
+              <Link href="/settings" className="access-connect-tools__link" onClick={onClose}>
+                Settings
+              </Link>
+            </footer>
+          </motion.div>
+        </div>
+      ) : null}
+    </AnimatePresence>,
+    document.body,
+  )
+}

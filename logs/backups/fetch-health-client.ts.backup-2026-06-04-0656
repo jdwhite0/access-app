@@ -1,0 +1,16 @@
+import type { OpenJarvisRuntimeState } from '@/lib/openjarvis/resolve-runtime-state'
+
+export type OpenJarvisHealthPayload = OpenJarvisRuntimeState & {
+  runtime?: OpenJarvisRuntimeState
+}
+
+export async function fetchOpenJarvisHealth(): Promise<OpenJarvisRuntimeState | null> {
+  try {
+    const res = await fetch('/api/jyson/openjarvis/health', { cache: 'no-store' })
+    if (!res.ok) return null
+    const d = (await res.json()) as OpenJarvisHealthPayload
+    return d.runtime ?? d ?? null
+  } catch {
+    return null
+  }
+}

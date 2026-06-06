@@ -1,0 +1,182 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import {
+  PrimaryButton,
+  SecondaryButton,
+  StatusPill,
+  type StatusPillTone,
+} from '@/lib/design-system/components/platform'
+import { DEV_FOUNDER_CMD } from '@/lib/openjarvis/founder-setup'
+import {
+  buildFallbackConnectionLayers,
+  resolveBannerCopy,
+} from '@/lib/vault/device-connection-fallback'
+import type { ConnectionLayerInfo, LayerStatusKind } from '@/lib/vault/device-connection-types'
+import { useDeviceConnectionStatus } from '@/components/platform/useDeviceConnectionStatus'
+
+const LAYER_TITLES = {
+  accessBridge: 'Device ↔ ACCESS',
+  vault: 'Vault folder',
+  jyson: 'JYSON',
+} as const
+
+function pillTone(status: LayerStatusKind): StatusPillTone {
+  switch (status) {
+    case 'connected':
+      return 'operational'
+    case 'cloud_only':
+      return 'info'
+    case 'partial':
+      return 'degraded'
+    case 'unavailable':
+      return 'neutral'
+    case 'offline':
+    default:
+      return 'offline'
+  }
+}
+
+function LayerRow({
+  title,
+  layer,
+}: {
+  title: string
+  layer: ConnectionLayerInfo
+}) {
+  return (
+    <div className="access-device-connection__row">
+      <div className="access-device-connection__row-label">
+        <span className="access-device-connection__row-name">{title}</span>
+        <p className="access-device-connection__row-msg">{layer.shortMessage}</p>
+      </div>
+      <StatusPill label={layer.pillLabel} tone={pillTone(layer.status)} />
+    </div>
+  )
+}
+
+export function DeviceIntelligenceBanner() {
+  const { device, status, loading, apiUnavailable } = useDeviceConnectionStatus()
+  const [copied, setCopied] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
+
+  const layers = useMemo(
+    () =>
+      status?.layers ??
+      buildFallbackConnectionLayers(device, {
+        apiUnavailable: apiUnavailable && !loading,
+      }),
+    [status, device, apiUnavailable, loading],
+  )
+
+  const { headline, subhead, tone } = resolveBannerCopy(
+    device,
+    status,
+    loading,
+    apiUnavailable,
+  )
+
+  const bridgeOnline = status?.bridgeOnline ?? false
+  const deviceLabel = status?.deviceLabel ?? device.deviceLabel
+  const isMobile = status?.capabilities.isMobile ?? device.isMobile
+
+  const showDesktopSetup =
+    !isMobile &&
+    !bridgeOnline &&
+    (status?.capabilities.canPickLocalFolder ?? device.isDesktop)
+
+  const startCommand = status?.startCommand ?? DEV_FOUNDER_CMD
+
+  async function copyStartCommand() {
+    try {
+      await navigator.clipboard.writeText(startCommand)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 4500)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  return (
+    <section
+      className={`access-device-connection access-device-connection--${tone}`}
+      aria-label="Your connection to ACCESS"
+      aria-busy={loading && !status}
+    >
+      <div className="access-device-connection__hero">
+        <div className="access-device-connection__status-dot" aria-hidden />
+        <div className="access-device-connection__hero-text">
+          <p className="access-device-connection__eyebrow">
+            Intelligence layer
+            {loading && !status ? (
+              <span className="access-device-connection__loading-tag"> · Updating</span>
+            ) : null}
+          </p>
+          <h2 className="access-device-connection__title">{headline}</h2>
+          <p className="access-device-connection__body">{subhead}</p>
+          {apiUnavailable && !loading && !status && (
+            <p className="access-device-connection__body access-device-connection__body--warn">
+              Could not refresh live status. Reload the page or check that you are signed in.
+            </p>
+          )}
+          {copied && (
+            <p className="access-device-connection__success" role="status">
+              Copied — open Terminal on your {deviceLabel} and paste
+            </p>
+          )}
+        </div>
+        {showDesktopSetup && (
+          <div className="access-device-connection__hero-actions">
+            <PrimaryButton
+              type="button"
+              onClick={() => void copyStartCommand()}
+              aria-label={`Copy setup command for ${deviceLabel}`}
+            >
+              {copied ? 'Copied' : `Connect ${deviceLabel}`}
+            </PrimaryButton>
+            <p className="access-device-connection__action-hint">
+              One command — paste in Terminal on this device
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="access-device-connection__layers" aria-label="Connection status by layer">
+        <LayerRow title={LAYER_TITLES.accessBridge} layer={layers.accessBridge} />
+        <LayerRow title={LAYER_TITLES.vault} layer={layers.vault} />
+        <LayerRow title={LAYER_TITLES.jyson} layer={layers.jyson} />
+      </div>
+
+      {showDesktopSetup && (
+        <div className="access-device-connection__footer">
+          <button
+            type="button"
+            className="access-device-connection__details-toggle"
+            onClick={() => setShowDetails((v) => !v)}
+            aria-expanded={showDetails}
+          >
+            {showDetails ? 'Hide setup details' : 'What gets copied?'}
+          </button>
+          {showDetails && (
+            <p className="access-device-connection__cmd">
+              <code>{startCommand}</code>
+            </p>
+          )}
+          <SecondaryButton href="/companion#diagnostics">Open diagnostics</SecondaryButton>
+        </div>
+      )}
+
+      {isMobile && (
+        <p className="access-device-connection__mobile-note">
+          Ecosystem perk: your {deviceLabel}, Mac or PC, and ACCESS stay aligned — each
+          device shows what it can do honestly.
+        </p>
+      )}
+
+      <p className="access-device-connection__folder-note">
+        <strong>Obsidian vaults:</strong> &quot;Obsidian&quot; on a card is the folder format, not
+        the Obsidian app. ACCESS reads the folder you connect — the app does not need to stay open.
+      </p>
+    </section>
+  )
+}

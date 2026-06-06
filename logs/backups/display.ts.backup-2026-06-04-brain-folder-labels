@@ -1,0 +1,81 @@
+/** Client-safe vault UI labels (no server env). */
+
+import type { VaultType } from '@/types/db'
+
+/** Short label on vault cards and lists — not connection status. */
+export const VAULT_TYPE_BADGE_LABELS: Record<VaultType, string> = {
+  obsidian: 'Notes folder',
+  local: 'Local folder',
+  manual: 'Cloud / manual',
+  notion: 'Notion workspace',
+  google_drive: 'Google Drive',
+  drive: 'Cloud storage',
+  other: 'Other source',
+}
+
+/** Tooltip / title text for type badges. */
+export const VAULT_TYPE_HINTS: Record<VaultType, string> = {
+  obsidian: 'A folder of markdown notes on your device. Works with Obsidian, Bear, or any .md folder — the Obsidian app does not need to be open.',
+  local: 'Any local folder ACCESS can read on this device.',
+  manual: 'No folder path — you manage content in ACCESS.',
+  notion: 'Connected via your Notion workspace.',
+  google_drive: 'Files stored in Google Drive.',
+  drive: 'Remote file storage.',
+  other: 'Custom knowledge source.',
+}
+
+/** Plain-English labels for the registration type dropdown. */
+export const VAULT_TYPE_REGISTER_OPTIONS: Array<{ value: VaultType; label: string }> = [
+  { value: 'obsidian', label: 'Notes folder on this device' },
+  { value: 'local', label: 'Other folder on this device' },
+  { value: 'manual', label: 'Cloud or manual (no folder path)' },
+  { value: 'notion', label: 'Notion workspace' },
+  { value: 'google_drive', label: 'Google Drive' },
+  { value: 'other', label: 'Other source' },
+]
+
+/** Extra hint under the type field in the register form (per type). */
+export const VAULT_TYPE_REGISTER_FIELD_HINTS: Partial<Record<VaultType, string>> = {
+  obsidian: 'Works with Obsidian, Bear, or any folder of .md notes. ACCESS reads the folder — not the Obsidian app.',
+  local: 'Pick any folder on this device that ACCESS should scan.',
+  manual: 'Use when there is no local path — content lives in ACCESS or the cloud.',
+  notion: 'Connect through Notion when that integration is available.',
+  google_drive: 'Files synced or linked from Google Drive.',
+  drive: 'Generic cloud or remote file storage.',
+  other: 'Describe the source in the vault name or description.',
+}
+
+export function vaultTypeBadgeLabel(vaultType: VaultType | string | null | undefined): string {
+  if (!vaultType) return 'Knowledge source'
+  return VAULT_TYPE_BADGE_LABELS[vaultType as VaultType] ?? String(vaultType)
+}
+
+export function vaultTypeHint(vaultType: VaultType | string | null | undefined): string | undefined {
+  if (!vaultType) return undefined
+  return VAULT_TYPE_HINTS[vaultType as VaultType]
+}
+
+export function vaultTypeRegisterFieldHint(vaultType: VaultType): string | undefined {
+  return VAULT_TYPE_REGISTER_FIELD_HINTS[vaultType]
+}
+
+export function vaultStatusLabel(status: string): string {
+  switch (status) {
+    case 'connected':
+      return 'Connected'
+    case 'pending_connector':
+      return 'Pending Connector'
+    case 'syncing':
+      return 'Syncing'
+    case 'stale':
+      return 'Stale'
+    case 'disconnected':
+      return 'Disconnected'
+    case 'error':
+      return 'Error'
+    case 'revoked':
+      return 'Revoked'
+    default:
+      return status
+  }
+}

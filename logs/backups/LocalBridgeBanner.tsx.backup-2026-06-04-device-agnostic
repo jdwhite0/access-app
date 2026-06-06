@@ -1,0 +1,130 @@
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { PrimaryButton } from '@/lib/design-system/components/platform'
+import { DEV_FOUNDER_CMD } from '@/lib/openjarvis/founder-setup'
+
+type BridgeStatus = {
+  bridgeOnline: boolean
+  localDev: boolean
+  canSyncWithoutBridge: boolean
+  userMessage: string
+  startCommand: string
+  devicePaired: boolean
+}
+
+const POLL_MS = 8000
+
+function bridgeHeadline(status: BridgeStatus): string {
+  if (status.bridgeOnline) return 'Your Mac is talking to ACCESS'
+  return "Your Mac isn't connected to ACCESS yet"
+}
+
+function bridgeBody(status: BridgeStatus): string {
+  if (status.bridgeOnline) {
+    return 'Your local connection is active. Vault sync and JYSON can use files on this Mac.'
+  }
+  if (status.localDev) {
+    return status.devicePaired
+      ? 'Start ACCESS on this Mac when you want the bridge live again, or use Sync now on a vault — local dev can still read folders on this machine.'
+      : 'Pair this Mac once, then start ACCESS. Until then, Sync now may still work in local dev if your vault folder is here.'
+  }
+  return 'Start ACCESS on this Mac so your vault can sync securely. Copy the setup command, paste it in Terminal, and keep ACCESS running.'
+}
+
+export function LocalBridgeBanner() {
+  const [status, setStatus] = useState<BridgeStatus | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/vault/local-bridge-status', { cache: 'no-store' })
+      if (!res.ok) return
+      const json = (await res.json()) as BridgeStatus
+      setStatus(json)
+    } catch {
+      /* ignore poll errors */
+    }
+  }, [])
+
+  useEffect(() => {
+    void load()
+    const id = window.setInterval(() => void load(), POLL_MS)
+    return () => window.clearInterval(id)
+  }, [load])
+
+  async function copyStartCommand() {
+    const cmd = status?.startCommand ?? DEV_FOUNDER_CMD
+    try {
+      await navigator.clipboard.writeText(cmd)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 4500)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  if (!status) return null
+
+  const tone = status.bridgeOnline
+    ? 'operational'
+    : status.localDev
+      ? 'neutral'
+      : 'warning'
+
+  const startCommand = status.startCommand ?? DEV_FOUNDER_CMD
+
+  return (
+    <section
+      className={`access-vault-bridge-banner access-vault-bridge-banner--${tone}`}
+      aria-label="Mac connection to ACCESS"
+    >
+      <div className="access-vault-bridge-banner__status-dot" aria-hidden />
+
+      <div className="access-vault-bridge-banner__main">
+        <h2 className="access-vault-bridge-banner__title">{bridgeHeadline(status)}</h2>
+        <p className="access-vault-bridge-banner__body">{bridgeBody(status)}</p>
+
+        {copied && (
+          <p className="access-vault-bridge-banner__success" role="status">
+            Copied — open Terminal on your Mac and paste
+          </p>
+        )}
+
+        {!status.bridgeOnline && (
+          <div className="access-vault-bridge-banner__details">
+            <button
+              type="button"
+              className="access-vault-bridge-banner__details-toggle"
+              onClick={() => setShowDetails((v) => !v)}
+              aria-expanded={showDetails}
+            >
+              {showDetails ? 'Hide setup details' : 'What gets copied?'}
+            </button>
+            {showDetails && (
+              <p className="access-vault-bridge-banner__cmd">
+                <code>{startCommand}</code>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {!status.bridgeOnline && (
+        <div className="access-vault-bridge-banner__actions">
+          <PrimaryButton
+            type="button"
+            onClick={() => void copyStartCommand()}
+            aria-label="Copy one Terminal command to start ACCESS on this Mac"
+          >
+            {copied ? 'Copied' : 'Copy Mac setup command'}
+          </PrimaryButton>
+          <p className="access-vault-bridge-banner__action-hint">
+            Copies one command — paste in Terminal on this Mac
+          </p>
+        </div>
+      )}
+    </section>
+  )
+}
