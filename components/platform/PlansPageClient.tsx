@@ -294,12 +294,15 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
         {/* ── Payment method toggle ── */}
         <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', background: C.bgAlt, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
-            {(['card', 'ach'] as const).map(m => (
-              <button key={m} type="button" onClick={() => setPayMethod(m)}
-                style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === m ? C.text : 'transparent', color: payMethod === m ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
-                {m === 'card' ? 'Credit / Debit Card' : 'Bank Transfer (ACH)'}
-              </button>
-            ))}
+            <button type="button" onClick={() => setPayMethod('card')}
+              style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === 'card' ? C.text : 'transparent', color: payMethod === 'card' ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
+              Credit / Debit Card
+            </button>
+            <button type="button" onClick={() => setPayMethod('ach')}
+              style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === 'ach' ? C.text : 'transparent', color: payMethod === 'ach' ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 7 }}>
+              Pay by Bank
+              <span style={{ fontSize: 10, fontWeight: 700, background: C.green, color: '#fff', padding: '2px 7px', borderRadius: 20, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Recommended</span>
+            </button>
           </div>
         </div>
 

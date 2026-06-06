@@ -89,6 +89,20 @@ export default function CheckoutPageClient({ plan, interval = 'month' }: Props) 
 
     return (
       <div className="access-checkout-v2__stripe">
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          background: 'rgba(45,138,110,0.08)', border: '1px solid rgba(45,138,110,0.25)',
+          borderRadius: 8, padding: '10px 14px', marginBottom: 16,
+        }}>
+          <span style={{ fontSize: 16 }}>🏦</span>
+          <div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#2D8A6E' }}>Pay by Bank</span>
+            <span style={{ fontSize: 11, fontWeight: 700, background: '#2D8A6E', color: '#fff', padding: '2px 7px', borderRadius: 20, marginLeft: 8, letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>Recommended</span>
+            <p style={{ fontSize: 12, color: '#425466', margin: '2px 0 0', lineHeight: 1.4 }}>
+              Select &ldquo;Bank account&rdquo; inside the form below for a secure, direct transfer.
+            </p>
+          </div>
+        </div>
         <div className="access-checkout-v2__embed">
           <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
             <EmbeddedCheckout />

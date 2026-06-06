@@ -35,8 +35,8 @@ const POSTS = [
   {
     date: 'May 20, 2026',
     category: 'Infrastructure',
-    title: 'ACH vs card: why we pushed operators toward bank transfers',
-    excerpt: 'Stripe card fees are 2.9% + $0.30. ACH is 0.8%. At 1,000 Builder subscribers, that\'s $28,536/year. We built ACH into the core billing flow — not as an afterthought — because the math is undeniable.',
+    title: 'Why we made bank transfer a first-class payment option',
+    excerpt: 'Most platforms treat ACH as a buried afterthought. We built bank transfer into the core billing flow so operators have a seamless, secure way to pay without reaching for a card. Here\'s the thinking behind it.',
     href: '#',
     readTime: '3 min read',
   },
