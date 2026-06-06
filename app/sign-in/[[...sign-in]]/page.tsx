@@ -2,6 +2,7 @@ import { SignIn } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import AuthPageShell from '@/components/auth/AuthPageShell'
 
 export const metadata = {
   title: 'Sign in to JYSON — JD AI Systems',
@@ -12,6 +13,7 @@ export default async function SignInPage() {
   if (userId) redirect('/dashboard')
 
   return (
+    <AuthPageShell>
     <div className="access-auth-root">
       <div className="access-auth-layout">
         {/* Left brand panel — desktop only */}
@@ -113,5 +115,6 @@ export default async function SignInPage() {
         </div>
       </div>
     </div>
+    </AuthPageShell>
   )
 }

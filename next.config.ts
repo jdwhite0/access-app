@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   experimental: {
     cpus: 1,
   },
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
+  },
   // Prevent IDE extension packages from being bundled by Turbopack
   serverExternalPackages: ['@cursor/sdk'],
 

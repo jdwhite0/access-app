@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignUpMarketingConsent from '@/components/auth/SignUpMarketingConsent'
 import SignUpAgeGate from '@/components/auth/SignUpAgeGate'
+import AuthPageShell from '@/components/auth/AuthPageShell'
 
 export const metadata = {
   title: 'Create your JYSON — JD AI Systems',
@@ -14,6 +15,7 @@ export default async function SignUpPage() {
   if (userId) redirect('/dashboard')
 
   return (
+    <AuthPageShell>
     <div className="access-auth-root">
       <div className="access-auth-layout">
         {/* Left brand panel — desktop only */}
@@ -116,5 +118,6 @@ export default async function SignUpPage() {
         </div>
       </div>
     </div>
+    </AuthPageShell>
   )
 }

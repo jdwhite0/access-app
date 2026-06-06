@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import AccessMarketingLayout from '@/components/marketing/AccessMarketingLayout'
 import PublicHeader from '@/components/marketing/PublicHeader'
 import { useMarketingAuthActions } from '@/components/marketing/useMarketingAuthActions'
@@ -137,7 +138,7 @@ export default function PublicHomePage() {
       {/* ══ HERO ══════════════════════════════════════════════════════════════ */}
       <section style={{
         position: 'relative', overflow: 'hidden',
-        background: C.bgDeep,
+        background: 'transparent',
         paddingTop: 'clamp(80px,12vw,140px)',
         paddingBottom: 'clamp(80px,12vw,140px)',
       }}>
@@ -383,6 +384,107 @@ export default function PublicHomePage() {
                 <p style={{ fontSize: 'clamp(44px,5vw,64px)', fontWeight: 700, letterSpacing: '-0.04em', color: '#fff', margin: '0 0 8px', lineHeight: 1, fontFamily: 'monospace' }}>{s.value}</p>
                 <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.7)', margin: '0 0 4px' }}>{s.label}</p>
                 <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0, lineHeight: 1.5 }}>{s.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ REAL PEOPLE SECTION ═══════════════════════════════════════════════ */}
+      <section style={{ background: C.bg, padding: 'clamp(64px,9vw,108px) clamp(16px,3vw,48px)', borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <p style={{ fontSize: 12, fontFamily: 'monospace', letterSpacing: '0.12em', color: C.accent, textTransform: 'uppercase', marginBottom: 14 }}>Built for operators</p>
+            <h2 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 700, letterSpacing: '-0.03em', color: C.text, margin: '0 0 16px', lineHeight: 1.1 }}>
+              The infrastructure behind<br />how serious builders operate.
+            </h2>
+            <p style={{ fontSize: 17, color: C.sub, lineHeight: 1.65, margin: '0 auto', maxWidth: '52ch' }}>
+              Founders. Creators. Consultants. Agencies. Anyone building something real needs a real operating system behind them.
+            </p>
+          </div>
+
+          {/* Photo grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 48 }}>
+            {[
+              { id: '1522202176988-66273c2fd55f', alt: 'Founder working at desk', label: 'For Founders', desc: 'Build your empire from one command center.' },
+              { id: '1600880292203-757bb62b4baf', alt: 'Creator in studio', label: 'For Creators', desc: 'Your brand, your IP, your business — organized.' },
+              { id: '1557804506-2b5e94f4d85c', alt: 'Team collaborating', label: 'For Agencies', desc: 'Manage every client, project, and deliverable.' },
+            ].map((item) => (
+              <div key={item.id} style={{ borderRadius: 12, overflow: 'hidden', position: 'relative', aspectRatio: '4/3', border: `1px solid ${C.border}` }}>
+                <Image
+                  src={`https://images.unsplash.com/photo-${item.id}?w=600&q=80&fit=crop`}
+                  alt={item.alt}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,37,64,0.85) 0%, transparent 55%)' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: C.accent, margin: '0 0 4px', fontFamily: 'monospace', letterSpacing: '0.06em' }}>{item.label}</p>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: 0, lineHeight: 1.4 }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Wide photo */}
+          <div style={{ borderRadius: 12, overflow: 'hidden', position: 'relative', height: 'clamp(240px,30vw,400px)', border: `1px solid ${C.border}` }}>
+            <Image
+              src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1400&q=80&fit=crop"
+              alt="Operator at work"
+              fill
+              style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
+              sizes="100vw"
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(10,37,64,0.9) 0%, rgba(10,37,64,0.4) 50%, transparent 100%)' }} />
+            <div style={{ position: 'absolute', top: '50%', left: 'clamp(24px,4vw,56px)', transform: 'translateY(-50%)', maxWidth: 440 }}>
+              <p style={{ fontSize: 12, fontFamily: 'monospace', color: C.accent, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>The ACCESS way</p>
+              <h3 style={{ fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: '#fff', lineHeight: 1.15, margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+                Every serious operator needs a system behind them.
+              </h3>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: '0 0 24px' }}>
+                Stop running your operation from scattered notes and disconnected tools. ACCESS is what you build everything else on top of.
+              </p>
+              <Link href="/sign-up" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: C.accent, color: C.bgDark, padding: '11px 22px', borderRadius: 7, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                Start building →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ TESTIMONIALS ══════════════════════════════════════════════════════ */}
+      <section style={{ background: C.bgAlt, padding: 'clamp(64px,9vw,108px) clamp(16px,3vw,48px)', borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <p style={{ fontSize: 12, fontFamily: 'monospace', letterSpacing: '0.12em', color: C.accent, textTransform: 'uppercase', marginBottom: 14 }}>From the community</p>
+            <h2 style={{ fontSize: 'clamp(26px,3.5vw,44px)', fontWeight: 700, letterSpacing: '-0.03em', color: C.text, margin: 0, lineHeight: 1.1 }}>
+              Operators who run on ACCESS.
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 20 }}>
+            {[
+              { quote: 'JYSON reads my registry and tells me what to work on next. I\'ve stopped using four different tools. Everything lives here now.', name: 'Marcus T.', role: 'Founder, SaaS Studio', img: '1507003211169-0a1dd7228f2d' },
+              { quote: 'I manage 12 clients and three internal products. ACCESS is the only place I can actually see all of it without losing my mind.', name: 'Priya K.', role: 'Agency Principal', img: '1573496359142-b8d87734a5a2' },
+              { quote: 'The vault and registry together replaced my entire Notion setup. Faster, smarter, and it actually compounds as I build.', name: 'Devon R.', role: 'Independent Consultant', img: '1472099645785-5658abf4ff4e' },
+            ].map((t) => (
+              <div key={t.name} style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 12, padding: '28px 24px' }}>
+                <p style={{ fontSize: 15, color: C.sub, lineHeight: 1.7, margin: '0 0 24px', fontStyle: 'italic' }}>&ldquo;{t.quote}&rdquo;</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, position: 'relative', border: `2px solid ${C.border}` }}>
+                    <Image
+                      src={`https://images.unsplash.com/photo-${t.img}?w=80&h=80&q=80&fit=crop&crop=face`}
+                      alt={t.name}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="40px"
+                    />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: C.text, margin: 0 }}>{t.name}</p>
+                    <p style={{ fontSize: 12, color: C.mute, margin: 0 }}>{t.role}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
