@@ -14,7 +14,8 @@ import {
   clearPendingReview,
 } from '@/lib/operator/slack-review-store'
 import { fetchDailyBriefSnapshot } from '@/lib/email/agents/intake-snapshot'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { dirname } from 'node:path'
 
 export type OperatorContext = {
   slackUserId: string
@@ -127,6 +128,14 @@ export async function executeOperatorIntent(
           ].join('\n')
         )
       }
+      // If /tmp was cleared by a restart, reconstruct the dossier file from Supabase
+      if (!existsSync(pending.json_path) && pending.dossier_json) {
+        try {
+          mkdirSync(dirname(pending.json_path), { recursive: true })
+          writeFileSync(pending.json_path, pending.dossier_json, 'utf8')
+        } catch { /* if this fails sendDailyBrief will handle the error */ }
+      }
+
       const result = await sendDailyBrief({ dossierPath: pending.json_path })
       await clearPendingReview(ctx!.slackUserId)
       if (!result.ok) {
@@ -205,6 +214,12 @@ export async function executeOperatorIntent(
       }
 
       const { preview } = afterResearch
+      // Read the dossier JSON and store it in Supabase so it survives /tmp clears on restart
+      let dossierJson: string | undefined
+      try {
+        dossierJson = readFileSync(preview.jsonPath, 'utf8')
+      } catch { /* non-fatal — file will be re-read at send time */ }
+
       await savePendingReview({
         slack_user_id: ctx!.slackUserId,
         channel_id: ctx!.channelId,
@@ -212,6 +227,7 @@ export async function executeOperatorIntent(
         source_id: preview.source_id,
         json_path: preview.jsonPath,
         topic: preview.topic,
+        dossier_json: dossierJson,
       })
       return reply(formatSlackBriefPreview(preview))
     }

@@ -8,6 +8,7 @@ export type PendingSlackReview = {
   json_path: string
   topic: string
   created_at: string
+  dossier_json?: string  // full dossier content — survives /tmp clears on restart
 }
 
 const reviewKey = (slackUserId: string) => `slack_review:${slackUserId}`
@@ -69,6 +70,7 @@ export async function loadPendingReview(slackUserId: string): Promise<PendingSla
     json_path: String(meta.json_path),
     topic: String(meta.topic ?? meta.source_id),
     created_at: String(meta.created_at ?? ''),
+    dossier_json: meta.dossier_json ? String(meta.dossier_json) : undefined,
   }
 }
 
