@@ -40,10 +40,15 @@ export async function POST(req: NextRequest) {
     consulting: 'Jerry White <hello@jdwhite.world>',
     'bridge-video': 'Bridge Video <hello@jdwhite.world>',
     access: 'ACCESS <notifications@jdwhite.world>',
-    'wholesale-payments': 'Jerry White <hello@jdwhite.world>',
+    'wholesale-payments': 'Jerry White <hello@jdwhite.world>', // sends from verified domain, reply-to routes to WP email
   }
 
   const fromAddress = fromMap[body.arm] ?? 'Jerry White <hello@jdwhite.world>'
+
+  const replyToMap: Partial<Record<Arm, string>> = {
+    'wholesale-payments': 'jerry.white@wholesalepayments.com',
+  }
+  const replyTo = replyToMap[body.arm]
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -56,6 +61,7 @@ export async function POST(req: NextRequest) {
       to: [body.to],
       subject: body.subject,
       text: body.body,
+      ...(replyTo ? { reply_to: replyTo } : {}),
     }),
   })
 

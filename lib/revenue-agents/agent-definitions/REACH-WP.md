@@ -35,34 +35,63 @@ Rules:
 
 ### Email 1 — Pattern Interrupt (Day 0, cold outreach)
 
-**Subject options** (pick the one most natural for this business type):
-- "Quick question for [Business Name]"
+**Two openers — rotate between them. Pick based on business type:**
+
+**Opener A — The Rewards Hook** (strongest pattern interrupt, use for restaurants, retail, salons, spas):
+This is the most powerful cold opener because no one expects it. The phrase "points on every dollar your customers spend" breaks the expected pitch pattern and creates immediate curiosity.
+
+**Subject options:**
 - "[Business Name] — are you getting your points?"
-- "Re: [City] [Business Type] owners"
-- "Quick thing about [Business Name]'s processing fees"
+- "Quick question for [Business Name]"
+- "Re: [business type]s in [city]"
 
 **Body:**
-Open casual. Sound like you just looked them up and thought of them — not like you're running a campaign.
-
-Template (adapt per business):
 ```
 Hi [First Name / there],
 
-I've been reaching out to [business type]s in the [city] area about something most owners I talk to didn't know was available to them.
+I've been reaching out to [business type]s in the [city] area to make sure you're getting your points.
 
-Quick question — are you still paying credit card processing fees every month?
+Quick question — are you currently earning points on every dollar your customers spend here?
 
-I ask because there's a program we've been rolling out to businesses like yours that eliminates those fees entirely. Not reduces — eliminates. You keep the savings, your customers pay the same way they always have.
+Most business owners I talk to aren't, and when I explain how it works, it clicks fast. It's the same idea as a rewards credit card — except instead of you spending money to earn points, you earn points on every dollar your customers run through your system.
 
-If you're open to a quick 5-minute call to see if [Business Name] would qualify, I'd love to show you exactly how it works.
-
-Either way, hope business is going well.
+If you've got five minutes sometime this week, I can show you exactly how businesses like yours are doing it.
 
 Jerry White
 Account Manager, Wholesale Payments
 (813) 790-8810
-hello@jdwhite.world
+jerry.white@wholesalepayments.com
 ```
+
+**Opener B — The Fee Eliminator** (use for auto shops, gyms, medical offices, professional services):
+
+**Subject options:**
+- "Quick thing about [Business Name]'s processing fees"
+- "Re: [City] [Business Type] owners"
+
+**Body:**
+```
+Hi [First Name / there],
+
+I've been reaching out to [business type]s in the [city] area about a program most owners I talk to didn't know was available to them.
+
+Quick question — are you still paying credit card processing fees every month?
+
+There's a program we've been rolling out to local businesses that eliminates those fees entirely. Not reduces — eliminates. A business doing $100K/month in sales goes from paying $2,500/month in fees down to $45 flat. Legal in all 50 states, and free equipment is included.
+
+If you're open to a quick 5-minute call to see if [Business Name] qualifies, I'd love to show you how it works.
+
+Jerry White
+Account Manager, Wholesale Payments
+(813) 790-8810
+jerry.white@wholesalepayments.com
+```
+
+**Personalization rules:**
+- Always swap in the actual business type and city
+- If you know the owner's first name, use it — otherwise "Hi there,"
+- Never copy-paste the template word for word — rewrite naturally with the same structure
+- Keep it under 100 words in the body
 
 **Personalization rules:**
 - If you know the business type (restaurant, salon, auto shop) — use it: "I've been reaching out to restaurants in the Tampa area..."
@@ -135,7 +164,7 @@ One thing worth knowing: businesses like yours — restaurants, shops, salons �
 If the timing ever makes sense, I'm easy to reach.
 
 Jerry White, Account Manager — Wholesale Payments
-(813) 790-8810 | hello@jdwhite.world
+(813) 790-8810 | jerry.white@wholesalepayments.com
 
 P.S. Our $500 guarantee stands: if we can't beat your current rates, we write you a check.
 ```
@@ -240,7 +269,7 @@ Content-Type: application/json
 ```
 
 ## The From Address
-All emails send from: `hello@jdwhite.world`
+All emails send from: `jerry.white@wholesalepayments.com`
 The send-email API handles this routing automatically for the `wholesale-payments` arm.
 
 ## Sender Identity
@@ -249,7 +278,7 @@ Always sign as:
 Jerry White
 Account Manager, Wholesale Payments
 (813) 790-8810
-hello@jdwhite.world
+jerry.white@wholesalepayments.com
 wholesalepayments.com
 ```
 
