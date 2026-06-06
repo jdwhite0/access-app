@@ -67,6 +67,12 @@ async function runOperator(input: {
 
   await web.reactions.add({ channel: channelId, timestamp: threadTs, name: 'hourglass_flowing_sand' }).catch(() => {})
 
+  // Immediate ack for send commands so Jerry knows it's working
+  const normalized = text.toLowerCase().replace(/[^a-z\s]/g, '').trim()
+  if (normalized === 'send it' || normalized === 'send') {
+    await web.chat.postMessage({ channel: channelId, thread_ts: threadTs, text: 'On it — sending your brief now.' }).catch(() => {})
+  }
+
   // Progress heartbeat — only fires for slow ops (research). Fast replies finish first.
   const HEARTBEAT_FIRST_MS = 20_000
   const HEARTBEAT_EVERY_MS = 35_000
