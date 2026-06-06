@@ -274,7 +274,7 @@ Return this exact JSON schema:
   },
   "signal": {
     "category": "<market category>",
-    "summary": "<2–3 sentences with bold key phrases>",
+    "summary": "<2–3 sentences, plain text only — no markdown, no asterisks>",
     "timing_rationale": "<why act on this now, not in 6 months>",
     "signal_score": <70–95>
   },
