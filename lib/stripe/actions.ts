@@ -111,9 +111,8 @@ export async function createCheckoutSession(
     custom_text: tier.checkoutDescription
       ? { submit: { message: tier.checkoutDescription } }
       : undefined,
-    // Apply FOUNDER50 launch coupon automatically on monthly checkout.
-    // Removes allow_promotion_codes since discounts is mutually exclusive with it.
-    discounts: [{ coupon: LAUNCH_COUPON_ID }],
+    // Allow promo codes at checkout (coupon field left empty — LAUNCH_COUPON_ID deprecated)
+    allow_promotion_codes: true,
     ...branding,
   })
 

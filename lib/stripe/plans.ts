@@ -1,52 +1,70 @@
 /**
  * Public plan display + Stripe metadata for UI/checkout.
- * Executive revenue targets and acquisition math live only in
+ * Revenue targets and acquisition math live only in
  * `docs/_internal/EXECUTIVE_PRICING_STRATEGY.md` — never in UI strings or user-facing exports.
  */
 import type { StripePlan } from './client'
 import type { BillingInterval } from './prices'
 
-/** Standard monthly prices (USD). */
-export const PLAN_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 299,
-  builder: 599,
+// ─── Pricing ──────────────────────────────────────────────────────────────────
+
+type BillablePlan = 'personal' | 'operator' | 'builder'
+
+/** Standard monthly prices (USD). operator = legacy alias for personal. */
+export const PLAN_MONTHLY_USD: Record<BillablePlan, number> = {
+  personal: 29,
+  operator: 29,   // legacy
+  builder:  99,
 }
 
-/** Annual commitment prices (USD). */
-export const PLAN_ANNUAL_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 1988,
-  builder: 3988,
+/** Annual prices — ~2 months free (16.7% discount). */
+export const PLAN_ANNUAL_USD: Record<BillablePlan, number> = {
+  personal: 290,
+  operator: 290,  // legacy
+  builder:  990,
 }
 
-/** Equivalent monthly when billed annually (USD). */
-export const PLAN_ANNUAL_EQ_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 165,
-  builder: 332,
+/** Equivalent monthly rate when billed annually. */
+export const PLAN_ANNUAL_EQ_MONTHLY_USD: Record<BillablePlan, number> = {
+  personal: 24,
+  operator: 24,  // legacy
+  builder:  83,
 }
 
-/** Annual savings vs paying monthly for 12 months (USD). */
-export const PLAN_ANNUAL_SAVINGS_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 1600,
-  builder: 3200,
+/** Annual savings vs 12 monthly payments. */
+export const PLAN_ANNUAL_SAVINGS_USD: Record<BillablePlan, number> = {
+  personal: 58,
+  operator: 58,  // legacy
+  builder:  198,
 }
 
-/** Founder launch displayed prices — applied via FOUNDER50 coupon (50% off first cycle). */
-export const PLAN_LAUNCH_MONTHLY_USD: Record<Exclude<StripePlan, 'enterprise'>, number> = {
-  operator: 149,
-  builder: 299,
+// ─── Payment method display (ACH savings) ─────────────────────────────────────
+
+/** Processing fee rates for display copy. */
+export const PAYMENT_FEES = {
+  card: { rate: 0.029, fixed: 0.30, label: '2.9% + $0.30' },
+  ach:  { rate: 0.008, fixed: 0.00, label: '0.8%' },
+} as const
+
+/** Calculate ACH savings vs card for a given monthly amount. */
+export function calcAchSavings(monthlyAmount: number): number {
+  const cardFee = monthlyAmount * PAYMENT_FEES.card.rate + PAYMENT_FEES.card.fixed
+  const achFee  = monthlyAmount * PAYMENT_FEES.ach.rate
+  return Math.round((cardFee - achFee) * 100) / 100
 }
 
-/** Coupon ID applied automatically to monthly checkout sessions during the launch window. */
-export const LAUNCH_COUPON_ID = 'FOUNDER50'
+// ─── Display helpers ──────────────────────────────────────────────────────────
 
 /** @deprecated Use PLAN_MONTHLY_USD */
 export const PLAN_FOUNDING_MONTHLY_USD = PLAN_MONTHLY_USD
-
 /** @deprecated Use PLAN_ANNUAL_USD */
 export const PLAN_FOUNDING_ANNUAL_USD = PLAN_ANNUAL_USD
-
 /** @deprecated Use PLAN_MONTHLY_USD */
 export const PLAN_PUBLIC_MONTHLY_USD = PLAN_MONTHLY_USD
+/** @deprecated Use PLAN_MONTHLY_USD */
+export const PLAN_LAUNCH_MONTHLY_USD = PLAN_MONTHLY_USD
+
+export const LAUNCH_COUPON_ID = ''  // no active launch coupon
 
 export type PlanDisplayPricing = {
   amount: number
@@ -57,24 +75,26 @@ export type PlanDisplayPricing = {
   savingsLabel?: string
 }
 
+function isBillable(plan: Exclude<StripePlan, 'enterprise'>): plan is BillablePlan {
+  return plan === 'personal' || plan === 'operator' || plan === 'builder'
+}
+
 export function getPlanDisplayPricing(
   plan: Exclude<StripePlan, 'enterprise'>,
   interval: BillingInterval
 ): PlanDisplayPricing {
+  const p = isBillable(plan) ? plan : 'personal'
   if (interval === 'month') {
     return {
-      amount: PLAN_LAUNCH_MONTHLY_USD[plan],
-      originalAmount: PLAN_MONTHLY_USD[plan],
+      amount: PLAN_MONTHLY_USD[p],
       periodLabel: '/month',
-      launchLabel: '50% founder launch discount applied.',
     }
   }
-
   return {
-    amount: PLAN_ANNUAL_USD[plan],
+    amount: PLAN_ANNUAL_USD[p],
     periodLabel: '/year',
-    equivalentMonthly: PLAN_ANNUAL_EQ_MONTHLY_USD[plan],
-    savingsLabel: `Save $${PLAN_ANNUAL_SAVINGS_USD[plan].toLocaleString('en-US')}+ vs monthly.`,
+    equivalentMonthly: PLAN_ANNUAL_EQ_MONTHLY_USD[p],
+    savingsLabel: `Save $${PLAN_ANNUAL_SAVINGS_USD[p].toLocaleString('en-US')} vs monthly.`,
   }
 }
 
@@ -82,30 +102,28 @@ export function getPlanCta(
   plan: Exclude<StripePlan, 'enterprise'>,
   interval: BillingInterval
 ): string {
+  const isPersonal = plan === 'personal' || plan === 'operator'
   if (interval === 'year') {
-    return plan === 'operator' ? 'Start Operator annually' : 'Start Builder annually'
+    return isPersonal ? 'Start Personal annually' : 'Start Builder annually'
   }
-  return plan === 'operator' ? 'Start Operator' : 'Start Builder'
+  return isPersonal ? 'Get started — $29/month' : 'Start free 14-day trial'
 }
 
 export function getPlanBadges(
   plan: StripePlan,
   interval: BillingInterval
 ): string[] {
-  if (plan === 'enterprise') {
-    return ['ENTERPRISE']
-  }
+  if (plan === 'enterprise') return ['ENTERPRISE']
+  const isPersonal = plan === 'personal' || plan === 'operator'
   if (interval === 'year') {
-    if (plan === 'builder') {
-      return ['RECOMMENDED', 'ANNUAL COMMITMENT']
-    }
-    return ['ANNUAL COMMITMENT']
+    if (!isPersonal) return ['MOST POPULAR', 'ANNUAL']
+    return ['ANNUAL']
   }
-  if (plan === 'builder') {
-    return ['RECOMMENDED']
-  }
-  return ['OPERATOR']
+  if (!isPersonal) return ['MOST POPULAR']
+  return []
 }
+
+// ─── Tier configs ─────────────────────────────────────────────────────────────
 
 export type PlanTierConfig = {
   id: StripePlan
@@ -121,18 +139,17 @@ export type PlanTierConfig = {
   brandingDisplayName: string
 }
 
-const OPERATOR_METADATA: Record<string, string> = {
-  plan_tier: 'operator',
+const PERSONAL_METADATA: Record<string, string> = {
+  plan_tier: 'personal',
   product_family: 'access',
   primary_outcome: 'personal_ai_workspace',
-  includes_jyson: 'true',
+  includes_jyson: 'limited',
   includes_memory: 'true',
-  includes_projects: 'true',
-  includes_agents: 'limited',
+  includes_projects: 'limited',
+  includes_agents: 'false',
   includes_offers: 'false',
-  includes_registry: 'true',
+  includes_registry: 'limited',
   target_user: 'individual_builders',
-  pricing_tier: 'commitment',
 }
 
 const BUILDER_METADATA: Record<string, string> = {
@@ -146,14 +163,13 @@ const BUILDER_METADATA: Record<string, string> = {
   includes_offers: 'true',
   includes_registry: 'true',
   target_user: 'founders_creators_operators',
-  pricing_tier: 'commitment',
 }
 
 const ENTERPRISE_METADATA: Record<string, string> = {
   plan_tier: 'enterprise',
   product_family: 'access',
   primary_outcome: 'ai_native_org_operations',
-  includes_jyson: 'true',
+  includes_jyson: 'advanced',
   includes_memory: 'true',
   includes_projects: 'true',
   includes_agents: 'advanced',
@@ -164,47 +180,48 @@ const ENTERPRISE_METADATA: Record<string, string> = {
 
 export const PLAN_TIERS: PlanTierConfig[] = [
   {
-    id: 'operator',
-    title: 'ACCESS Operator',
-    shortName: 'Operator',
-    subtitle:
-      'For individuals who want JYSON to organize projects, memory, next actions, and workspace intelligence.',
+    id: 'personal',
+    title: 'ACCESS Personal',
+    shortName: 'Personal',
+    subtitle: 'For individuals organizing their world and building personal systems with AI.',
     checkoutDescription:
-      'Organize your work with JYSON — your AI companion for projects, memory, next actions, and intelligent workspace guidance.',
+      'Start building with JYSON — your AI companion for personal projects, memory, and workspace organization.',
     dashboardDescription:
-      'Your personal AI workspace for organizing projects, memory, and next actions with JYSON.\n\nUse ACCESS to understand what you are building, stay organized, and move faster with an AI companion that remembers your work.',
+      'Your personal AI workspace for organizing ideas, projects, and memory with JYSON.',
     includes: [
-      'JYSON AI companion',
-      'Project workspace',
-      'Memory layer',
-      'Registry records',
-      'Agent workspace',
-      'Dashboard and next actions',
+      'JYSON (100 messages/month)',
+      '3 active projects',
+      'Personal vault (5GB)',
+      'Registry (25 objects)',
+      'Personal memory (30 days)',
+      'Knowledge base',
     ],
-    cta: 'Start Operator',
-    metadata: OPERATOR_METADATA,
-    brandingDisplayName: 'ACCESS Operator',
+    cta: 'Get started — $29/month',
+    metadata: PERSONAL_METADATA,
+    brandingDisplayName: 'ACCESS Personal',
   },
   {
     id: 'builder',
     title: 'ACCESS Builder',
     shortName: 'Builder',
     subtitle:
-      'For founders, creators, and operators building products, offers, systems, content, workflows, and businesses.',
+      'For founders, creators, consultants, agencies, nonprofits, and operators running a business.',
     checkoutDescription:
-      'Build companies, systems, products, content, and workflows with JYSON — your AI companion for memory, projects, agents, offers, and connected workspace intelligence.',
+      'Run your operation with ACCESS — registry, projects, CRM, workflows, offers, and JYSON business intelligence in one platform.',
     dashboardDescription:
-      'Build companies, systems, products, content, and workflows with an AI that understands your world.\n\nACCESS Builder gives you JYSON, memory, projects, agents, offers, registry intelligence, and connected workspace context so you can turn ideas into operating systems.',
+      'Build companies, systems, products, content, and workflows with an AI that understands your world.\n\nACCESS Builder gives you JYSON, permanent memory, projects, agents, offers, registry intelligence, and connected workspace context so you can turn ideas into operating systems.',
     includes: [
-      'Everything in Operator',
-      'Offers workspace',
-      'Workflows and systems',
-      'Local connector and OpenJarvis tools',
-      'Vault scan and sync',
+      'JYSON (1,000 messages/month + business context)',
+      'Unlimited projects',
+      'CRM (500 contacts)',
+      'Workflows (10 automations)',
+      '5 vaults (50GB each)',
+      'Offers catalog',
+      'Full registry + blueprints',
+      'Permanent business memory',
       'Priority support',
-      'Advanced JYSON recommendations',
     ],
-    cta: 'Start Builder',
+    cta: 'Start free 14-day trial',
     highlight: true,
     metadata: BUILDER_METADATA,
     brandingDisplayName: 'ACCESS Builder',
@@ -213,27 +230,32 @@ export const PLAN_TIERS: PlanTierConfig[] = [
     id: 'enterprise',
     title: 'ACCESS Enterprise',
     shortName: 'Enterprise',
-    subtitle:
-      'For teams and organizations operating with agents, workflows, collaboration, and custom infrastructure.',
+    subtitle: 'For teams and organizations scaling their operation with AI infrastructure.',
     checkoutDescription:
-      'Operate your organization with ACCESS — an AI-native workspace for teams, agents, memory, workflows, integrations, and intelligent execution.',
+      'Operate your organization with ACCESS — team collaboration, RBAC permissions, advanced JYSON intelligence, compliance tools, and API access.',
     dashboardDescription:
-      'Operate teams, organizations, workflows, and intelligent systems with ACCESS as your AI-native command layer.\n\nDesigned for advanced collaboration, agent teams, custom integrations, governance, and enterprise-grade operating infrastructure.',
+      'Operate teams, organizations, workflows, and intelligent systems with ACCESS as your AI-native command layer.',
     includes: [
       'Everything in Builder',
-      'Team and organization rollout',
+      '10 team seats ($25/seat after)',
+      'JYSON — unlimited + team intelligence',
+      'RBAC permissions',
+      'Audit logs & compliance tools',
+      'Advanced analytics',
+      'Full REST API access',
       'Custom integrations',
-      'Dedicated implementation support',
-      'Enterprise infrastructure planning',
+      'Dedicated support + SLA',
     ],
-    cta: 'Contact sales',
+    cta: 'Get started — $299/month',
     metadata: ENTERPRISE_METADATA,
     brandingDisplayName: 'ACCESS Enterprise',
   },
 ]
 
 export function getPlanTier(plan: StripePlan): PlanTierConfig | undefined {
-  return PLAN_TIERS.find((t) => t.id === plan)
+  // legacy 'operator' maps to personal tier config
+  const lookupId = (plan === 'operator') ? 'personal' : plan
+  return PLAN_TIERS.find((t) => t.id === lookupId)
 }
 
 export function buildCheckoutSessionMetadata(

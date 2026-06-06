@@ -381,15 +381,117 @@ export default function PublicHomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ background: C.bgAlt, borderTop: `1px solid ${C.border}`, padding: 'clamp(24px, 4vw, 40px) clamp(16px, 3vw, 48px)' }}>
-        <div style={{ maxWidth: MAX, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-          <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: C.text, letterSpacing: '0.12em' }}>ACCESS</span>
-          <nav style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-            {[{ label: 'Plans', href: '/plans' }, { label: 'Dashboard', href: '/dashboard' }, { label: 'Status', href: '/status' }, { label: 'Contact', href: '/contact' }].map((l) => (
-              <Link key={l.label} href={l.href} style={{ fontSize: 13, color: C.textMute, textDecoration: 'none' }}>{l.label}</Link>
-            ))}
-          </nav>
-          <p style={{ fontSize: 12, color: C.textMute, fontFamily: 'var(--mono)', margin: 0 }}>© 2026 JD Productions Inc.</p>
+      <footer style={{ background: C.bgDark, borderTop: `1px solid rgba(255,255,255,0.08)`, padding: 'clamp(48px,6vw,80px) clamp(16px,3vw,48px) clamp(24px,3vw,40px)' }}>
+        <div style={{ maxWidth: MAX, margin: '0 auto' }}>
+
+          {/* Column grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 'clamp(32px,4vw,56px)', marginBottom: 56 }}>
+
+            {/* Brand column */}
+            <div style={{ gridColumn: 'span 1' }}>
+              <p style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 700, color: '#fff', letterSpacing: '0.12em', marginBottom: 12 }}>ACCESS</p>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+                The AI operating system for founders, creators, and operators.
+              </p>
+              <Link href="/sign-up" style={{ display: 'inline-block', background: C.accent, color: C.bgDark, padding: '9px 18px', borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                Get started free
+              </Link>
+            </div>
+
+            {/* Platform */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'var(--mono)' }}>Platform</p>
+              {[
+                ['JYSON', '/jyson'],
+                ['Registry', '/registry'],
+                ['Projects', '/projects'],
+                ['Customers', '/customers'],
+                ['Assets', '/assets'],
+                ['Vaults', '/vaults'],
+                ['Workflows', '/workflows'],
+                ['Offers', '/offers'],
+                ['Memory', '/memory'],
+                ['Terminal', '/terminal'],
+                ['Blueprints', '/blueprints'],
+              ].map(([l, h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', marginBottom: 8, lineHeight: 1.4 }}>{l}</Link>
+              ))}
+            </div>
+
+            {/* Solutions */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'var(--mono)' }}>Solutions</p>
+              {[
+                ['For Founders', '/solutions/founders'],
+                ['For Agencies', '/solutions/agencies'],
+                ['For Creators', '/solutions/creators'],
+                ['For Nonprofits', '/solutions/nonprofits'],
+                ['For Consultants', '/solutions/consultants'],
+                ['For Churches', '/solutions/churches'],
+                ['Enterprise', '/plans'],
+                ['Compare plans', '/compare'],
+              ].map(([l, h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', marginBottom: 8, lineHeight: 1.4 }}>{l}</Link>
+              ))}
+            </div>
+
+            {/* Resources */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'var(--mono)' }}>Resources</p>
+              {[
+                ['Documentation', '/docs'],
+                ['Help Center', '/help'],
+                ['Changelog', '/changelog'],
+                ['Platform status', '/status'],
+                ['Security', '/security'],
+                ['Compare', '/compare'],
+                ['Blog', '/blog'],
+              ].map(([l, h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', marginBottom: 8, lineHeight: 1.4 }}>{l}</Link>
+              ))}
+            </div>
+
+            {/* Company */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'var(--mono)' }}>Company</p>
+              {[
+                ['About ACCESS', '/about'],
+                ['Careers', '/careers'],
+                ['Contact', '/contact'],
+                ['Plans & Pricing', '/plans'],
+              ].map(([l, h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', marginBottom: 8, lineHeight: 1.4 }}>{l}</Link>
+              ))}
+            </div>
+
+            {/* Legal */}
+            <div>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16, fontFamily: 'var(--mono)' }}>Legal</p>
+              {[
+                ['Terms of Service', '/terms'],
+                ['Privacy Policy', '/privacy'],
+                ['Acceptable Use', '/acceptable-use'],
+                ['Cookie Policy', '/cookies'],
+                ['Security', '/security'],
+              ].map(([l, h]) => (
+                <Link key={l} href={h} style={{ display: 'block', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', marginBottom: 8, lineHeight: 1.4 }}>{l}</Link>
+              ))}
+            </div>
+
+          </div>
+
+          {/* Bottom bar */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--mono)', margin: 0 }}>
+              © 2026 JD AI Systems, LLC · Tampa, FL · Atlanta, GA
+            </p>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              {[['Terms', '/terms'], ['Privacy', '/privacy'], ['Acceptable Use', '/acceptable-use'], ['Cookies', '/cookies']].map(([l, h]) => (
+                <Link key={l} href={h} style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{l}</Link>
+              ))}
+            </div>
+          </div>
+
         </div>
       </footer>
 

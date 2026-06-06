@@ -43,20 +43,22 @@ export default function BillingPageClient() {
       ? 'Founder'
       : effectivePlan === 'builder'
         ? 'Builder'
-        : effectivePlan === 'operator'
-          ? 'Operator'
+        : effectivePlan === 'personal' || effectivePlan === 'operator'
+          ? 'Personal'
           : effectivePlan === 'free'
             ? 'Free'
             : effectivePlan
 
   const monthlyPrice =
-    effectivePlan === 'operator'
-      ? '$299/month'
+    effectivePlan === 'personal' || effectivePlan === 'operator'
+      ? '$29/month'
       : effectivePlan === 'builder'
-        ? '$599/month'
-        : isFounder
-          ? 'Lifetime · No charge'
-          : '—'
+        ? '$99/month'
+        : effectivePlan === 'enterprise'
+          ? '$299/month'
+          : isFounder
+            ? 'Lifetime · No charge'
+            : '—'
 
   async function handleUpgrade(plan: StripePlan) {
     setCheckoutLoading(plan)
@@ -187,22 +189,21 @@ export default function BillingPageClient() {
 
               <SectionPanel title="Upgrade plan">
                 <p className="access-platform-body" style={{ marginBottom: 12 }}>
-                  Upgrade to Builder to unlock agents, offers, advanced project intelligence, and
-                  deeper JYSON recommendations.
+                  Upgrade to Builder to unlock unlimited projects, CRM, workflows, offers, and full
+                  JYSON business intelligence. Start with a free 14-day trial.
                 </p>
                 <p className="access-platform-meta" style={{ marginBottom: 16 }}>
-                  Builder is for users who are actively turning ideas into systems, products,
-                  workflows, or businesses. Enterprise is for teams that need ACCESS across
-                  multiple people, agents, and workflows.
+                  Builder ($99/month) is for founders, creators, consultants, agencies, nonprofits, and operators.
+                  Enterprise ($299/month) adds team seats, RBAC, compliance tools, and API access.
                 </p>
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {effectivePlan !== 'operator' && effectivePlan !== 'builder' ? (
+                  {effectivePlan !== 'personal' && effectivePlan !== 'operator' && effectivePlan !== 'builder' ? (
                     <button
                       className="access-settings-btn access-settings-btn--secondary"
-                      onClick={() => handleUpgrade('operator')}
+                      onClick={() => handleUpgrade('personal')}
                       disabled={!!checkoutLoading}
                     >
-                      {checkoutLoading === 'operator' ? 'Redirecting…' : 'Start Operator — $299/mo'}
+                      {checkoutLoading === 'personal' ? 'Redirecting…' : 'Start Personal — $29/mo'}
                     </button>
                   ) : null}
                   {effectivePlan !== 'builder' ? (
@@ -211,18 +212,15 @@ export default function BillingPageClient() {
                       onClick={() => handleUpgrade('builder')}
                       disabled={!!checkoutLoading}
                     >
-                      {checkoutLoading === 'builder' ? 'Redirecting…' : 'Start Builder — $599/mo'}
+                      {checkoutLoading === 'builder' ? 'Redirecting…' : 'Start Builder — $99/mo'}
                     </button>
                   ) : null}
                   <Link href="/plans" className="access-settings-btn access-settings-btn--ghost">
                     Compare all plans
                   </Link>
-                  <a
-                    href="mailto:jerry@jdwhite.world?subject=ACCESS%20Enterprise"
-                    className="access-settings-btn access-settings-btn--ghost"
-                  >
-                    Contact sales — Enterprise
-                  </a>
+                  <Link href="/contact" className="access-settings-btn access-settings-btn--ghost">
+                    Contact us — Enterprise
+                  </Link>
                 </div>
               </SectionPanel>
             </>

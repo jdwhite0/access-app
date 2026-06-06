@@ -1,11 +1,21 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useUser, useClerk } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import AccessAppLayout from '@/components/navigation/AccessAppLayout'
 import { PageHeader, SectionPanel } from '@/lib/design-system/components/platform'
 import { deleteAccountAction } from '@/lib/actions/account'
+
+type PrivacyRequestType = 'access' | 'portability' | 'correction' | 'deletion_request'
+
+const PRIVACY_REQUEST_LABELS: Record<PrivacyRequestType, string> = {
+  access:           'Access — Get a copy of my personal data',
+  portability:      'Portability — Export my data in a machine-readable format',
+  correction:       'Correction — Update inaccurate information on file',
+  deletion_request: 'Deletion — Delete my personal data (separate from closing account)',
+}
 
 export default function AccountPageClient() {
   const { user, isLoaded } = useUser()
@@ -15,6 +25,27 @@ export default function AccountPageClient() {
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showDanger, setShowDanger] = useState(false)
+  const [privacyRequestType, setPrivacyRequestType] = useState<PrivacyRequestType>('access')
+  const [privacyRequestSent, setPrivacyRequestSent] = useState(false)
+  const [privacyRequestSending, setPrivacyRequestSending] = useState(false)
+
+  async function handlePrivacyRequest() {
+    setPrivacyRequestSending(true)
+    try {
+      await fetch('/api/email/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: `Privacy Request: ${privacyRequestType}`,
+          message: `User ${user?.emailAddresses?.[0]?.emailAddress ?? user?.id} has submitted a Florida/Georgia FDBR privacy request: ${PRIVACY_REQUEST_LABELS[privacyRequestType]}`,
+          type: 'privacy_request',
+        }),
+      })
+      setPrivacyRequestSent(true)
+    } finally {
+      setPrivacyRequestSending(false)
+    }
+  }
 
   const handle = user?.username
     ? `${user.username.toLowerCase()}.access`
@@ -91,6 +122,48 @@ export default function AccountPageClient() {
             >
               Manage security in Clerk ↗
             </a>
+          </SectionPanel>
+
+          {/* Privacy request — FDBR / Florida + Georgia compliance */}
+          <SectionPanel title="Privacy request">
+            <p className="access-platform-body" style={{ marginBottom: 12 }}>
+              Under the Florida Digital Bill of Rights (FDBR) and Georgia consumer protection law,
+              you have the right to access, correct, export, or delete your personal data.
+              We respond within 45 days.
+            </p>
+            {privacyRequestSent ? (
+              <p className="access-platform-body" style={{ color: '#2D8A6E', marginBottom: 12 }}>
+                Request received. We&apos;ll respond to {user?.emailAddresses?.[0]?.emailAddress} within 45 days.
+              </p>
+            ) : (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+                  {(Object.entries(PRIVACY_REQUEST_LABELS) as [PrivacyRequestType, string][]).map(([val, label]) => (
+                    <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#425466', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="privacy_request_type"
+                        value={val}
+                        checked={privacyRequestType === val}
+                        onChange={() => setPrivacyRequestType(val)}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+                <button
+                  className="access-settings-btn access-settings-btn--secondary"
+                  onClick={handlePrivacyRequest}
+                  disabled={privacyRequestSending}
+                >
+                  {privacyRequestSending ? 'Submitting…' : 'Submit privacy request'}
+                </button>
+              </>
+            )}
+            <p className="access-platform-meta" style={{ marginTop: 12 }}>
+              To delete your account entirely, use the Danger zone below.{' '}
+              <Link href="/privacy" style={{ color: '#697386' }}>Privacy Policy ↗</Link>
+            </p>
           </SectionPanel>
 
           {/* Danger zone */}

@@ -15,36 +15,47 @@ function envPrice(value: string | undefined): string | undefined {
 
 /**
  * Resolve Stripe Price ID for a paid plan and billing interval.
- * Monthly: STRIPE_PRICE_*_MONTHLY, else legacy STRIPE_PRICE_OPERATOR / BUILDER.
+ *
+ * New env vars (preferred):
+ *   STRIPE_PRICE_PERSONAL_MONTHLY / STRIPE_PRICE_PERSONAL_ANNUAL
+ *   STRIPE_PRICE_BUILDER_MONTHLY  / STRIPE_PRICE_BUILDER_ANNUAL
+ *
+ * Legacy env vars still supported for operator:
+ *   STRIPE_PRICE_OPERATOR_MONTHLY / STRIPE_PRICE_OPERATOR_ANNUAL
+ *   STRIPE_PRICE_OPERATOR (legacy fallback)
  */
 export function getStripePriceId(
   plan: PaidPlan,
   interval: BillingInterval
 ): string | undefined {
-  if (interval === 'month') {
-    if (plan === 'operator') {
-      return (
-        envPrice(process.env.STRIPE_PRICE_OPERATOR_MONTHLY) ??
-        envPrice(process.env.STRIPE_PRICE_OPERATOR)
-      )
-    }
-    return (
-      envPrice(process.env.STRIPE_PRICE_BUILDER_MONTHLY) ??
-      envPrice(process.env.STRIPE_PRICE_BUILDER)
-    )
+  if (plan === 'personal') {
+    return interval === 'month'
+      ? envPrice(process.env.STRIPE_PRICE_PERSONAL_MONTHLY)
+      : envPrice(process.env.STRIPE_PRICE_PERSONAL_ANNUAL)
   }
 
   if (plan === 'operator') {
-    return envPrice(process.env.STRIPE_PRICE_OPERATOR_ANNUAL)
+    // legacy — falls back through old env var names
+    return interval === 'month'
+      ? (envPrice(process.env.STRIPE_PRICE_OPERATOR_MONTHLY) ?? envPrice(process.env.STRIPE_PRICE_OPERATOR))
+      : envPrice(process.env.STRIPE_PRICE_OPERATOR_ANNUAL)
   }
-  return envPrice(process.env.STRIPE_PRICE_BUILDER_ANNUAL)
+
+  // builder
+  return interval === 'month'
+    ? (envPrice(process.env.STRIPE_PRICE_BUILDER_MONTHLY) ?? envPrice(process.env.STRIPE_PRICE_BUILDER))
+    : envPrice(process.env.STRIPE_PRICE_BUILDER_ANNUAL)
 }
 
-/** Both paid plans need annual Price IDs before the plans page enables annual checkout. */
+/**
+ * Annual billing is available when Personal (or legacy Operator) AND Builder
+ * both have valid annual Price IDs configured.
+ */
 export function isAnnualBillingEnabled(): boolean {
-  return (
-    !!getStripePriceId('operator', 'year') && !!getStripePriceId('builder', 'year')
-  )
+  const personalAnnual =
+    !!getStripePriceId('personal', 'year') || !!getStripePriceId('operator', 'year')
+  const builderAnnual = !!getStripePriceId('builder', 'year')
+  return personalAnnual && builderAnnual
 }
 
 export function getMonthlyStripePriceId(plan: PaidPlan): string | undefined {

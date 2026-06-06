@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import SignUpMarketingConsent from '@/components/auth/SignUpMarketingConsent'
+import SignUpAgeGate from '@/components/auth/SignUpAgeGate'
 
 export const metadata = {
   title: 'Create your JYSON — JD AI Systems',
@@ -63,6 +64,7 @@ export default async function SignUpPage() {
               <p className="access-auth-form__subtitle">Free forever. Your AI operator is waiting.</p>
             </div>
 
+            <SignUpAgeGate />
             <SignUpMarketingConsent />
 
             <SignUp

@@ -60,19 +60,31 @@ export const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' })
   : null
 
-export type StripePlan = 'operator' | 'builder' | 'enterprise'
+export type StripePlan = 'personal' | 'operator' | 'builder' | 'enterprise'
 
-/** Monthly Price IDs (legacy STRIPE_PRICE_* fall back in getMonthlyStripePriceId). */
+/** Monthly Price IDs. 'operator' is legacy — maps to Personal display. */
 export const PLAN_PRICE_MAP: Record<StripePlan, string | undefined> = {
-  operator: getMonthlyStripePriceId('operator'),
-  builder: getMonthlyStripePriceId('builder'),
+  personal:   getMonthlyStripePriceId('personal'),
+  operator:   getMonthlyStripePriceId('operator'),   // legacy
+  builder:    getMonthlyStripePriceId('builder'),
   enterprise: undefined,
 }
 
 export const PLAN_NAMES: Record<StripePlan, string> = {
-  operator:   'ACCESS Operator',
+  personal:   'ACCESS Personal',
+  operator:   'ACCESS Personal',   // legacy — displays as Personal
   builder:    'ACCESS Builder',
   enterprise: 'ACCESS Enterprise',
+}
+
+/** Canonical display name for any plan, including legacy aliases. */
+export function getPlanDisplayName(plan: StripePlan): string {
+  return PLAN_NAMES[plan] ?? 'ACCESS'
+}
+
+/** Whether a plan is the new Personal tier or its legacy alias. */
+export function isPersonalPlan(plan: StripePlan): boolean {
+  return plan === 'personal' || plan === 'operator'
 }
 
 export function stripeEnabled(): boolean {

@@ -5,10 +5,9 @@ import type { EmbeddedCheckoutPlan } from '@/lib/stripe/actions'
 import { getPlanTier } from '@/lib/stripe/plans'
 import { isAnnualBillingEnabled, type BillingInterval } from '@/lib/stripe/prices'
 
-const VALID_PLANS: EmbeddedCheckoutPlan[] = ['operator', 'builder']
+const VALID_PLANS: EmbeddedCheckoutPlan[] = ['personal', 'operator', 'builder']
 
-const ENTERPRISE_MAIL =
-  'mailto:jerry@jdwhite.world?subject=ACCESS%20Enterprise'
+const ENTERPRISE_CONTACT = '/contact'
 
 type Props = {
   params: Promise<{ plan: string }>
@@ -33,7 +32,7 @@ export default async function CheckoutPlanPage({ params, searchParams }: Props) 
   }
 
   if (plan === 'enterprise') {
-    redirect(ENTERPRISE_MAIL)
+    redirect(ENTERPRISE_CONTACT)
   }
 
   if (!VALID_PLANS.includes(plan as EmbeddedCheckoutPlan)) {
