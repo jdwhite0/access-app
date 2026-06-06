@@ -1,4 +1,4 @@
-export type Arm = 'consulting' | 'bridge-video' | 'access'
+export type Arm = 'consulting' | 'bridge-video' | 'access' | 'wholesale-payments'
 
 export type PipelineStage =
   | 'IDENTIFIED'
@@ -18,8 +18,10 @@ export type PipelineStage =
 export type AgentCode =
   | 'SCOUT-CON'
   | 'SCOUT-BV'
+  | 'SCOUT-WP'
   | 'REACH-CON'
   | 'REACH-BV'
+  | 'REACH-WP'
   | 'PUB-ACCESS'
   | 'PIPE-MGR'
   | 'REPORT-2X'

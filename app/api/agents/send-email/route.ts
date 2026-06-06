@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
     consulting: 'Jerry White <hello@jdwhite.world>',
     'bridge-video': 'Bridge Video <hello@jdwhite.world>',
     access: 'ACCESS <notifications@jdwhite.world>',
+    'wholesale-payments': 'Jerry White <hello@jdwhite.world>',
   }
 
   const fromAddress = fromMap[body.arm] ?? 'Jerry White <hello@jdwhite.world>'
