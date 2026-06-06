@@ -27,8 +27,16 @@ export function createSupabaseAdmin(): SupabaseClient | null {
   if (!url || !key) return null
 
   if (!_client) {
+    // Node < 22 has no native WebSocket — supply the 'ws' transitive dep if available
+    let wsTransport: unknown
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      wsTransport = require('ws')
+    } catch { /* Node 22+ has native WebSocket */ }
+
     _client = createClient(url, key, {
       auth: { persistSession: false },
+      ...(wsTransport ? { realtime: { transport: wsTransport as typeof WebSocket } } : {}),
     })
   }
   return _client

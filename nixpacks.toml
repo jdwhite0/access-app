@@ -1,2 +1,5 @@
+[variables]
+NODE_VERSION = "22"
+
 [start]
 cmd = './node_modules/.bin/tsx scripts/slack-operator-bot.ts'
