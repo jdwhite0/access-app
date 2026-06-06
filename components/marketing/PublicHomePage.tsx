@@ -142,27 +142,11 @@ export default function PublicHomePage() {
         paddingBottom: 'clamp(80px,12vw,140px)',
       }}>
         {/* Gradient mesh */}
-        <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
-          {/* Subtle grid */}
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px)', backgroundSize: '52px 52px' }} />
-          {/* Left ambient glow */}
-          <div style={{ position: 'absolute', top: '-10%', left: '-15%', width: '55%', height: '90%', background: 'radial-gradient(ellipse at center, rgba(124,108,248,0.12) 0%, transparent 65%)', filter: 'blur(48px)' }} />
-          {/* 3D orb — right side */}
-          <div style={{
-            position: 'absolute',
-            top: '50%', right: '-8%',
-            transform: 'translateY(-52%)',
-            width: 'clamp(340px,44vw,580px)',
-            height: 'clamp(340px,44vw,580px)',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at 36% 30%, #FFD166 0%, #FF7B35 12%, #F74B8A 28%, #CC44CC 44%, #8B5CF6 60%, #40C0D0 78%, #0A2540 100%)',
-            boxShadow: 'inset -50px -40px 100px rgba(0,0,0,0.65), inset 30px 25px 60px rgba(255,180,80,0.08), 0 0 120px rgba(140,80,220,0.2), 0 0 60px rgba(255,100,60,0.12)',
-            opacity: 0.82,
-          }} />
-          {/* Orb ambient bleed */}
-          <div style={{ position: 'absolute', top: '15%', right: '-14%', width: 'clamp(440px,58vw,760px)', height: 'clamp(440px,58vw,760px)', borderRadius: '50%', background: 'radial-gradient(circle at center, rgba(200,80,180,0.1) 0%, rgba(124,108,248,0.08) 40%, transparent 70%)', filter: 'blur(64px)' }} />
-          {/* Bottom fade to dark */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to top, rgba(6,13,24,1) 0%, transparent 100%)' }} />
+        <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+          <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70%', height: '100%', background: 'radial-gradient(ellipse at center, rgba(124,108,248,0.18) 0%, transparent 65%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', top: '10%', right: '-5%', width: '55%', height: '80%', background: 'radial-gradient(ellipse at center, rgba(64,192,208,0.15) 0%, transparent 65%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', bottom: '-10%', left: '30%', width: '50%', height: '60%', background: 'radial-gradient(ellipse at center, rgba(10,37,64,0.8) 0%, transparent 70%)' }} />
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '48px 48px', opacity: 0.5 }} />
         </div>
 
         <div style={{ position: 'relative', zIndex: 1, maxWidth: MAX, margin: '0 auto', padding: '0 clamp(16px,3vw,48px)', textAlign: 'center' }}>
