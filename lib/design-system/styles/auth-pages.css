@@ -232,17 +232,18 @@
 .access-clerk-input {
   height: 44px !important;
   border: 1px solid #e6ebf1 !important;
-  border-radius: 6px !important;
-  background: #ffffff !important;
+  border-radius: 8px !important;
+  background: #f9fafb !important;
   color: #0a2540 !important;
   font-size: 15px !important;
   padding: 0 14px !important;
-  transition: border-color 0.15s !important;
+  transition: border-color 0.15s, background 0.15s !important;
   box-shadow: none !important;
 }
 
 .access-clerk-input:focus {
   border-color: #40c0d0 !important;
+  background: #ffffff !important;
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(64,192,208,0.1) !important;
 }
@@ -321,4 +322,34 @@
     padding-left: 24px;
     padding-right: 24px;
   }
+}
+
+/* ── Clerk internal class overrides ──────────────────────────────────────── */
+/* Target Clerk's own generated classes directly so the card never shows a box */
+
+.cl-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  gap: 0 !important;
+}
+
+.cl-rootBox {
+  width: 100% !important;
+}
+
+.cl-main {
+  width: 100% !important;
+}
+
+.cl-header {
+  display: none !important;
+}
+
+.cl-footer {
+  display: none !important;
 }

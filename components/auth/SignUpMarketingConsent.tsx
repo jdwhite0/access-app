@@ -6,10 +6,6 @@ import {
   SIGNUP_MARKETING_CONSENT_LABEL,
 } from '@/lib/email/constants'
 
-/**
- * Optional marketing consent on signup — not required to create an account.
- * Value is persisted to sessionStorage and processed on onboarding (see OnboardingFlow).
- */
 export default function SignUpMarketingConsent() {
   const [optIn, setOptIn] = useState(false)
 
@@ -22,27 +18,12 @@ export default function SignUpMarketingConsent() {
   }, [optIn])
 
   return (
-    <label
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 10,
-        marginTop: 20,
-        padding: '14px 16px',
-        borderRadius: 8,
-        border: '1px solid #e6ebf1',
-        background: '#f9fafb',
-        cursor: 'pointer',
-        fontSize: 13,
-        lineHeight: 1.5,
-        color: '#425466',
-      }}
-    >
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 20, fontSize: 13, lineHeight: 1.6, color: '#697386', cursor: 'pointer', userSelect: 'none' }}>
       <input
         type="checkbox"
         checked={optIn}
         onChange={(e) => setOptIn(e.target.checked)}
-        style={{ marginTop: 3, flexShrink: 0 }}
+        style={{ marginTop: 3, flexShrink: 0, accentColor: '#0a2540', width: 14, height: 14 }}
       />
       <span>{SIGNUP_MARKETING_CONSENT_LABEL}</span>
     </label>
