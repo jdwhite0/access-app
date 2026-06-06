@@ -140,11 +140,10 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 // ─── Plan card ────────────────────────────────────────────────────────────────
-function PlanCard({ tier, interval, annualEnabled, payMethod }: {
+function PlanCard({ tier, interval, annualEnabled }: {
   tier: PlanTierConfig
   interval: BillingInterval
   annualEnabled: boolean
-  payMethod: 'card' | 'ach'
 }) {
   const isEnt      = tier.id === 'enterprise'
   const isPersonal = tier.id === 'personal' || tier.id === 'operator'
@@ -245,7 +244,6 @@ type Props = { annualBillingEnabled: boolean }
 
 export default function PlansPageClient({ annualBillingEnabled }: Props) {
   const [interval,    setInterval]    = useState<BillingInterval>('month')
-  const [payMethod,   setPayMethod]   = useState<'card' | 'ach'>('card')
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [tableOpen,   setTableOpen]   = useState(false)
 
@@ -291,21 +289,6 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
           <p style={{ margin: '12px 0 0', fontSize: 13, color: C.textMute }}>No credit card required · Cancel anytime</p>
         </header>
 
-        {/* ── Payment method toggle ── */}
-        <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', background: C.bgAlt, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
-            <button type="button" onClick={() => setPayMethod('card')}
-              style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === 'card' ? C.text : 'transparent', color: payMethod === 'card' ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
-              Credit / Debit Card
-            </button>
-            <button type="button" onClick={() => setPayMethod('ach')}
-              style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === 'ach' ? C.text : 'transparent', color: payMethod === 'ach' ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 7 }}>
-              Pay by Bank
-              <span style={{ fontSize: 10, fontWeight: 700, background: C.green, color: '#fff', padding: '2px 7px', borderRadius: 20, letterSpacing: '0.04em', textTransform: 'uppercase' }}>Recommended</span>
-            </button>
-          </div>
-        </div>
-
         {/* ── Billing interval toggle ── */}
         <div style={{ marginBottom: 44, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', background: C.bgAlt, border: `1px solid ${C.border}`, borderRadius: 8, overflow: 'hidden' }}>
@@ -325,7 +308,7 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
         {/* ── Plan cards ── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 80 }}>
           {PLAN_TIERS.map(tier => (
-            <PlanCard key={tier.id} tier={tier} interval={interval} annualEnabled={annualBillingEnabled} payMethod={payMethod} />
+            <PlanCard key={tier.id} tier={tier} interval={interval} annualEnabled={annualBillingEnabled} />
           ))}
         </div>
 
