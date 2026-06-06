@@ -90,7 +90,7 @@ async function runOperator(input: {
   const postBeat = () => {
     const msg = stages[Math.min(stageIndex, stages.length - 1)]
     stageIndex += 1
-    web.chat.postMessage({ channel: channelId, thread_ts: threadTs, text: `_${msg}_` }).catch(() => {})
+    web.chat.postMessage({ channel: channelId, text: `_${msg}_` }).catch(() => {})
   }
 
   firstTimer = setTimeout(() => {
@@ -112,7 +112,7 @@ async function runOperator(input: {
     stopHeartbeat()
 
     for (const msg of result.messages) {
-      await web.chat.postMessage({ channel: channelId, thread_ts: threadTs, text: msg })
+      await web.chat.postMessage({ channel: channelId, text: msg })
     }
     await web.reactions.add({ channel: channelId, timestamp: threadTs, name: 'white_check_mark' }).catch(() => {})
   } finally {
