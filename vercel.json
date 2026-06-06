@@ -23,6 +23,13 @@
     {
       "path": "/api/cron/email-dispatch",
       "schedule": "10 11 * * 2,4"
-    }
+    },
+
+    { "path": "/api/cron/agent-pipe", "schedule": "0 11 * * *" },
+    { "path": "/api/cron/agent-pipe", "schedule": "0 16 * * *" },
+    { "path": "/api/cron/agent-pipe", "schedule": "0 21 * * *" },
+
+    { "path": "/api/cron/agent-report?report_type=MORNING", "schedule": "30 11 * * *" },
+    { "path": "/api/cron/agent-report?report_type=EVENING", "schedule": "0 21 * * *" }
   ]
 }
