@@ -7,7 +7,6 @@ import {
   getPlanBadges,
   getPlanCta,
   getPlanDisplayPricing,
-  calcAchSavings,
   type PlanTierConfig,
 } from '@/lib/stripe/plans'
 import type { BillingInterval } from '@/lib/stripe/prices'
@@ -88,14 +87,6 @@ const COMPARE_SECTIONS = [
   },
 ]
 
-// ─── ACH example table ────────────────────────────────────────────────────────
-const ACH_EXAMPLES = [
-  { label: '$29/mo (Personal)',             card: '$1.14', ach: '$0.23', save: '$0.91/mo'  },
-  { label: '$99/mo (Builder)',              card: '$3.17', ach: '$0.79', save: '$2.38/mo'  },
-  { label: '$299/mo (Enterprise)',          card: '$8.97', ach: '$2.39', save: '$6.58/mo'  },
-  { label: '1,000 users × $99/mo',         card: '$3,170/mo', ach: '$792/mo', save: '$2,378/mo' },
-]
-
 // ─── Competitors ──────────────────────────────────────────────────────────────
 const COMPETITORS = [
   { name: 'Notion',         price: '$8–$16/user/mo',   cat: 'Docs + wiki',        gap: 'Great for notes. No registry, no CRM, no JYSON. No ownership layer.' },
@@ -109,7 +100,7 @@ const COMPETITORS = [
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 const FAQS = [
   { q: 'What happens after my 14-day Builder trial?', a: 'If you add a payment method, you continue on Builder at $99/month. If you don\'t, your data is preserved in read-only mode under Personal limits. You can subscribe anytime.' },
-  { q: 'Can I pay with a bank transfer instead of a card?', a: 'Yes. ACH bank transfer is available at checkout for Builder and Enterprise. The fee is 0.8% vs 2.9% + $0.30 for cards. We strongly recommend it.' },
+  { q: 'Can I pay with a bank transfer instead of a card?', a: 'Yes. ACH bank transfer is available at checkout for US bank accounts on Builder and Enterprise plans. Select "Bank Transfer" at checkout.' },
   { q: 'What is JYSON?', a: 'JYSON is the intelligence layer inside ACCESS. Unlike a generic AI chatbot, JYSON knows your projects, assets, customers, systems, and history. It surfaces insights, automates tasks, and helps you run your operation.' },
   { q: 'What\'s the difference between Personal and Builder?', a: 'Personal is for organizing your world (3 projects, 1 vault, 100 JYSON messages). Builder is for running a business — unlimited projects, CRM, workflows, full JYSON business intelligence, and 5 vaults.' },
   { q: 'Is ACCESS right for nonprofits and churches?', a: 'Yes. Builder at $99/month replaces the 4-5 tools these organizations typically use. Registry + Projects + CRM + JYSON in one place.' },
@@ -178,8 +169,6 @@ function PlanCard({ tier, interval, annualEnabled, payMethod }: {
   const paidPlan = isPersonal ? 'personal' : (isEnt ? null : 'builder')
   const pricing  = paidPlan ? getPlanDisplayPricing(paidPlan, interval) : null
   const monthlyAmt = pricing ? (interval === 'month' ? pricing.amount : (pricing.equivalentMonthly ?? pricing.amount)) : (isEnt ? 299 : 0)
-  const achSave  = calcAchSavings(monthlyAmt)
-
   return (
     <article style={cardStyle}>
       {isFeatured && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #0EA5B9, #2D8A6E)' }} />}
@@ -217,11 +206,6 @@ function PlanCard({ tier, interval, annualEnabled, payMethod }: {
         </>
       ) : null}
 
-      {payMethod === 'ach' && (
-        <p style={{ margin: '4px 0 8px', fontSize: 12, color: isFeatured ? 'rgba(45,138,110,0.9)' : C.green, background: isFeatured ? 'rgba(45,138,110,0.15)' : C.greenSoft, padding: '4px 8px', borderRadius: 4, display: 'inline-block' }}>
-          ACH saves ${achSave.toFixed(2)}/mo vs card
-        </p>
-      )}
 
       <p style={{ margin: '12px 0 24px', fontSize: 14, color: muteColor, lineHeight: 1.55 }}>{tier.subtitle}</p>
 
@@ -276,7 +260,6 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
     if (interval === 'year' && !annualBillingEnabled) setInterval('month')
   }, [interval, annualBillingEnabled])
 
-  const achScale1kSave = Math.round((99 * 1000 * (0.029 - 0.008)) - 1000 * 0.30).toLocaleString('en-US')
 
   return (
     <div style={{ background: C.bg, minHeight: '100dvh', color: C.text, fontFamily: 'var(--sans, Inter, -apple-system, sans-serif)', overflowX: 'hidden' }}>
@@ -314,15 +297,10 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
             {(['card', 'ach'] as const).map(m => (
               <button key={m} type="button" onClick={() => setPayMethod(m)}
                 style={{ padding: '7px 18px', fontSize: 13, fontWeight: 600, background: payMethod === m ? C.text : 'transparent', color: payMethod === m ? '#fff' : C.textMute, border: 'none', cursor: 'pointer', transition: 'all 0.15s' }}>
-                {m === 'card' ? 'Pay by Card (2.9%)' : 'Pay by Bank — ACH (0.8%)'}
+                {m === 'card' ? 'Credit / Debit Card' : 'Bank Transfer (ACH)'}
               </button>
             ))}
           </div>
-          {payMethod === 'ach' && (
-            <span style={{ fontSize: 13, color: C.green, fontWeight: 600 }}>
-              Saves ~${achScale1kSave}/month at 1,000 users vs card fees
-            </span>
-          )}
         </div>
 
         {/* ── Billing interval toggle ── */}
@@ -347,41 +325,6 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
             <PlanCard key={tier.id} tier={tier} interval={interval} annualEnabled={annualBillingEnabled} payMethod={payMethod} />
           ))}
         </div>
-
-        {/* ── ACH savings section ── */}
-        <section style={{ marginBottom: 80, background: C.bgAlt, borderRadius: 16, padding: 'clamp(28px,4vw,48px)', border: `1px solid ${C.border}` }}>
-          <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.textMute }}>Payment Strategy</p>
-          <h2 style={{ margin: '0 0 12px', fontSize: 'clamp(22px,3vw,30px)', fontWeight: 700, letterSpacing: '-0.025em', color: C.text }}>Pay by bank. Keep more revenue.</h2>
-          <p style={{ margin: '0 0 32px', fontSize: 16, color: C.textSub, maxWidth: '54ch', lineHeight: 1.6 }}>
-            Stripe processes both cards and ACH bank transfers. Cards cost 2.9% + $0.30.
-            ACH costs 0.8%. For recurring subscriptions, that gap compounds fast.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
-            {ACH_EXAMPLES.map(row => (
-              <div key={row.label} style={{ background: C.bg, borderRadius: 10, padding: '20px 18px', border: `1px solid ${C.border}` }}>
-                <p style={{ margin: '0 0 12px', fontSize: 11, fontWeight: 700, color: C.textMute, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{row.label}</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.textSub }}><span>Card</span><span>{row.card}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: C.green, fontWeight: 600 }}><span>ACH</span><span>{row.ach}</span></div>
-                  <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 5, display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, color: C.text }}><span>Saves</span><span>{row.save}</span></div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ background: C.bgDark, borderRadius: 10, padding: '20px 24px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>At 1,000 Builder users ($99/month):</p>
-              <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Card fees ≈ $3,170/month · ACH fees ≈ $792/month</p>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ margin: '0 0 2px', fontSize: 22, fontWeight: 700, color: C.accent }}>$28,536/year saved</p>
-              <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>by routing through ACH instead of cards</p>
-            </div>
-          </div>
-          <p style={{ margin: '16px 0 0', fontSize: 13, color: C.textMute }}>
-            ACH available on Builder and Enterprise. Enterprise defaults to ACH. Wire transfer available for annual Enterprise contracts.
-          </p>
-        </section>
 
         {/* ── Comparison table ── */}
         <section id="compare" style={{ marginBottom: 80 }}>
@@ -500,7 +443,7 @@ export default function PlansPageClient({ annualBillingEnabled }: Props) {
             <SecondaryButton href="/contact" style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)' }}>Talk to us about Enterprise →</SecondaryButton>
           </div>
           <p style={{ margin: '16px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
-            Personal · Builder · Enterprise · ACH bank transfer available
+            Personal · Builder · Enterprise · Multiple payment methods accepted
           </p>
         </section>
 

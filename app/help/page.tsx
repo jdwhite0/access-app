@@ -38,7 +38,7 @@ const SECTIONS = [
       },
       {
         q: 'What payment methods do you accept?',
-        a: 'We accept all major credit cards and debit cards, plus ACH bank transfer (US bank accounts). ACH is recommended for Builder and Enterprise — the processing fee is 0.8% vs 2.9% for cards, which saves meaningful money at scale.',
+        a: 'We accept all major credit cards, debit cards, and ACH bank transfer (US bank accounts). Bank transfer is available on Builder and Enterprise plans. Select your payment method at checkout.',
       },
       {
         q: 'Can I switch plans?',
