@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Arm, MessageType } from '@/lib/revenue-agents/types'
+import { buildHtmlEmail } from '@/lib/revenue-agents/signatures'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
         to: ['jdevinwhite2@gmail.com'],
         subject: `[MOCK TEST] [original → ${body.to}] ${body.subject}`,
         text: `--- MOCK TEST ---\nOriginal to: ${body.to}\nSubject: ${body.subject}\nArm: ${body.arm}\nMessage type: ${body.message_type}\n---\n${body.body}`,
+        html: buildHtmlEmail(`--- MOCK TEST ---\nOriginal to: ${body.to}\nArm: ${body.arm}\n---\n${body.body}`, body.arm),
       }),
     })
 
@@ -89,6 +91,7 @@ export async function POST(req: NextRequest) {
       bcc: ['jdevinwhite2@gmail.com'],
       subject: body.subject,
       text: body.body,
+      html: buildHtmlEmail(body.body, body.arm),
       ...(replyTo ? { reply_to: replyTo } : {}),
     }),
   })
