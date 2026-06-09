@@ -93,3 +93,15 @@ export async function GET(
   if (error) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ lead: data })
 }
+
+// DELETE /api/agents/pipeline/[id]
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!verifyAgentAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { id } = await params
+  const { error } = await supabase.from('pipeline_leads').delete().eq('id', id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ deleted: true, id })
+}
