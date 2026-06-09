@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyCronOrInternalAuth } from '@/lib/email/agents/cron-auth'
+import { slackPostMessage } from '@/lib/slack/client'
+import { PIPE_MGR_CHANNEL, EMPIRE_PIPELINE_CHANNEL } from '@/lib/revenue-agents/slack-channels'
 import type { PipelineStage, Arm } from '@/lib/revenue-agents/types'
 import {
   FOLLOW_UP_ADVANCE_DAYS,
@@ -175,6 +177,20 @@ export async function GET(request: NextRequest) {
     .update({ last_run_at: now.toISOString(), updated_at: now.toISOString() })
     .eq('agent_code', 'PIPE-MGR')
     .eq('date', today)
+
+  // ── 5. Post Slack summary ────────────────────────────────────────
+  const runTime = now.toLocaleString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false })
+  const flaggedLines = hotLeads?.length
+    ? hotLeads.slice(0, 5).map(l => `• *${l.first_name ?? l.email}* (${l.company ?? l.arm}) — ${l.stage}`).join('\n')
+    : '_No new hot leads_'
+
+  const pipeMgrMsg = `*PIPE-MGR* — Run complete ${now.toISOString().split('T')[0]} ${runTime} ET\n⬆️ Leads advanced: ${results.advanced}\n🔥 Flagged for Jerry: ${results.flagged}\n🔄 Reactivated from nurture: ${results.reactivated}\n\n*HOT LEADS*\n${flaggedLines}`
+  const empireMsg = `PIPE-MGR ✅ Pipeline managed — ${results.advanced} advanced, ${results.flagged} flagged, ${results.reactivated} reactivated`
+
+  await Promise.all([
+    slackPostMessage({ channel: PIPE_MGR_CHANNEL, text: pipeMgrMsg }),
+    slackPostMessage({ channel: EMPIRE_PIPELINE_CHANNEL, text: empireMsg }),
+  ])
 
   return NextResponse.json({
     ok: true,

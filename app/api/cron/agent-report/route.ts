@@ -4,13 +4,15 @@ import { verifyCronOrInternalAuth } from '@/lib/email/agents/cron-auth'
 import { slackPostMessage } from '@/lib/slack/client'
 import type { ReportType, PipelineStage, Arm } from '@/lib/revenue-agents/types'
 import { REVENUE_TARGET_MONTHLY, TARGET_START_DATE } from '@/lib/revenue-agents/types'
+import { generatePerformanceReport } from '@/lib/revenue-agents/agent-analyzer'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const REPORT_CHANNEL = process.env.SLACK_REVENUE_CHANNEL ?? process.env.SLACK_CHANNEL ?? '#general'
+const REPORT_CHANNEL = 'C0B8U0ZA5NV'  // #daily-report
+const EMPIRE_CHANNEL = 'C0B8KJXKYCB'  // #empire-pipeline
 
 /**
  * REPORT-2X — Twice-Daily Pipeline Reporter
@@ -66,6 +68,9 @@ export async function GET(request: NextRequest) {
   const followUpsSentToday = todayLogs?.filter(l => l.action?.startsWith('FOLLOW_UP') && l.success).length ?? 0
   const stagesAdvancedToday = todayLogs?.filter(l => l.action === 'STAGE_ADVANCED' && l.success).length ?? 0
 
+  // ── Agent performance report ─────────────────────────────────────
+  const perfReport = await generatePerformanceReport()
+
   // ── Hot leads needing attention ──────────────────────────────────
   const hotLeads = allLeads?.filter(l => l.flagged_for_jerry) ?? []
 
@@ -106,6 +111,22 @@ export async function GET(request: NextRequest) {
   const mrrBar = Math.round((totalMrrClosed / REVENUE_TARGET_MONTHLY) * 20)
   const mrrBarStr = '█'.repeat(mrrBar) + '░'.repeat(20 - mrrBar)
 
+  // ── Agent performance scores ─────────────────────────────────────
+  const agentScoreLines = perfReport.agent_metrics
+    .filter(m => m.weekly.outreach_sent > 0 || m.weekly.submitted > 0)
+    .map(m => {
+      const icon = m.trend === 'improving' ? '📈' : m.trend === 'declining' ? '📉' : '➡️'
+      return `${icon} *${m.agent}*: ${m.performance_score}/100 | Conv: ${m.conversion_rates.outreach_to_reply}% → ${m.conversion_rates.reply_to_call}% | Wkly outreach: ${m.weekly.outreach_sent}`
+    }).join('\n')
+
+  const bottleneckLines = perfReport.bottlenecks.length > 0
+    ? perfReport.bottlenecks.map(b =>
+        `${b.severity === 'critical' ? '🚨' : '⚠️'} *${b.arm}* stuck in ${b.stage}: ${b.leads_stuck} leads (${b.avg_days_in_stage}d avg)`
+      ).join('\n')
+    : '_No bottlenecks detected_'
+
+  const pv = perfReport.pipeline_value
+
   const message = reportType === 'MORNING'
     ? `
 *🌅 EMPIRE MORNING BRIEF — ${today}*
@@ -114,15 +135,27 @@ export async function GET(request: NextRequest) {
 *📊 MRR PROGRESS*
 \`${mrrBarStr}\` $${totalMrrClosed.toLocaleString()} / $${REVENUE_TARGET_MONTHLY.toLocaleString()} target
 Gap: $${mrrGap.toLocaleString()} | ${daysRemaining} days remaining in 90-day window
+Weighted pipeline: $${pv.weighted_value.toLocaleString()} | Projected: $${perfReport.revenue_projection.projected_closed_this_month.toLocaleString()}
 
 *📋 TODAY'S QUOTA*
 ${quotaLines || '_No quotas set_'}
 
+*🎯 AGENT PERFORMANCE (7-day)*
+${agentScoreLines || '_No agent activity yet_'}
+
 *🔄 PIPELINE SNAPSHOT*
 ${pipelineLines}
 
+*🚧 BOTTLENECKS*
+${bottleneckLines}
+
 *🔥 HOT LEADS — NEEDS YOUR ATTENTION*
 ${hotLeadLines}
+
+*🎯 TODAY'S TARGET*
+SCOUTs find ~100 leads → REACHes send ~100 emails → PIPE-MGR advances follow-ups
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+_The system is running._
 `.trim()
     : `
 *🌆 EMPIRE EVENING REPORT — ${today}*
@@ -136,7 +169,14 @@ ${quotaLines || '_No quotas_'}
 
 *💰 REVENUE STATUS*
 \`${mrrBarStr}\` $${totalMrrClosed.toLocaleString()} / $${REVENUE_TARGET_MONTHLY.toLocaleString()}
+Pipeline value: $${pv.total_value.toLocaleString()} (weighted: $${pv.weighted_value.toLocaleString()})
 ${daysRemaining} days remaining | Gap: $${mrrGap.toLocaleString()}
+
+*🎯 AGENT SCORES*
+${agentScoreLines || '_No weekly data yet_'}
+
+*🚧 BOTTLENECKS*
+${bottleneckLines}
 
 *🔥 FLAGS FOR JERRY*
 ${hotLeadLines}
@@ -145,7 +185,16 @@ _Next run: tomorrow morning 7:30am_
 `.trim()
 
   // ── Post to Slack ─────────────────────────────────────────────────
-  const slackResult = await slackPostMessage({ channel: REPORT_CHANNEL, text: message })
+  const finalMessage = process.env.MOCK_MODE === 'true'
+    ? `[MOCK TEST] — ${message.replace(/_The system is running._/, '_Mock test — system is running._')}`
+    : message
+  const slackResult = await slackPostMessage({ channel: REPORT_CHANNEL, text: finalMessage })
+
+  // One-liner to #empire-pipeline
+  const empireOneLiner = reportType === 'MORNING'
+    ? `📋 Morning brief posted — ${hotLeads.length} flagged leads, MRR gap: $${mrrGap.toLocaleString()}`
+    : `📊 Evening brief posted — ${leadsFoundToday} leads found, ${outreachSentToday} emails sent, $${totalMrrClosed.toLocaleString()} closed`
+  await slackPostMessage({ channel: EMPIRE_CHANNEL, text: empireOneLiner }).catch(() => null)
 
   // ── Store report ──────────────────────────────────────────────────
   const payload = {
