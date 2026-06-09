@@ -38,6 +38,13 @@ const isPublicRoute = createRouteMatcher([
   '/api/concierge/(.*)',
   // JDWhite.world public endpoints (subscribe, ecosystem)
   '/api/jdw/(.*)',
+  // Revenue agent API — header-based auth (x-agent-key), not Clerk session
+  '/api/agents/(.*)',
+  '/api/cron/agent-pipe',
+  '/api/cron/agent-report(.*)',
+  // Communications — Quo/OpenPhone webhooks, Slack events, internal routing
+  '/api/communications/(.*)',
+  '/api/integrations/slack/(.*)',
 ])
 
 const isAuthRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
