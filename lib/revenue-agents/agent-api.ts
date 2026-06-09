@@ -22,7 +22,6 @@ interface LeadInput {
   source_agent: string
   source_url?: string
   tags?: string[]
-  estimated_value?: number
   raw_data?: Record<string, unknown>
 }
 

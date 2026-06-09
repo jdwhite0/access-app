@@ -129,7 +129,6 @@ export async function run(): Promise<{ success: boolean; summary: string; leadsA
         source_agent: AGENT_CODE,
         source_url: lead.source_url,
         tags: [ARM, 'merchant-services', (lead.industry ?? 'general').toLowerCase().replace(/\s+/g, '-')],
-        estimated_value: 750,
         raw_data: {
           original_score: lead.icp_score,
           score_adjustment: verification.overall.score_adjustment,

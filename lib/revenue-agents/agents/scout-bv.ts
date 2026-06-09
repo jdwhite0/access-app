@@ -130,7 +130,6 @@ Each profile needs: first_name, last_name, company, website, title, location (Ci
       source_agent: AGENT_CODE,
       source_url: lead.source_url,
       tags: [ARM, 'video', lead.industry ?? 'general'].filter(Boolean),
-      estimated_value: 5000,
       raw_data: {
         original_score: lead.icp_score,
         score_adjustment: verification.overall.score_adjustment,
