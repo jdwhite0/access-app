@@ -42,6 +42,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/agents/(.*)',
   '/api/cron/agent-pipe',
   '/api/cron/agent-report(.*)',
+  '/api/cron/run-all-agents',
   // Communications — Quo/OpenPhone webhooks, Slack events, internal routing
   '/api/communications/(.*)',
   '/api/integrations/slack/(.*)',
