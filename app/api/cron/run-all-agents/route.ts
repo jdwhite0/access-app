@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[cron] Failed to run revenue agents:', msg)
-    await alertSystem(`CRITICAL: Daily revenue agents cron run failed with error: ${msg}`).catch(() => {})
+    await slackPostMessage({ channel: 'C0B8KJXKYCB', text: `🚨 CRITICAL: Daily revenue agents cron run failed with error: ${msg}` }).catch(() => {})
 
     return NextResponse.json({
       error: `Cron failed: ${msg}`,
