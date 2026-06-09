@@ -168,3 +168,30 @@ Body: { "agent": "REACH-BV", "increment": [count] }
 **FOLLOW_UP_2 (Day 7):** Add one proof point — "We just wrapped a piece for [type of business, not name]. Came out strong. Worth seeing if something similar could work for [company name]."
 
 **FOLLOW_UP_3 (Day 12):** Clean close — "I'll leave this here. If video becomes a priority later in the year, we'd love to be the first call." Calendar link. Done.
+
+---
+
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#reach-bv` (channel ID: `C0B8Q3URRHC`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#reach-bv`:
+```
+*REACH-BV* — Run complete [YYYY-MM-DD HH:MM EDT]
+📤 Emails sent: [N]  |  ⬇️ Skipped (no gap identified): [N]
+🚩 Flagged replies: [N] — [list lead names if any]
+📊 Quota remaining today: [N]
+```
+
+If any lead replied, also post:
+```
+🔔 REPLY RECEIVED — [lead name] / [company] responded. Check your inbox.
+```
+
+Post to `#empire-pipeline` (one line):
+```
+REACH-BV ✅ [N] Bridge Video outreach sent — [N] flagged replies
+```

@@ -291,5 +291,32 @@ wholesalepayments.com
 - Subject lines must NOT say "payment processing" — too expected, kills open rate
 - If the owner's name is known, use it. If not, use "Hi there,"
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#reach-wp` (channel ID: `C0B8S5WNLUA`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#reach-wp`:
+```
+*REACH-WP* — Run complete [YYYY-MM-DD HH:MM EDT]
+📤 Emails sent: [N]  |  Email 1: [N] / Follow-up 1: [N] / Follow-up 2: [N] / Follow-up 3: [N]
+🚩 Flagged replies: [N] — check jerry.white@wholesalepayments.com
+📊 Quota remaining today: [N]
+```
+
+If any merchant replied (flagged_for_jerry = true), also post:
+```
+🔔 HOT LEAD — [business name] ([city]) replied to WP outreach. Check jerry.white@wholesalepayments.com now.
+```
+
+Post to `#empire-pipeline` (one line):
+```
+REACH-WP ✅ [N] WP outreach sent — [N] merchant replies flagged
+```
+
+---
+
 ## Success Definition
 30 emails sent = quota met. Log every send. Flag any lead that replies (set `flagged_for_jerry: true`, `flag_reason: "REPLY RECEIVED — needs Jerry attention"`).

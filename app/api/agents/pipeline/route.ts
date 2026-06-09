@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   if (!verifyAgentAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json() as Partial<PipelineLead>
+  const body = await req.json() as Partial<PipelineLead> & { estimated_value?: number }
 
   if (!body.email || !body.arm) {
     return NextResponse.json({ error: 'email and arm are required' }, { status: 400 })
@@ -66,16 +66,18 @@ export async function POST(req: NextRequest) {
 
   const stage: PipelineStage = (body.icp_score ?? 0) >= 7 ? 'QUEUED' : 'SCORED'
 
+  const { estimated_value: _ev, ...cleanBody } = body
+
   const { data, error } = await supabase
     .from('pipeline_leads')
     .insert({
-      ...body,
+      ...cleanBody,
       email: normalizedEmail,
       stage,
       outreach_count: 0,
       flagged_for_jerry: false,
       tags: body.tags ?? [],
-      raw_data: body.raw_data ?? {},
+      raw_data: { ...body.raw_data ?? {}, estimated_value: _ev },
     })
     .select()
     .single()

@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
   // Auto-create if missing (happens on first run of the day)
   if (!data) {
     const defaultTargets: Record<string, number> = {
-      'SCOUT-CON': 15, 'SCOUT-BV': 10,
-      'REACH-CON': 10, 'REACH-BV': 8,
+      'SCOUT-CON': 10, 'SCOUT-BV': 15, 'SCOUT-WP': 75,
+      'REACH-CON': 10, 'REACH-BV': 15, 'REACH-WP': 75,
       'PUB-ACCESS': 3, 'PIPE-MGR': 999, 'REPORT-2X': 2,
     }
     const { data: created, error: createErr } = await supabase

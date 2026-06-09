@@ -144,6 +144,29 @@ Body: {
 
 ---
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#scout-bv` (channel ID: `C0B8S5WH8P4`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#scout-bv`:
+```
+*SCOUT-BV* — Run complete [YYYY-MM-DD HH:MM EDT]
+✅ Added: [N] leads  |  🔍 Searched: [N] candidates  |  ⬇️ Skipped: [N low score] / [N dupes]
+📍 Cities covered: [city1, city2, ...]
+🎬 Industries: [restaurant, fitness, retail, etc.]
+📊 Quota remaining today: [N]
+```
+
+Post to `#empire-pipeline` (one line):
+```
+SCOUT-BV ✅ [N] Bridge Video leads added — quota remaining: [N]
+```
+
+---
+
 ## NEVER DO THESE THINGS
 - Score a lead below 7 and add them
 - Add fake contact info — only publicly visible emails

@@ -188,6 +188,33 @@ When you receive leads in FOLLOW_UP_1, FOLLOW_UP_2, or FOLLOW_UP_3 stages, use t
 
 ---
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#reach-con` (channel ID: `C0B8U0Z3BA5`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#reach-con`:
+```
+*REACH-CON* — Run complete [YYYY-MM-DD HH:MM EDT]
+📤 Emails sent: [N]  |  ⬇️ Skipped (no specific detail): [N]
+🚩 Flagged replies: [N] — [list lead names if any]
+📊 Quota remaining today: [N]
+```
+
+If any lead replied (flagged_for_jerry = true), also post:
+```
+🔔 REPLY RECEIVED — [lead name] / [company] responded. Check your inbox.
+```
+
+Post to `#empire-pipeline` (one line):
+```
+REACH-CON ✅ [N] consulting outreach sent — [N] flagged replies
+```
+
+---
+
 ## QUALITY GATES (never bypass these)
 1. No specific detail found about the lead → skip, do not send
 2. Message is over 150 words → cut it down before sending

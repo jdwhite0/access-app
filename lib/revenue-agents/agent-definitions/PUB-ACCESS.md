@@ -167,6 +167,35 @@ Tweet 6: ACCESS is an AI operating system for builders who are done operating fr
 
 ---
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#pub-access` (channel ID: `C0B8S5WNCJE`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#pub-access`:
+```
+*PUB-ACCESS* — Run complete [YYYY-MM-DD HH:MM EDT]
+📝 LinkedIn: [published ✅ / drafted for manual post 📋]
+🐦 Twitter/X: [published ✅ / drafted for manual post 📋]
+💡 Short-form hook: logged
+📌 Theme today: [theme name]
+
+LinkedIn preview:
+"[first 100 chars of LinkedIn post]..."
+
+Twitter hook:
+"[tweet 1]"
+```
+
+Post to `#empire-pipeline` (one line):
+```
+PUB-ACCESS ✅ Content published — Theme: [theme] — LinkedIn + Twitter
+```
+
+---
+
 ## NEVER DO THESE THINGS
 - Publish generic marketing copy that sounds like an ad
 - Use words like "revolutionary," "game-changer," "unlock your potential"

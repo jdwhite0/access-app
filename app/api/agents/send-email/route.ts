@@ -15,6 +15,7 @@ function verifyAgentAuth(req: NextRequest): boolean {
 // POST /api/agents/send-email
 // Agents call this to send outreach emails via Resend.
 // Body: { to, subject, body, arm, lead_id, message_type, from_name? }
+// When MOCK_MODE=true, all emails redirect to jdevinwhite2@gmail.com with [MOCK TEST] prefix.
 export async function POST(req: NextRequest) {
   if (!verifyAgentAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -26,10 +27,36 @@ export async function POST(req: NextRequest) {
     lead_id?: string
     message_type: MessageType
     from_name?: string
+    mock?: boolean
   }
 
   if (!body.to || !body.subject || !body.body || !body.arm || !body.message_type) {
     return NextResponse.json({ error: 'to, subject, body, arm, message_type required' }, { status: 400 })
+  }
+
+  const isMock = process.env.MOCK_MODE === 'true' || body.mock === true
+
+  if (isMock) {
+    const mockRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Jerry White <hello@jdwhite.world>',
+        to: ['jdevinwhite2@gmail.com'],
+        subject: `[MOCK TEST] [original → ${body.to}] ${body.subject}`,
+        text: `--- MOCK TEST ---\nOriginal to: ${body.to}\nSubject: ${body.subject}\nArm: ${body.arm}\nMessage type: ${body.message_type}\n---\n${body.body}`,
+      }),
+    })
+
+    const mockResult = await mockRes.json() as { id?: string; error?: { message?: string } }
+    if (!mockRes.ok || mockResult.error) {
+      return NextResponse.json({ ok: false, error: mockResult.error?.message ?? 'Resend mock error' }, { status: 500 })
+    }
+
+    return NextResponse.json({ ok: true, message_id: mockResult.id, mock: true })
   }
 
   const resendKey = process.env.RESEND_API_KEY
@@ -59,6 +86,7 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       from: fromAddress,
       to: [body.to],
+      bcc: ['jdevinwhite2@gmail.com'],
       subject: body.subject,
       text: body.body,
       ...(replyTo ? { reply_to: replyTo } : {}),

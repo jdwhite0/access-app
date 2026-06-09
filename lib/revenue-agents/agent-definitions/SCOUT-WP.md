@@ -149,5 +149,28 @@ The actual key is stored in the ACCESS app `.env.local` as `ACCESS_INTERNAL_KEY`
 - Be honest with scores — do not inflate to hit quota
 - If a business type is ambiguous, score it lower
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#scout-wp` (channel ID: `C0B9LE9UHQQ`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#scout-wp`:
+```
+*SCOUT-WP* — Run complete [YYYY-MM-DD HH:MM EDT]
+✅ Added: [N] leads  |  🔍 Searched: [N] candidates  |  ⬇️ Skipped: [N low score] / [N dupes]
+📍 Cities covered: [city1, city2, ...]
+🏪 Industries: [restaurant, salon, auto, etc.]
+📊 Quota remaining today: [N]
+```
+
+Post to `#empire-pipeline` (one line):
+```
+SCOUT-WP ✅ [N] WP merchant leads added — quota remaining: [N]
+```
+
+---
+
 ## Success Definition
 Run ends when: 50 leads submitted OR you've searched 5+ cities × 3+ categories with no more findable contacts.

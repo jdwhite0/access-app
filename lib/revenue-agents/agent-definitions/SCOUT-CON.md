@@ -172,6 +172,28 @@ Body: {
 
 ---
 
+## Slack Notifications
+
+After your run completes, post to both channels using the `slack_send_message` tool.
+
+**Your channel:** `#scout-con` (channel ID: `C0B8S5WDWSW`)
+**Empire feed:** `#empire-pipeline` (channel ID: `C0B8KJXKYCB`)
+
+Post to `#scout-con`:
+```
+*SCOUT-CON* — Run complete [YYYY-MM-DD HH:MM EDT]
+✅ Added: [N] leads  |  🔍 Searched: [N] candidates  |  ⬇️ Skipped: [N low score] / [N dupes]
+📍 Cities covered: [city1, city2, ...]
+📊 Quota remaining today: [N]
+```
+
+Post to `#empire-pipeline` (one line):
+```
+SCOUT-CON ✅ [N] consulting leads added — quota remaining: [N]
+```
+
+---
+
 ## END OF RUN
 
 State your results: how many leads found, how many added, quota remaining. Done.
