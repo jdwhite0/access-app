@@ -37,16 +37,16 @@ export const PIPELINE_STAGES: PipelineStage[] = [
 ]
 
 export const SLACK_CHANNELS = {
-  hq: '#hq',
-  operations: '#operations',
-  new_leads: '#new-leads',
-  sales_pipeline: '#sales-pipeline',
-  client_success: '#client-success',
-  partnerships: '#partnerships',
-  media: '#media',
-  founder: '#founder',
-  system_alerts: '#system-alerts',
-  revenue_dashboard: '#revenue-dashboard',
+  hq: '#pipe-mgr',
+  operations: '#pipe-mgr',
+  new_leads: '#pipe-mgr',
+  sales_pipeline: '#pipe-mgr',
+  client_success: '#pipe-mgr',
+  partnerships: '#pipe-mgr',
+  media: '#pipe-mgr',
+  founder: '#pipe-mgr',
+  system_alerts: '#pipe-mgr',
+  revenue_dashboard: '#pipe-mgr',
 }
 
 export const CALLBACK_CADENCE = [
