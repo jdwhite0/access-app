@@ -40,9 +40,27 @@ export function intakeNewLead(input: IntakeInput): { lead: Lead; score: number }
   return { lead, score: scored.score }
 }
 
+// Discovery Coach principle: qualification is gap mapping, not checkbox completion.
+// The gap between current state and desired state IS the deal. The bigger and more painful
+// the gap, the more urgency. Surface it explicitly in qualification notes.
 export function qualifyLead(leadId: string, updates: Partial<Lead>): Lead | null {
   const lead = getStore().leads.find(l => l.id === leadId)
   if (!lead) return null
+
+  // Build gap analysis note using what we know
+  const gapNotes: string[] = []
+
+  if (updates.budget_range) gapNotes.push(`Budget: ${updates.budget_range}`)
+  if (updates.timeline) gapNotes.push(`Timeline: ${updates.timeline}`)
+  if (updates.decision_maker_status === 'yes') gapNotes.push('Decision maker confirmed')
+  if (updates.decision_maker_status === 'no') gapNotes.push('⚠️ Not decision maker — champion needed')
+  if (updates.notes) gapNotes.push(`Context: ${updates.notes}`)
+
+  // Gap signal: if they have budget + urgency + are the decision maker = high-conversion gap
+  const hasGap = updates.budget_range && updates.timeline && updates.decision_maker_status === 'yes'
+  if (hasGap) gapNotes.push('✅ Qualified gap: budget + timeline + authority confirmed')
+
+  const qualificationNote = gapNotes.length > 0 ? gapNotes.join(' | ') : 'Qualified — details pending discovery call'
 
   Object.assign(lead, updates, {
     pipeline_stage: 'qualified',
@@ -53,7 +71,7 @@ export function qualifyLead(leadId: string, updates: Partial<Lead>): Lead | null
     lead_id: lead.id,
     stage: 'qualified',
     entered_at: new Date().toISOString(),
-    notes: `Qualified with provided details`,
+    notes: qualificationNote,
     changed_by: 'lead-intake-agent',
   })
 

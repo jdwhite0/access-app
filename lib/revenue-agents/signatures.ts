@@ -38,8 +38,6 @@ export const CONSULTING_SIGNATURE = `
     <strong>JD Productions Inc.</strong>
   </td></tr>
   <tr><td style="padding-bottom:4px;">
-    <a href="https://instagram.com/jdproductions46" style="color:#1a1a1a;text-decoration:none;">Instagram</a>
-    &nbsp;|&nbsp;
     <a href="https://www.linkedin.com/in/jdwhite099" style="color:#1a1a1a;text-decoration:none;">LinkedIn</a>
   </td></tr>
   <tr><td>${LEGAL_NOTICE}</td></tr>

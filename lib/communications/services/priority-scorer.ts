@@ -1,19 +1,22 @@
 import type { Lead, Priority } from '../types'
 import { HIGH_PRIORITY_TRAITS, PRIORITY_THRESHOLDS } from '../config'
 
+// Pipeline Analyst principle: stage and close date are not a forecast methodology.
+// Score on qualification depth (MEDDPICC-inspired), engagement signals, and deal risk factors.
+// Single-threaded inbound leads with no budget context are high-risk regardless of enthusiasm.
 export interface ScoredLead {
   lead: Lead
   score: number
   breakdown: {
-    budget: number
-    timeline: number
-    decisionMaker: number
-    referral: number
-    media: number
-    partnership: number
-    recurring: number
-    urgency: number
-    completeness: number
+    budget: number          // Metrics: has the buyer quantified value/budget?
+    timeline: number        // Decision process: is there urgency or a real deadline?
+    decisionMaker: number   // Economic buyer: is the decision maker identified?
+    referral: number        // Source quality: referrals have 3x higher close rates
+    media: number           // Service line: JD Productions = high brand awareness value
+    partnership: number     // Partnership signals: B2B relationships compound
+    recurring: number       // Recurring revenue: ACCESS subscriptions weighted higher
+    urgency: number         // Implicated pain: how acute is the problem right now?
+    completeness: number    // Champion signals: more info = more engaged = more likely to close
   }
 }
 

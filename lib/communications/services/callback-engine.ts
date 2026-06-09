@@ -2,12 +2,17 @@ import type { Lead, Callback } from '../types'
 import { CALLBACK_CADENCE } from '../config'
 import { addCallback, updateCallback, getStore } from '../integrations/store'
 
+// Discovery Coach principle: the call that opens the conversation wins or loses the deal.
+// Use SPIN structure: Situation (brief) → Problem (surface it) → Implication (let them feel the cost) → Need-Payoff (they articulate the value).
+// Customer Service principle: acknowledge first, never lead with the pitch.
 const SCRIPT_TEMPLATES: Record<string, string> = {
-  'jd-productions': 'Hi {name}, this is Jerry from JD Productions. I got your message about video/creative work. I\'d love to hear more about what you\'re working on. What\'s a good time to chat?',
-  'bridge-video': 'Hi {name}, this is Jerry from Bridge Video. Thanks for reaching out about business video. Can you tell me a bit about your brand and what kind of video you\'re looking for?',
-  'access': 'Hi {name}, this is Jerry from ACCESS. I saw your inquiry about AI systems and automation. I\'d love to understand your current setup and where you want to go. Free to talk this week?',
-  'regal': 'Hi {name}, this is Jerry from REGAL. Thanks for your interest in our nonprofit work. Let me connect you with the right person on our team.',
-  'general': 'Hi {name}, this is Jerry. Thanks for reaching out. I got your message and want to make sure we connect. What works best for you — a call or email?',
+  'jd-productions': 'Hi {name}, this is Jerry from JD Productions — thanks for reaching out. I want to make sure I understand exactly what you\'re working on before anything else. Walk me through where you are right now — what\'s the project, and what\'s the biggest thing that\'s not working the way you want it to?',
+  'bridge-video': 'Hi {name}, Jerry from Bridge Video. Got your message — appreciate you reaching out. Quick question before we jump in: what does your current video presence look like, and where do you feel like it\'s costing you the most — awareness, conversions, or something else?',
+  'access': 'Hi {name}, Jerry from ACCESS. Thanks for the inquiry. I\'d love to understand your setup first — what are you currently using to manage your operations or AI tools, and where does it break down for you?',
+  'kingdom-consulting': 'Hi {name}, this is Jerry. Thanks for reaching out to Kingdom Consulting. Before I tell you anything about what we do, I want to hear about you — what\'s the creative or brand challenge that actually brought you here today?',
+  'wholesale-payments': 'Hi {name}, Jerry White here with Wholesale Payments. I got your message. Real quick — do you know off the top of your head what you paid in processing fees last month? I ask because I want to show you the actual math before we talk about anything else.',
+  'regal': 'Hi {name}, this is Jerry. Thanks for your interest in our work. Tell me a bit about what brought you to REGAL — what\'s the situation you\'re in and what kind of support are you looking for?',
+  'general': 'Hi {name}, this is Jerry. Got your message and I\'m glad you reached out. I want to make sure we\'re actually the right fit for you before anything — what\'s going on, and what made you decide to reach out today?',
 }
 
 export function createCallback(lead: Lead): Callback {
@@ -65,11 +70,17 @@ export function advanceFollowUp(callbackId: string): Callback | null {
   return getStore().callbacks.find(c => c.id === callbackId) ?? null
 }
 
+// Discovery Coach follow-up principle: each follow-up adds NEW value — an implication question,
+// a number, or a reframe. "Just checking in" is deleted. Persistence is professional; repetition is not.
 function getFollowUpScript(followUpNum: number, name: string): string {
   switch (followUpNum) {
-    case 1: return `Hi ${name}, just following up on my previous message. Would love to connect when you have a moment.`
-    case 2: return `Hi ${name}, wanted to check in one more time. Happy to jump on a quick call if you're still interested.`
-    case 3: return `Hi ${name}, last note from me on this. If timing isn't right, no worries — feel free to reach out whenever works.`
-    default: return `Hi ${name}, just checking in. Let me know if you'd like to reconnect.`
+    case 1:
+      return `Hi ${name}, following up from my last message. One question I forgot to ask — what happens if this doesn't get resolved in the next 30 days? I want to make sure I understand the stakes before we talk.`
+    case 2:
+      return `Hi ${name}, Jerry again. I don't want to be a broken record, so I'll ask directly — is the timing off, or is it something else? Either way I can work with that. Just want to know if it makes sense to keep the door open.`
+    case 3:
+      return `Hi ${name}, last one from me. If now isn't the right time, completely understand — feel free to reach back out whenever it makes sense. The opportunity will still be here.`
+    default:
+      return `Hi ${name}, just making sure you have my info. Reach out any time when you're ready.`
   }
 }

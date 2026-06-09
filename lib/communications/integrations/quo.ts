@@ -52,12 +52,26 @@ export function identifyDepartment(fromNumber: string, toNumber: string): { depa
   return { department: 'hq', intent: null }
 }
 
+// Customer Service principle: assume positive intent, treat every unknown as a potential new client.
+// Founder-office ranked first — those calls are never missed regardless of other signals.
 export function classifyCallIntent(text: string, contactName?: string): CallIntent {
   const lower = text.toLowerCase()
-  if (/\b(media|press|interview|podcast|speaking|news|reporter)\b/.test(lower)) return 'media-inquiry'
-  if (/\b(vendor|partner|partnership|sponsor|collaborate|affiliate)\b/.test(lower)) return 'vendor-partner'
-  if (/\b(existing|current|returning|already |previous)\b/.test(lower)) return 'existing-client'
-  if (/\b(founder|jerry|owner|ceo|executive|leadership)\b/.test(lower) || contactName?.toLowerCase() === 'jerry') return 'founder-office'
-  if (/\b(new|help|interested|services|quote|estimate|pricing|sign up|start)\b/.test(lower)) return 'new-client'
+
+  // Founder direct — highest priority, route immediately
+  if (/\b(founder|jerry|owner|ceo|executive|leadership|personal)\b/.test(lower) || contactName?.toLowerCase().includes('jerry')) return 'founder-office'
+
+  // Media — press, podcast, speaking, coverage
+  if (/\b(media|press|interview|podcast|speaking|news|reporter|feature|story|coverage|pr)\b/.test(lower)) return 'media-inquiry'
+
+  // Vendor / partner — B2B relationships, not service clients
+  if (/\b(vendor|partner|partnership|sponsor|collaborate|affiliate|wholesale|distribution|resell)\b/.test(lower)) return 'vendor-partner'
+
+  // Existing client — they reference prior work or account context
+  if (/\b(existing|current|returning|already|previous|my account|invoice|project update|follow.?up|still working)\b/.test(lower)) return 'existing-client'
+
+  // New client buying signals — any intent, budget curiosity, or service need
+  if (/\b(new|help|interested|services|quote|estimate|pricing|sign.?up|start|hire|book|schedule|cost|how much|available|looking for|need|want|information)\b/.test(lower)) return 'new-client'
+
+  // Default: new client — better to over-qualify than miss a lead
   return 'new-client'
 }
